@@ -1,0 +1,3 @@
+# Dependencies for pcgpa_reconstruct.py (vendored pypret)
+h5py
+scipy

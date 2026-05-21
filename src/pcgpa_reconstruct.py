@@ -1,0 +1,490 @@
+"""PCGPA pulse retrieval for SHG-FROG (FROGNet delay/shift model + pypret PCGPA).
+
+Primary entry point: ``reconstruct_pcgpa`` on traces shaped ``[N_omega, N_tau]``
+as produced by ``frognet.FROGNet``.
+
+Requires vendored ``pypret`` at ``vendor/pypret`` (not on PyPI for all platforms).
+"""
+
+from __future__ import annotations
+
+PCGPA_API_VERSION = 3  # ambiguity-aware δE/L1 without redundant canonicalize on recovered
+
+import sys
+from pathlib import Path
+from typing import Literal
+
+import numpy as np
+
+_VENDOR = Path(__file__).resolve().parent / "vendor" / "pypret"
+if _VENDOR.is_dir() and str(_VENDOR) not in sys.path:
+    sys.path.insert(0, str(_VENDOR))
+
+
+def reload_from_disk():
+    """Re-load this module from ``pcgpa_reconstruct.py`` on disk (for Jupyter)."""
+    import importlib.util
+
+    path = Path(__file__).resolve()
+    spec = importlib.util.spec_from_file_location("pcgpa_reconstruct", path)
+    mod = importlib.util.module_from_spec(spec)
+    sys.modules["pcgpa_reconstruct"] = mod
+    spec.loader.exec_module(mod)
+    if getattr(mod, "PCGPA_API_VERSION", 0) < 2:
+        raise RuntimeError(f"Outdated {path}; need PCGPA_API_VERSION >= 2")
+    return mod
+
+
+def _ensure_pypret():
+    import pypret  # noqa: F401
+
+    return pypret
+
+
+def _build_delay_indices(n_t: int, num_delay_steps: int) -> np.ndarray:
+    delays = np.linspace(-n_t // 2, n_t // 2, num_delay_steps)
+    return np.round(delays).astype(np.int64)
+
+
+def _shift_with_zeros(e: np.ndarray, shift: int) -> np.ndarray:
+    n_t = e.shape[-1]
+    out = np.zeros_like(e)
+    if shift == 0:
+        return e.copy()
+    if abs(shift) >= n_t:
+        return out
+    if shift > 0:
+        out[..., shift:] = e[..., : n_t - shift]
+    else:
+        k = -shift
+        out[..., : n_t - k] = e[..., k:]
+    return out
+
+
+def frognet_g_matrix(
+    e_t: np.ndarray,
+    num_delay_steps: int | None = None,
+) -> np.ndarray:
+    """SHG gate product G(t, tau) = E(t) E(t-tau), shape (N_t, N_tau)."""
+    e_t = np.asarray(e_t, dtype=np.complex128)
+    n_t = e_t.shape[-1]
+    n_tau = int(num_delay_steps) if num_delay_steps is not None else n_t
+    delays = _build_delay_indices(n_t, n_tau)
+    delayed = np.stack(
+        [_shift_with_zeros(e_t, int(tau)) for tau in delays],
+        axis=-1,
+    )
+    return e_t[:, None] * delayed
+
+
+def frognet_forward(
+    e_t: np.ndarray,
+    *,
+    ft=None,
+    num_delay_steps: int | None = None,
+) -> tuple[np.ndarray, np.ndarray]:
+    """
+    SHG-FROG trace matching ``FROGNet`` intensities, using ``ft.forward`` when
+    ``ft`` is a pypret ``FourierTransform`` (needed for consistent PCGPA).
+
+    Returns
+    -------
+    I_trace : (N_omega, N_tau)
+    g_w : complex spectrogram before |.|^2
+    """
+    g = frognet_g_matrix(e_t, num_delay_steps=num_delay_steps)
+    n_tau = g.shape[1]
+    if ft is None:
+        g_w = np.fft.fft(g, axis=0)
+        i_trace = g_w.real**2 + g_w.imag**2
+        return i_trace.astype(np.float64), g_w
+
+    n_t = g.shape[0]
+    g_w = np.zeros((n_t, n_tau), dtype=np.complex128)
+    for m in range(n_tau):
+        g_w[:, m] = ft.forward(g[:, m])
+    i_trace = np.abs(g_w) ** 2
+    return i_trace.astype(np.float64), g_w
+
+
+class FrogNetSHG_PNPS:
+    """
+    Minimal PNPS shim: FROGNet ``E(t-tau)`` product gate + pypret Fourier grid.
+
+    Exposes ``scheme == 'shg-frog'`` for ``PCGPARetriever``.
+    """
+
+    scheme = "shg-frog"
+    process = "shg"
+    method = "frog"
+    parameter_name = "delay"
+    parameter_unit = "s"
+
+    def __init__(self, n_points: int = 64, dt: float = 1.0, center_wl: float = 800e-9):
+        _ensure_pypret()
+        from pypret import FourierTransform, Pulse
+
+        self.ft = FourierTransform(n_points, dt=dt)
+        pulse = Pulse(self.ft, center_wl)
+        self.process_w = pulse.w
+        self.w0 = pulse.w0
+        self.w = pulse.w
+        self.t = pulse.t
+        self.parameter = pulse.t
+        self.Smk: np.ndarray | None = None
+        self.Tmn: np.ndarray | None = None
+        self._tmp: dict = {}
+
+    def measure(self, sk: np.ndarray) -> np.ndarray:
+        sn = self.ft.forward(sk)
+        return sn.real**2 + sn.imag**2
+
+    def calculate(self, spectrum: np.ndarray, parameter: np.ndarray) -> np.ndarray:
+        parameter = np.atleast_1d(parameter)
+        e = self.ft.backward(np.asarray(spectrum, dtype=np.complex128))
+        g = frognet_g_matrix(e, parameter.size)
+        m_delays, n_t = g.shape[1], g.shape[0]
+        smk = np.zeros((m_delays, n_t), dtype=np.complex128)
+        tmn = np.zeros((m_delays, n_t), dtype=np.float64)
+        for m in range(m_delays):
+            smk[m, :] = g[:, m]
+            # Match ``FROGNet`` (numpy FFT along time), not pypret's phased FT.
+            tmn[m, :] = np.abs(np.fft.fft(g[:, m])) ** 2
+        self.Smk = smk
+        self.Tmn = tmn
+        return tmn.squeeze() if m_delays == 1 else tmn
+
+
+def make_pypret_setup(
+    n_points: int = 64,
+    dt: float = 1.0,
+    center_wl: float = 800e-9,
+) -> tuple[object, object, FrogNetSHG_PNPS]:
+    """Fourier grid + ``FrogNetSHG_PNPS`` (delay axis = ``pulse.t``)."""
+    _ensure_pypret()
+    from pypret import Pulse
+
+    pnps = FrogNetSHG_PNPS(n_points, dt=dt, center_wl=center_wl)
+    pulse = Pulse(pnps.ft, center_wl)
+    return pnps.ft, pulse, pnps
+
+
+def _project_smk_numpy(measured: np.ndarray, smk: np.ndarray) -> np.ndarray:
+    """Intensity projection using numpy FFT (consistent with ``FROGNet``)."""
+    smn = np.fft.fft(smk, axis=-1)
+    abs_smn = np.abs(smn)
+    target = np.sqrt(np.maximum(measured, 0.0))
+    smn2 = np.zeros_like(smn)
+    mask = abs_smn > 1e-15
+    smn2[mask] = smn[mask] / abs_smn[mask] * target[mask]
+    smn2[~mask] = target[~mask]
+    return np.fft.ifft(smn2, axis=-1)
+
+
+class _FrogNetPCGPARetriever:
+    """PCGPA retriever with numpy-FFT projection for ``FrogNetSHG_PNPS``."""
+
+    def __init__(self, pnps: FrogNetSHG_PNPS, **kwargs):
+        from pypret.retrieval import Retriever
+
+        self._retriever = Retriever(pnps, "pcgpa", **kwargs)
+        self._retriever._project = _project_smk_numpy
+
+    def retrieve(self, measurement, initial_guess, weights=None, **kwargs):
+        return self._retriever.retrieve(measurement, initial_guess, weights, **kwargs)
+
+    def result(self, pulse_original=None, full=True):
+        return self._retriever.result(pulse_original, full=full)
+
+
+def _frog_ambiguity_candidates(e_rec: np.ndarray, n: int) -> list[np.ndarray]:
+    """Conjugate / flip / circular-shift variants of a recovered field."""
+    e_rec = np.asarray(e_rec, dtype=np.complex128).ravel()
+    candidates = [e_rec, e_rec.conj(), np.flip(e_rec).conj()]
+    for k in range(n):
+        candidates.append(np.roll(e_rec, k))
+        candidates.append(np.roll(e_rec.conj(), k))
+    return candidates
+
+
+def best_delta_e_ambiguity(e_rec: np.ndarray, e_true: np.ndarray) -> float:
+    """δE after searching conjugation / flip / circular shift (no canonicalize)."""
+    e_true = np.asarray(e_true, dtype=np.complex128).ravel()
+    n = e_true.size
+    return min(delta_e_numpy(c, e_true) for c in _frog_ambiguity_candidates(e_rec, n))
+
+
+def best_l1_ambiguity(e_rec: np.ndarray, e_true: np.ndarray) -> float:
+    """L1 (packed Re/Im MAE) after the same ambiguity search (no canonicalize)."""
+    e_true = np.asarray(e_true, dtype=np.complex128).ravel()
+    n = e_true.size
+    true_packed = pack_complex_field(e_true)
+    return min(
+        float(np.abs(pack_complex_field(c) - true_packed).mean())
+        for c in _frog_ambiguity_candidates(e_rec, n)
+    )
+
+
+def delta_e_numpy(e_rec: np.ndarray, e_true: np.ndarray) -> float:
+    """Complex overlap error δE (radians), phase-invariant."""
+    e_rec = np.asarray(e_rec, dtype=np.complex128).ravel()
+    e_true = np.asarray(e_true, dtype=np.complex128).ravel()
+    dot = np.abs(np.vdot(e_rec, e_true))
+    denom = np.linalg.norm(e_rec) * np.linalg.norm(e_true)
+    return float(np.arccos(np.clip(dot / (denom + 1e-30), -1.0, 1.0)))
+
+
+def canonicalize_field(
+    e_t: np.ndarray,
+    *,
+    zero_index: int | None = None,
+) -> np.ndarray:
+    """Match ``data_generation`` global phase / time-flip conventions."""
+    e = np.asarray(e_t, dtype=np.complex128).copy()
+    n = e.shape[-1]
+    z = n // 2 if zero_index is None else int(zero_index)
+    phase_at_t0 = np.angle(e[z])
+    e *= np.exp(-1j * phase_at_t0)
+    left = np.sum(e[:z].real)
+    right = np.sum(e[z + 1 :].real)
+    if right > left:
+        e = np.flip(e).conj()
+        e *= np.exp(-1j * np.angle(e[z]))
+    nrm = np.linalg.norm(e)
+    if nrm > 0:
+        e /= nrm
+    return e
+
+
+def pack_complex_field(e_t: np.ndarray) -> np.ndarray:
+    e_t = np.asarray(e_t)
+    return np.concatenate([e_t.real, e_t.imag]).astype(np.float32)
+
+
+def unpack_packed_field(e_packed: np.ndarray) -> np.ndarray:
+    e_packed = np.asarray(e_packed)
+    half = e_packed.shape[-1] // 2
+    return e_packed[..., :half] + 1j * e_packed[..., half:]
+
+
+def reconstruct_pcgpa(
+    trace: np.ndarray,
+    *,
+    n_points: int | None = None,
+    dt: float = 1.0,
+    maxiter: int = 300,
+    decomposition: Literal["power", "svd"] = "power",
+    initial_spectrum: np.ndarray | None = None,
+    reference_spectrum: np.ndarray | None = None,
+    n_restarts: int = 1,
+    rng: np.random.Generator | None = None,
+) -> np.ndarray:
+    """
+    PCGPA retrieval from FROGNet-layout trace ``[N_omega, N_tau]``.
+
+    Do not pass the true pulse as ``initial_spectrum`` for benchmarking — use a
+    random guess (default). ``reference_spectrum`` is only for optional
+    post-hoc alignment via pypret ``pulse_error`` (not used in SNR sweeps).
+
+    ``n_restarts`` > 1 runs PCGPA from independent random guesses and keeps the
+    result with the lowest trace error (recommended).
+
+    Returns
+    -------
+    e_t : complex temporal field on the pypret time grid, shape (N,)
+    """
+    from pypret.mesh_data import MeshData
+    from pypret.random_pulse import random_gaussian
+
+    if n_restarts < 1:
+        raise ValueError("n_restarts must be >= 1")
+
+    i_meas = np.asarray(trace, dtype=np.float64)
+    if i_meas.ndim != 2:
+        raise ValueError("trace must be 2D [N_omega, N_tau]")
+    n_omega, n_tau = i_meas.shape
+    n = int(n_points) if n_points is not None else n_omega
+    if n != n_omega or n != n_tau:
+        raise ValueError("trace must be square [N, N] matching FROGNet layout")
+
+    ft, pulse, pnps = make_pypret_setup(n, dt=dt)
+    # pypret PCGPA expects (delay, frequency); FROGNet is (omega, tau)
+    data = i_meas.T.copy()
+    measurement = MeshData(data, pnps.parameter, pnps.process_w)
+
+    rng = rng or np.random.default_rng()
+    best_spec: np.ndarray | None = None
+    best_trace_err = np.inf
+
+    for attempt in range(n_restarts):
+        if initial_spectrum is not None and n_restarts == 1:
+            guess = np.asarray(initial_spectrum, dtype=np.complex128)
+        else:
+            random_gaussian(pulse, 50e-15, 0.3 * np.pi)
+            jitter = 0.05 * (rng.normal(size=n) + 1j * rng.normal(size=n))
+            guess = pulse.spectrum + jitter
+
+        retriever = _FrogNetPCGPARetriever(
+            pnps,
+            maxiter=maxiter,
+            decomposition=decomposition,
+            verbose=False,
+        )
+        retriever.retrieve(measurement, guess)
+        res = retriever.result()
+        if res.trace_error < best_trace_err:
+            best_trace_err = float(res.trace_error)
+            best_spec = res.pulse_retrieved.copy()
+
+    spec_rec = best_spec
+    if reference_spectrum is not None:
+        from pypret.pulse_error import pulse_error
+
+        _, spec_rec = pulse_error(
+            spec_rec,
+            np.asarray(reference_spectrum, dtype=np.complex128),
+            ft,
+            dot_ambiguity=True,
+        )
+    return ft.backward(spec_rec)
+
+
+# Backward-compatible alias
+reconstruct_pcgpa_frognet = reconstruct_pcgpa
+
+
+def trace_from_field(
+    e_t: np.ndarray,
+    *,
+    n_points: int = 64,
+    dt: float = 1.0,
+) -> np.ndarray:
+    """Forward trace ``[N_omega, N_tau]`` for a temporal field."""
+    _, _, pnps = make_pypret_setup(n_points, dt=dt)
+    tmn = pnps.calculate(pnps.ft.forward(np.asarray(e_t, dtype=np.complex128)), pnps.parameter)
+    return np.asarray(tmn).T
+
+
+def mean_delta_e_at_snr_pcgpa(
+    i_clean_batch: np.ndarray,
+    e_true_batch: np.ndarray,
+    snr_db: float,
+    *,
+    add_noise_fn,
+    maxiter: int = 300,
+    n_subsample: int | None = None,
+    seed: int = 0,
+    n_restarts: int = 3,
+    use_best_ambiguity: bool = True,
+) -> tuple[float, float]:
+    """
+    Mean/std δE for PCGPA over pulses.
+
+    Random initial guesses only (never the ground-truth pulse). Uses
+    ``n_restarts`` and, by default, ``use_best_ambiguity=True``: align the
+    recovered pulse to truth via flip/conjugate/shift before δE (simulation eval).
+
+    Parameters
+    ----------
+    i_clean_batch : (B, N, N) numpy or torch-convertible
+    e_true_batch : (B, 2N) packed real/imag
+    add_noise_fn : callable (I_clean_tensor, snr_db) -> I_noisy tensor
+    n_restarts : independent PCGPA runs; keep lowest trace-error result
+    use_best_ambiguity : minimize δE over flip/conjugate/shift vs. ground truth
+    """
+    import torch
+
+    i_clean = np.asarray(i_clean_batch, dtype=np.float64)
+    e_true = np.asarray(e_true_batch, dtype=np.float64)
+    b = i_clean.shape[0]
+    idx = np.arange(b)
+    if n_subsample is not None and n_subsample < b:
+        rng = np.random.default_rng(seed)
+        idx = rng.choice(b, size=n_subsample, replace=False)
+
+    per: list[float] = []
+    for i in idx:
+        i_c = torch.as_tensor(i_clean[i])
+        i_n = add_noise_fn(i_c.unsqueeze(0), float(snr_db)).squeeze(0).numpy()
+        e_ref = unpack_packed_field(e_true[i])
+        e_rec = reconstruct_pcgpa(
+            i_n,
+            maxiter=maxiter,
+            n_restarts=n_restarts,
+            rng=np.random.default_rng(
+                (seed + int(i) * 10007 + int(round(snr_db * 10))) % (2**32 - 1)
+            ),
+        )
+        if use_best_ambiguity:
+            per.append(best_delta_e_ambiguity(e_rec, e_ref))
+        else:
+            per.append(delta_e_numpy(e_rec, e_ref))
+    arr = np.asarray(per, dtype=np.float64)
+    return float(arr.mean()), float(arr.std(ddof=0))
+
+
+def l1_packed_mae(
+    e_rec: np.ndarray,
+    e_true_packed: np.ndarray,
+    *,
+    use_best_ambiguity: bool = True,
+    canonicalize: bool = False,
+) -> float:
+    """
+    Mean |error| over packed Re/Im (same layout as CNN L1 in the notebook).
+
+    Default: ``use_best_ambiguity=True`` (flip/conjugate/shift vs. truth).
+    ``canonicalize=True`` is legacy-only when ``use_best_ambiguity=False``.
+    """
+    e_r = np.asarray(e_rec, dtype=np.complex128).ravel()
+    if use_best_ambiguity:
+        e_t = unpack_packed_field(e_true_packed).ravel()
+        return best_l1_ambiguity(e_r, e_t)
+    e_t = unpack_packed_field(e_true_packed)
+    if canonicalize:
+        e_r = canonicalize_field(e_r)
+        e_t = canonicalize_field(e_t)
+    return float(np.abs(pack_complex_field(e_r) - pack_complex_field(e_t)).mean())
+
+
+def mean_l1_at_snr_pcgpa(
+    i_clean_batch: np.ndarray,
+    e_true_batch: np.ndarray,
+    snr_db: float,
+    *,
+    add_noise_fn,
+    maxiter: int = 300,
+    n_subsample: int | None = None,
+    seed: int = 0,
+    n_restarts: int = 3,
+    use_best_ambiguity: bool = True,
+) -> tuple[float, float]:
+    """Mean/std per-pulse L1 (packed Re/Im MAE) for PCGPA over pulses."""
+    import torch
+
+    i_clean = np.asarray(i_clean_batch, dtype=np.float64)
+    e_true = np.asarray(e_true_batch, dtype=np.float64)
+    b = i_clean.shape[0]
+    idx = np.arange(b)
+    if n_subsample is not None and n_subsample < b:
+        rng = np.random.default_rng(seed)
+        idx = rng.choice(b, size=n_subsample, replace=False)
+
+    per: list[float] = []
+    for i in idx:
+        i_c = torch.as_tensor(i_clean[i])
+        i_n = add_noise_fn(i_c.unsqueeze(0), float(snr_db)).squeeze(0).numpy()
+        e_ref_packed = e_true[i]
+        e_rec = reconstruct_pcgpa(
+            i_n,
+            maxiter=maxiter,
+            n_restarts=n_restarts,
+            rng=np.random.default_rng(
+                (seed + int(i) * 10007 + int(round(snr_db * 10))) % (2**32 - 1)
+            ),
+        )
+        per.append(
+            l1_packed_mae(e_rec, e_ref_packed, use_best_ambiguity=use_best_ambiguity)
+        )
+    arr = np.asarray(per, dtype=np.float64)
+    return float(arr.mean()), float(arr.std(ddof=0))
