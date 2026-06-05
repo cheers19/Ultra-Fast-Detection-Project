@@ -6,12 +6,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # ==========================================
-# פונקציית עזר: הזרקת רעש 
+# Helper: noise injection
 # ==========================================
 
 def add_noise(I_clean, snr_db, noise_type="WGN"):
     """
-    הזרקת רעש לתמונת ה-TRACE (לפי סוג הרעש המבוקש)
+    Inject noise into the TRACE image (according to the requested noise type).
     """
     if noise_type == "WGN":
         from trace_noise import add_trace_noise_awgn
@@ -24,20 +24,20 @@ def add_noise(I_clean, snr_db, noise_type="WGN"):
         return noisy_I
 
 # ==========================================
-# פונקציות עזר: מדדי הערכה 
+# Helper: evaluation metrics
 # ==========================================
 
 def calc_delta_E(E_rec, E_orig):
     """
-    חישוב מדד הדמיון (Complex Overlap) - דלתא E
-    E_rec, E_orig: טנזורים הכוללים חצי ממשי וחצי מדומה
+    Compute the similarity metric (complex overlap) delta E.
+    E_rec, E_orig: tensors with real part in the first half and imaginary in the second.
     """
     from pulse_metrics import mean_delta_e_torch
 
     return mean_delta_e_torch(E_rec, E_orig)
 
 def calc_delta_I(I_rec, I_orig):
-    """חישוב שגיאת L1 מנורמלת לתמונת ה-TRACE"""
+    """Compute normalized L1 error for the TRACE image."""
     l1_diff = torch.norm(I_rec - I_orig, p=1, dim=(-2,-1))
     l1_orig = torch.norm(I_orig, p=1, dim=(-2,-1))
     return torch.mean(l1_diff / l1_orig).item()

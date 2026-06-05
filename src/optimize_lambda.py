@@ -8,40 +8,40 @@ import matplotlib.pyplot as plt
 from utils import add_noise
 
 # ==========================================
-# שלב 1: כוונון היפר-פרמטרים (חיפוש למדא אופטימלי)
+# Step 1: hyperparameter tuning (optimal lambda search)
 # ==========================================
 
 # Updated code: Switch to reduction='mean' for supervised/unsupervised L1 losses (Equation 2) to normalize by batch size. Early Stopping remains enabled.
 def optimize_lambda(train_loader, val_loader, FROGNet, model_architecture, snr_range=(0, 30), n_trials=20, max_epochs=50, patience=5):
-    print("מתחיל שלב 1: כוונון למדא בעזרת Optuna (עם שגיאת L1 ממוצעת ועצירה מוקדמת)...")
+    print("Starting step 1: tuning lambda with Optuna (mean L1 error and early stopping)...")
     
     def objective(trial):
         lambda_val = trial.suggest_float('lambda', 0.0, 1.0)
         
-        # אתחול הארכיטקטורה
+        # Initialize the architecture
         model = model_architecture().cuda() 
         optimizer = optim.Adam(model.parameters(), lr=0.001)
         
-        # === השינוי שביקשת: שימוש בממוצע (mean) במקום סכום (sum) ===
+        # Use mean reduction instead of sum
         l1_loss = nn.L1Loss(reduction='mean')
         
         best_val_loss = float('inf')
         epochs_no_improve = 0
         
-        # אימון עם מספר אפוקים מקסימלי גבוה (לשם עצירה מוקדמת)
+        # Train with a high max epoch count (for early stopping)
         for epoch in range(max_epochs):
             model.train()
             for I_clean, E_label in train_loader:
                 I_clean, E_label = I_clean.cuda(), E_label.cuda()
                 
-                # הזרקת רעש לאימון
+                # Inject noise for training
                 snr = np.random.uniform(snr_range, snr_range[2])
                 I_noisy = add_noise(I_clean, snr, "WGN")
                 
                 optimizer.zero_grad()
                 E_pred = model(I_noisy)
                 
-                # חישוב השגיאות המשולבות על סמך משוואה 2, מחושבות כעת כממוצע [1]
+                # Combined losses per Equation 2, now computed as mean [1]
                 loss_supervised = l1_loss(E_pred, E_label)
                 I_reconstructed = FROGNet(E_pred)
                 loss_unsupervised = l1_loss(I_reconstructed, I_noisy)
@@ -50,7 +50,7 @@ def optimize_lambda(train_loader, val_loader, FROGNet, model_architecture, snr_r
                 total_loss.backward()
                 optimizer.step()
                 
-            # בדיקת אימות בסוף כל אפוק
+            # Validation check at the end of each epoch
             model.eval()
             val_loss = 0.0
             with torch.no_grad():
@@ -61,26 +61,26 @@ def optimize_lambda(train_loader, val_loader, FROGNet, model_architecture, snr_r
             
             val_loss /= len(val_loader)
             
-            # --- לוגיקת עצירה מוקדמת (Early Stopping) ---
+            # --- Early stopping logic ---
             if val_loss < best_val_loss:
                 best_val_loss = val_loss
-                epochs_no_improve = 0  # איפוס המונה אם יש שיפור
+                epochs_no_improve = 0  # reset counter on improvement
             else:
                 epochs_no_improve += 1
                 if epochs_no_improve >= patience:
-                    # יציאה מהלולאה אם אין שיפור למשך 'patience' אפוקים רצופים
+                    # exit loop if no improvement for 'patience' consecutive epochs
                     break 
                 
-        # מחזירים את התוצאה הטובה ביותר שהושגה
+        # Return the best validation loss achieved
         return best_val_loss
 
     study = optuna.create_study(direction='minimize')
     study.optimize(objective, n_trials=n_trials)
     
     lambda_opt = study.best_params['lambda']
-    print(f"הערך האופטימלי שנמצא: lambda = {lambda_opt}")
+    print(f"Optimal value found: lambda = {lambda_opt}")
     
-    # הפקת הגרף
+    # Plot results
     lambdas = [t.params['lambda'] for t in study.trials]
     values = [t.value for t in study.trials]
     plt.scatter(lambdas, values)
