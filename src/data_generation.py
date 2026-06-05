@@ -60,3 +60,17 @@ def generate_pulses_gaussian(
         pulses_w.append(e_omega)
 
     return np.array(pulses_t), np.array(pulses_w), t, omega
+
+
+def phase_t_unwrapped_at_zero(pulse_t: np.ndarray) -> np.ndarray:
+    """
+    Unwrapped phase with φ(t=0)=0 at the center sample (``num_points // 2``).
+
+    Use this for plots. ``np.unwrap(np.angle(E))`` alone can show 2π at t=0
+    even when ``angle(E[t=0]) == 0``; ``unwrap(angle(E) - angle(E[t=0]))`` is
+    also wrong because ``unwrap`` accumulates from the left edge.
+    """
+    pulse_t = np.asarray(pulse_t)
+    z = pulse_t.size // 2
+    ph = np.unwrap(np.angle(pulse_t))
+    return ph - ph[z]

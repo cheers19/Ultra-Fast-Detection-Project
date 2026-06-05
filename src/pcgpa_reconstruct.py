@@ -8,7 +8,7 @@ Requires vendored ``pypret`` at ``vendor/pypret`` (not on PyPI for all platforms
 
 from __future__ import annotations
 
-PCGPA_API_VERSION = 3  # ambiguity-aware δE/L1 without redundant canonicalize on recovered
+PCGPA_API_VERSION = 5  # smart initial guess: FWHM from sigma_omega (same units as dt)
 
 import sys
 from pathlib import Path
@@ -197,74 +197,70 @@ class _FrogNetPCGPARetriever:
         return self._retriever.result(pulse_original, full=full)
 
 
-def _frog_ambiguity_candidates(e_rec: np.ndarray, n: int) -> list[np.ndarray]:
-    """Conjugate / flip / circular-shift variants of a recovered field."""
-    e_rec = np.asarray(e_rec, dtype=np.complex128).ravel()
-    candidates = [e_rec, e_rec.conj(), np.flip(e_rec).conj()]
-    for k in range(n):
-        candidates.append(np.roll(e_rec, k))
-        candidates.append(np.roll(e_rec.conj(), k))
-    return candidates
+from pulse_metrics import (
+    best_delta_e_ambiguity,
+    best_l1_ambiguity,
+    best_similarity_error_ambiguity,
+    delta_e_numpy,
+    l1_packed_mae,
+    pack_complex_field,
+    similarity_error_numpy,
+    unpack_packed_field,
+)
 
 
-def best_delta_e_ambiguity(e_rec: np.ndarray, e_true: np.ndarray) -> float:
-    """δE after searching conjugation / flip / circular shift (no canonicalize)."""
-    e_true = np.asarray(e_true, dtype=np.complex128).ravel()
-    n = e_true.size
-    return min(delta_e_numpy(c, e_true) for c in _frog_ambiguity_candidates(e_rec, n))
+def fwhm_t_transform_limited(sigma_omega: float) -> float:
+    """
+    Transform-limited intensity FWHM in the same units as ``pulse.t`` / ``dt``.
+
+    Matches ``generate_pulses_gaussian``: spectral envelope std ``sigma_omega``
+    (rad / time unit). ``pypret.random_gaussian`` expects intensity FWHM in
+    ``pulse.t`` units (attoseconds as plain floats in this project).
+    """
+    sigma_omega = float(sigma_omega)
+    if sigma_omega <= 0:
+        raise ValueError("sigma_omega must be positive")
+    sigma_field = 1.0 / sigma_omega
+    return float(2.0 * np.sqrt(2.0 * np.log(2.0)) * sigma_field)
 
 
-def best_l1_ambiguity(e_rec: np.ndarray, e_true: np.ndarray) -> float:
-    """L1 (packed Re/Im MAE) after the same ambiguity search (no canonicalize)."""
-    e_true = np.asarray(e_true, dtype=np.complex128).ravel()
-    n = e_true.size
-    true_packed = pack_complex_field(e_true)
-    return min(
-        float(np.abs(pack_complex_field(c) - true_packed).mean())
-        for c in _frog_ambiguity_candidates(e_rec, n)
-    )
+def default_sigma_omega_from_dt(dt: float) -> float:
+    """Same convention as ``reconstruction_snr_experiments``: ``0.05 * (2π/dt)``."""
+    dt = float(dt)
+    if dt <= 0:
+        raise ValueError("dt must be positive")
+    return 0.05 * (2.0 * np.pi / dt)
 
 
-def delta_e_numpy(e_rec: np.ndarray, e_true: np.ndarray) -> float:
-    """Complex overlap error δE (radians), phase-invariant."""
-    e_rec = np.asarray(e_rec, dtype=np.complex128).ravel()
-    e_true = np.asarray(e_true, dtype=np.complex128).ravel()
-    dot = np.abs(np.vdot(e_rec, e_true))
-    denom = np.linalg.norm(e_rec) * np.linalg.norm(e_true)
-    return float(np.arccos(np.clip(dot / (denom + 1e-30), -1.0, 1.0)))
-
-
-def canonicalize_field(
-    e_t: np.ndarray,
+def _sample_fwhm_t_for_restart(
+    rng: np.random.Generator,
+    fwhm_nom: float,
     *,
-    zero_index: int | None = None,
+    scale_range: tuple[float, float] = (0.5, 2.0),
+) -> float:
+    lo, hi = (float(scale_range[0]), float(scale_range[1]))
+    if lo <= 0 or hi <= 0 or lo > hi:
+        raise ValueError("fwhm_scale_range must be positive with lo <= hi")
+    return float(fwhm_nom * rng.uniform(lo, hi))
+
+
+def _initial_spectrum_guess(
+    pulse,
+    rng: np.random.Generator,
+    fwhm_t: float,
+    *,
+    phase_max: float = 0.3 * np.pi,
+    jitter_scale: float = 0.05,
 ) -> np.ndarray:
-    """Match ``data_generation`` global phase / time-flip conventions."""
-    e = np.asarray(e_t, dtype=np.complex128).copy()
-    n = e.shape[-1]
-    z = n // 2 if zero_index is None else int(zero_index)
-    phase_at_t0 = np.angle(e[z])
-    e *= np.exp(-1j * phase_at_t0)
-    left = np.sum(e[:z].real)
-    right = np.sum(e[z + 1 :].real)
-    if right > left:
-        e = np.flip(e).conj()
-        e *= np.exp(-1j * np.angle(e[z]))
-    nrm = np.linalg.norm(e)
-    if nrm > 0:
-        e /= nrm
-    return e
+    """Random Gaussian spectrum: envelope width ``fwhm_t``, random phase, small jitter."""
+    from pypret.random_pulse import random_gaussian
 
-
-def pack_complex_field(e_t: np.ndarray) -> np.ndarray:
-    e_t = np.asarray(e_t)
-    return np.concatenate([e_t.real, e_t.imag]).astype(np.float32)
-
-
-def unpack_packed_field(e_packed: np.ndarray) -> np.ndarray:
-    e_packed = np.asarray(e_packed)
-    half = e_packed.shape[-1] // 2
-    return e_packed[..., :half] + 1j * e_packed[..., half:]
+    n = int(pulse.N)
+    random_gaussian(pulse, float(fwhm_t), float(phase_max))
+    jitter = float(jitter_scale) * (
+        rng.normal(size=n) + 1j * rng.normal(size=n)
+    )
+    return np.asarray(pulse.spectrum + jitter, dtype=np.complex128)
 
 
 def reconstruct_pcgpa(
@@ -278,6 +274,11 @@ def reconstruct_pcgpa(
     reference_spectrum: np.ndarray | None = None,
     n_restarts: int = 1,
     rng: np.random.Generator | None = None,
+    sigma_omega: float | None = None,
+    fwhm_t: float | None = None,
+    fwhm_scale_range: tuple[float, float] = (0.5, 2.0),
+    phase_max: float = 0.3 * np.pi,
+    jitter_scale: float = 0.05,
 ) -> np.ndarray:
     """
     PCGPA retrieval from FROGNet-layout trace ``[N_omega, N_tau]``.
@@ -285,6 +286,10 @@ def reconstruct_pcgpa(
     Do not pass the true pulse as ``initial_spectrum`` for benchmarking — use a
     random guess (default). ``reference_spectrum`` is only for optional
     post-hoc alignment via pypret ``pulse_error`` (not used in SNR sweeps).
+
+    Default initial guess: Gaussian envelope with transform-limited
+    ``fwhm_t`` from ``sigma_omega`` (or ``0.05*(2π/dt)`` if only ``dt`` is set),
+    random phase, and per-restart FWHM scaled in ``fwhm_scale_range``.
 
     ``n_restarts`` > 1 runs PCGPA from independent random guesses and keeps the
     result with the lowest trace error (recommended).
@@ -294,7 +299,6 @@ def reconstruct_pcgpa(
     e_t : complex temporal field on the pypret time grid, shape (N,)
     """
     from pypret.mesh_data import MeshData
-    from pypret.random_pulse import random_gaussian
 
     if n_restarts < 1:
         raise ValueError("n_restarts must be >= 1")
@@ -313,6 +317,13 @@ def reconstruct_pcgpa(
     measurement = MeshData(data, pnps.parameter, pnps.process_w)
 
     rng = rng or np.random.default_rng()
+    if fwhm_t is not None:
+        fwhm_nom = float(fwhm_t)
+    elif sigma_omega is not None:
+        fwhm_nom = fwhm_t_transform_limited(sigma_omega)
+    else:
+        fwhm_nom = fwhm_t_transform_limited(default_sigma_omega_from_dt(dt))
+
     best_spec: np.ndarray | None = None
     best_trace_err = np.inf
 
@@ -320,9 +331,20 @@ def reconstruct_pcgpa(
         if initial_spectrum is not None and n_restarts == 1:
             guess = np.asarray(initial_spectrum, dtype=np.complex128)
         else:
-            random_gaussian(pulse, 50e-15, 0.3 * np.pi)
-            jitter = 0.05 * (rng.normal(size=n) + 1j * rng.normal(size=n))
-            guess = pulse.spectrum + jitter
+            fwhm_try = (
+                fwhm_nom
+                if n_restarts == 1
+                else _sample_fwhm_t_for_restart(
+                    rng, fwhm_nom, scale_range=fwhm_scale_range
+                )
+            )
+            guess = _initial_spectrum_guess(
+                pulse,
+                rng,
+                fwhm_try,
+                phase_max=phase_max,
+                jitter_scale=jitter_scale,
+            )
 
         retriever = _FrogNetPCGPARetriever(
             pnps,
@@ -365,17 +387,110 @@ def trace_from_field(
     return np.asarray(tmn).T
 
 
+def _pcgpa_subsample_indices(
+    batch_size: int, n_subsample: int | None, seed: int
+) -> np.ndarray:
+    idx = np.arange(batch_size)
+    if n_subsample is not None and n_subsample < batch_size:
+        rng = np.random.default_rng(seed)
+        idx = rng.choice(batch_size, size=n_subsample, replace=False)
+    return idx
+
+
+def _pcgpa_rng_for_pulse(seed: int, pulse_index: int, snr_db: float) -> np.random.Generator:
+    tag = (seed + int(pulse_index) * 10007 + int(round(snr_db * 10))) % (2**32 - 1)
+    return np.random.default_rng(tag)
+
+
+def _mean_std(values: list[float]) -> tuple[float, float]:
+    arr = np.asarray(values, dtype=np.float64)
+    return float(arr.mean()), float(arr.std(ddof=0))
+
+
+def mean_metrics_at_snr_pcgpa(
+    i_clean_batch: np.ndarray,
+    e_true_batch: np.ndarray,
+    snr_db: float,
+    *,
+    add_noise_fn,
+    dt: float = 1.0,
+    sigma_omega: float | None = None,
+    maxiter: int = 300,
+    n_subsample: int | None = None,
+    seed: int = 0,
+    n_restarts: int = 3,
+    use_best_ambiguity: bool = True,
+    show_progress: bool = False,
+    fwhm_scale_range: tuple[float, float] = (0.5, 2.0),
+) -> tuple[tuple[float, float], tuple[float, float]]:
+    """
+    Mean/std SIMILARITY_ERROR and L1 with **one** PCGPA reconstruction per pulse.
+
+    Returns ``((sim_mean, sim_std), (l1_mean, l1_std))``.
+    """
+    import torch
+
+    i_clean = np.asarray(i_clean_batch, dtype=np.float64)
+    e_true = np.asarray(e_true_batch, dtype=np.float64)
+    idx = _pcgpa_subsample_indices(i_clean.shape[0], n_subsample, seed)
+
+    sim_per: list[float] = []
+    l1_per: list[float] = []
+    iterator = idx
+    if show_progress:
+        try:
+            from tqdm.auto import tqdm
+
+            iterator = tqdm(
+                idx,
+                desc=f"PCGPA @ {float(snr_db):.0f} dB",
+                leave=False,
+            )
+        except ImportError:
+            pass
+
+    for i in iterator:
+        i_c = torch.as_tensor(i_clean[i])
+        i_n = add_noise_fn(i_c.unsqueeze(0), float(snr_db)).squeeze(0).numpy()
+        e_ref = unpack_packed_field(e_true[i])
+        e_ref_packed = e_true[i]
+        e_rec = reconstruct_pcgpa(
+            i_n,
+            dt=dt,
+            maxiter=maxiter,
+            n_restarts=n_restarts,
+            rng=_pcgpa_rng_for_pulse(seed, int(i), float(snr_db)),
+            sigma_omega=sigma_omega,
+            fwhm_scale_range=fwhm_scale_range,
+        )
+        if use_best_ambiguity:
+            sim_per.append(best_similarity_error_ambiguity(e_rec, e_ref))
+            l1_per.append(
+                l1_packed_mae(e_rec, e_ref_packed, use_best_ambiguity=True)
+            )
+        else:
+            sim_per.append(similarity_error_numpy(e_rec, e_ref))
+            l1_per.append(
+                l1_packed_mae(e_rec, e_ref_packed, use_best_ambiguity=False)
+            )
+
+    return _mean_std(sim_per), _mean_std(l1_per)
+
+
 def mean_delta_e_at_snr_pcgpa(
     i_clean_batch: np.ndarray,
     e_true_batch: np.ndarray,
     snr_db: float,
     *,
     add_noise_fn,
+    dt: float = 1.0,
+    sigma_omega: float | None = None,
     maxiter: int = 300,
     n_subsample: int | None = None,
     seed: int = 0,
     n_restarts: int = 3,
     use_best_ambiguity: bool = True,
+    fwhm_scale_range: tuple[float, float] = (0.5, 2.0),
 ) -> tuple[float, float]:
     """
     Mean/std δE for PCGPA over pulses.
@@ -396,11 +511,7 @@ def mean_delta_e_at_snr_pcgpa(
 
     i_clean = np.asarray(i_clean_batch, dtype=np.float64)
     e_true = np.asarray(e_true_batch, dtype=np.float64)
-    b = i_clean.shape[0]
-    idx = np.arange(b)
-    if n_subsample is not None and n_subsample < b:
-        rng = np.random.default_rng(seed)
-        idx = rng.choice(b, size=n_subsample, replace=False)
+    idx = _pcgpa_subsample_indices(i_clean.shape[0], n_subsample, seed)
 
     per: list[float] = []
     for i in idx:
@@ -409,42 +520,53 @@ def mean_delta_e_at_snr_pcgpa(
         e_ref = unpack_packed_field(e_true[i])
         e_rec = reconstruct_pcgpa(
             i_n,
+            dt=dt,
             maxiter=maxiter,
             n_restarts=n_restarts,
-            rng=np.random.default_rng(
-                (seed + int(i) * 10007 + int(round(snr_db * 10))) % (2**32 - 1)
-            ),
+            rng=_pcgpa_rng_for_pulse(seed, int(i), float(snr_db)),
+            sigma_omega=sigma_omega,
+            fwhm_scale_range=fwhm_scale_range,
         )
         if use_best_ambiguity:
             per.append(best_delta_e_ambiguity(e_rec, e_ref))
         else:
             per.append(delta_e_numpy(e_rec, e_ref))
-    arr = np.asarray(per, dtype=np.float64)
-    return float(arr.mean()), float(arr.std(ddof=0))
+    return _mean_std(per)
 
 
-def l1_packed_mae(
-    e_rec: np.ndarray,
-    e_true_packed: np.ndarray,
+def mean_similarity_at_snr_pcgpa(
+    i_clean_batch: np.ndarray,
+    e_true_batch: np.ndarray,
+    snr_db: float,
     *,
+    add_noise_fn,
+    dt: float = 1.0,
+    sigma_omega: float | None = None,
+    maxiter: int = 300,
+    n_subsample: int | None = None,
+    seed: int = 0,
+    n_restarts: int = 3,
     use_best_ambiguity: bool = True,
-    canonicalize: bool = False,
-) -> float:
-    """
-    Mean |error| over packed Re/Im (same layout as CNN L1 in the notebook).
-
-    Default: ``use_best_ambiguity=True`` (flip/conjugate/shift vs. truth).
-    ``canonicalize=True`` is legacy-only when ``use_best_ambiguity=False``.
-    """
-    e_r = np.asarray(e_rec, dtype=np.complex128).ravel()
-    if use_best_ambiguity:
-        e_t = unpack_packed_field(e_true_packed).ravel()
-        return best_l1_ambiguity(e_r, e_t)
-    e_t = unpack_packed_field(e_true_packed)
-    if canonicalize:
-        e_r = canonicalize_field(e_r)
-        e_t = canonicalize_field(e_t)
-    return float(np.abs(pack_complex_field(e_r) - pack_complex_field(e_t)).mean())
+    show_progress: bool = False,
+    fwhm_scale_range: tuple[float, float] = (0.5, 2.0),
+) -> tuple[float, float]:
+    """Mean/std SIMILARITY_ERROR (= 1 - cos δE) for PCGPA over pulses."""
+    (sim, _), _ = mean_metrics_at_snr_pcgpa(
+        i_clean_batch,
+        e_true_batch,
+        snr_db,
+        add_noise_fn=add_noise_fn,
+        dt=dt,
+        sigma_omega=sigma_omega,
+        maxiter=maxiter,
+        n_subsample=n_subsample,
+        seed=seed,
+        n_restarts=n_restarts,
+        use_best_ambiguity=use_best_ambiguity,
+        show_progress=show_progress,
+        fwhm_scale_range=fwhm_scale_range,
+    )
+    return sim
 
 
 def mean_l1_at_snr_pcgpa(
@@ -453,38 +575,30 @@ def mean_l1_at_snr_pcgpa(
     snr_db: float,
     *,
     add_noise_fn,
+    dt: float = 1.0,
+    sigma_omega: float | None = None,
     maxiter: int = 300,
     n_subsample: int | None = None,
     seed: int = 0,
     n_restarts: int = 3,
     use_best_ambiguity: bool = True,
+    show_progress: bool = False,
+    fwhm_scale_range: tuple[float, float] = (0.5, 2.0),
 ) -> tuple[float, float]:
-    """Mean/std per-pulse L1 (packed Re/Im MAE) for PCGPA over pulses."""
-    import torch
-
-    i_clean = np.asarray(i_clean_batch, dtype=np.float64)
-    e_true = np.asarray(e_true_batch, dtype=np.float64)
-    b = i_clean.shape[0]
-    idx = np.arange(b)
-    if n_subsample is not None and n_subsample < b:
-        rng = np.random.default_rng(seed)
-        idx = rng.choice(b, size=n_subsample, replace=False)
-
-    per: list[float] = []
-    for i in idx:
-        i_c = torch.as_tensor(i_clean[i])
-        i_n = add_noise_fn(i_c.unsqueeze(0), float(snr_db)).squeeze(0).numpy()
-        e_ref_packed = e_true[i]
-        e_rec = reconstruct_pcgpa(
-            i_n,
-            maxiter=maxiter,
-            n_restarts=n_restarts,
-            rng=np.random.default_rng(
-                (seed + int(i) * 10007 + int(round(snr_db * 10))) % (2**32 - 1)
-            ),
-        )
-        per.append(
-            l1_packed_mae(e_rec, e_ref_packed, use_best_ambiguity=use_best_ambiguity)
-        )
-    arr = np.asarray(per, dtype=np.float64)
-    return float(arr.mean()), float(arr.std(ddof=0))
+    """Mean/std per-pulse L1 (sum over packed Re/Im) for PCGPA over pulses."""
+    _, (l1, _) = mean_metrics_at_snr_pcgpa(
+        i_clean_batch,
+        e_true_batch,
+        snr_db,
+        add_noise_fn=add_noise_fn,
+        dt=dt,
+        sigma_omega=sigma_omega,
+        maxiter=maxiter,
+        n_subsample=n_subsample,
+        seed=seed,
+        n_restarts=n_restarts,
+        use_best_ambiguity=use_best_ambiguity,
+        show_progress=show_progress,
+        fwhm_scale_range=fwhm_scale_range,
+    )
+    return l1
