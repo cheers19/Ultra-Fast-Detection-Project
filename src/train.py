@@ -11,7 +11,7 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
 
-from frog_reconstruction_model import TraceToPulseCNN
+from frog_reconstruction_model import MODEL_REGISTRY, TraceToPulseCNN
 from pulse_metrics import pulse_packed_l1_loss_torch
 from trace_noise import add_trace_noise_awgn
 
@@ -30,6 +30,7 @@ class TrainConfig:
     seed: int = 0
     checkpoint_path: str = "checkpoints/baseline_2k.pt"
     experiment_name: str = "baseline_2k"
+    model_name: str = "cnn"
     device: str | None = None
 
     def resolve_device(self) -> torch.device:
@@ -44,8 +45,14 @@ class TrainHistory:
     val_l1_pulses: list[float] = field(default_factory=list)
 
 
-def build_model(n: int, device: torch.device) -> TraceToPulseCNN:
-    model = TraceToPulseCNN(out_dim=2 * n).to(device)
+def build_model(
+    n: int,
+    device: torch.device,
+    model_name: str = "cnn",
+) -> nn.Module:
+    if model_name not in MODEL_REGISTRY:
+        raise ValueError(f"unknown model_name={model_name!r}; choose from {list(MODEL_REGISTRY)}")
+    model = MODEL_REGISTRY[model_name](out_dim=2 * n).to(device)
     # LazyLinear needs one forward pass to initialize weights.
     model(torch.zeros(1, 1, n, n, device=device))
     return model
@@ -67,11 +74,15 @@ def train_trace_to_pulse(
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
     history = TrainHistory()
 
+    device = next(model.parameters()).device
+
     for epoch in range(epochs):
         model.train()
         running = 0.0
         n_seen = 0
         for I_clean, E_true in train_loader:
+            I_clean = I_clean.to(device)
+            E_true = E_true.to(device)
             snr = float(np.random.uniform(train_snr_db_range[0], train_snr_db_range[1]))
             I_noisy = add_noise_fn(I_clean, snr)
             optimizer.zero_grad(set_to_none=True)
@@ -89,6 +100,8 @@ def train_trace_to_pulse(
         vsum, vcount = 0.0, 0
         with torch.no_grad():
             for I_clean, E_true in val_loader:
+                I_clean = I_clean.to(device)
+                E_true = E_true.to(device)
                 I_noisy = add_noise_fn(I_clean, val_snr_db)
                 E_pred = model(I_noisy.unsqueeze(1))
                 vloss = criterion(E_pred, E_true)
@@ -118,6 +131,7 @@ def save_checkpoint(
     payload = {
         "model_state_dict": model.state_dict(),
         "N": config.n,
+        "model_name": config.model_name,
         "train_snr_db_range": config.train_snr_db_range,
         "experiment_name": config.experiment_name,
         "train_config": asdict(config),
@@ -132,11 +146,14 @@ def save_checkpoint(
 def load_checkpoint(
     path: str | Path,
     device: torch.device | None = None,
-) -> tuple[TraceToPulseCNN, dict]:
+) -> tuple[nn.Module, dict]:
     device = device or torch.device("cpu")
     ckpt = torch.load(path, map_location=device, weights_only=False)
     n = int(ckpt["N"])
-    model = build_model(n, device)
+    model_name = ckpt.get("model_name", "cnn")
+    if "train_config" in ckpt and "model_name" in ckpt["train_config"]:
+        model_name = ckpt["train_config"].get("model_name", model_name)
+    model = build_model(n, device, model_name=model_name)
     model.load_state_dict(ckpt["model_state_dict"])
     model.eval()
     return model, ckpt

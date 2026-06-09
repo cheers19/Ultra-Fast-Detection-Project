@@ -253,6 +253,49 @@ def plot_training_history(
     plt.show()
 
 
+def plot_cnn_snr_compare(
+    cnn_results: list[CnnSweepResult],
+    *,
+    use_best_l1_amb: bool = True,
+    include_vs_n: bool = True,
+) -> None:
+    """Overlay CNN-only SNR sweeps (no PCGPA). Default: L1 with best ambiguity."""
+    if not cnn_results:
+        raise ValueError("cnn_results must be non-empty")
+    snr = cnn_results[0].snr_sweep_db
+    fmts = ["-o", "--^", "-s", "-D", "-v", "-P", "-X"]
+    attr_m = "cnn_l1_amb_m" if use_best_l1_amb else "cnn_l1_raw_m"
+    attr_s = "cnn_l1_amb_s" if use_best_l1_amb else "cnn_l1_raw_s"
+    suffix = "best L1 amb." if use_best_l1_amb else "raw"
+    ylabel = "L1 (sum over 2N, mean over pulses)"
+    series = [
+        (
+            getattr(res, attr_m),
+            getattr(res, attr_s),
+            fmts[i % len(fmts)],
+            res.experiment_name or f"CNN {i + 1}",
+        )
+        for i, res in enumerate(cnn_results)
+    ]
+    plot_metric_curves(
+        snr,
+        series,
+        xlabel="trace SNR (dB)",
+        ylabel=ylabel,
+        title=f"L1 vs trace SNR — CNN ({suffix})",
+    )
+    if include_vs_n:
+        n_equiv = np.array([snr_db_to_equivalent_n_pulses(float(s)) for s in snr])
+        plot_metric_curves(
+            n_equiv,
+            series,
+            xlabel="equivalent pulse count N (log scale)",
+            ylabel=ylabel,
+            title=f"L1 vs N — CNN ({suffix})",
+            xscale="log",
+        )
+
+
 def plot_standard_cnn_vs_pcgpa_suite(
     snr_sweep_db: np.ndarray,
     cnn_results: list[CnnSweepResult],

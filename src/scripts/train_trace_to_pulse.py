@@ -35,6 +35,13 @@ def parse_args() -> argparse.Namespace:
         help="output checkpoint path",
     )
     p.add_argument("--experiment-name", type=str, default=None)
+    p.add_argument(
+        "--model",
+        type=str,
+        default="cnn",
+        choices=["cnn", "cnn_large"],
+        help="architecture: cnn (baseline) or cnn_large (wider/deeper)",
+    )
     p.add_argument("--device", type=str, default=None)
     return p.parse_args()
 
@@ -53,6 +60,7 @@ def main() -> None:
         seed=args.seed,
         checkpoint_path=args.checkpoint,
         experiment_name=exp_name,
+        model_name=args.model,
         device=args.device,
     )
     device = config.resolve_device()
@@ -62,7 +70,7 @@ def main() -> None:
         torch.cuda.manual_seed_all(config.seed)
 
     print(f"DEVICE: {device}")
-    print(f"Training {exp_name}: n_train={config.n_train}, epochs={config.epochs}")
+    print(f"Training {exp_name}: model={args.model}, n_train={config.n_train}, epochs={config.epochs}")
 
     bundle = build_frog_dataloaders(
         n_train=config.n_train,
@@ -73,7 +81,7 @@ def main() -> None:
         device=device,
         grid=PulseGridConfig(n=config.n),
     )
-    model = build_model(config.n, device)
+    model = build_model(config.n, device, model_name=config.model_name)
     print("Parameters:", sum(p.numel() for p in model.parameters()))
 
     history = train_trace_to_pulse(

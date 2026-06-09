@@ -48,6 +48,22 @@ class FrogDatasetBundle:
     grid: PulseGridConfig
 
 
+def _frog_traces_batched(
+    frog: FROGNet,
+    e_packed: torch.Tensor,
+    device: torch.device,
+    *,
+    chunk_size: int = 256,
+) -> torch.Tensor:
+    """Forward FROGNet in chunks; return CPU float tensors."""
+    out: list[torch.Tensor] = []
+    with torch.no_grad():
+        for start in range(0, e_packed.shape[0], chunk_size):
+            batch = e_packed[start : start + chunk_size].to(device)
+            out.append(frog(batch).cpu())
+    return torch.cat(out, dim=0)
+
+
 def build_frog_dataloaders(
     *,
     n_train: int,
@@ -90,16 +106,22 @@ def build_frog_dataloaders(
         seed=seed + 2,
     )
 
-    E_train = pack_pulses_complex(p_train_c).to(device)
-    E_val = pack_pulses_complex(p_val_c).to(device)
-    E_test = pack_pulses_complex(p_test_c).to(device)
+    E_train = pack_pulses_complex(p_train_c)
+    E_val = pack_pulses_complex(p_val_c)
+    E_test = pack_pulses_complex(p_test_c)
 
     frog = FROGNet(num_delay_steps=grid.n).to(device)
     frog.eval()
+    I_train = _frog_traces_batched(frog, E_train, device)
     with torch.no_grad():
-        I_train = frog(E_train)
-        I_val = frog(E_val)
-        I_test = frog(E_test)
+        I_val = frog(E_val.to(device)).cpu()
+        I_test = frog(E_test.to(device)).cpu()
+
+    # Small val/test stay on device for notebook inference; train stays on CPU.
+    E_val = E_val.to(device)
+    E_test = E_test.to(device)
+    I_val = I_val.to(device)
+    I_test = I_test.to(device)
 
     train_loader = DataLoader(
         TensorDataset(I_train, E_train),

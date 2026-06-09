@@ -304,8 +304,26 @@ def prepare_frog_trace_for_plot(
         n = int(num_points)
         omega_plot = np.fft.fftshift(np.fft.fftfreq(n, dt)) * (2.0 * np.pi)
     num_tau = trace.shape[-1]
-    tau_axis = np.linspace(-n // 2, n // 2, num_tau)
+    tau_samples = np.linspace(-n // 2, n // 2, num_tau)
+    tau_axis = tau_samples * float(dt) if dt is not None else tau_samples
     return trace_plot, tau_axis, omega_plot
+
+
+def frog_trace_marginals(trace_plot: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    """
+    Marginals of a display-order FROG trace ``[N_omega, N_tau]``.
+
+    Returns
+    -------
+    spectral_marginal : sum over delay (τ) → profile vs ω
+    delay_marginal : sum over angular frequency (ω) → profile vs τ
+    """
+    trace_plot = np.asarray(trace_plot, dtype=np.float64)
+    if trace_plot.ndim != 2:
+        raise ValueError("trace_plot must be 2D [N_omega, N_tau]")
+    spectral_marginal = trace_plot.sum(axis=1)
+    delay_marginal = trace_plot.sum(axis=0)
+    return spectral_marginal, delay_marginal
 
 
 def phase_relative_to_center(e_t: np.ndarray, zero_index: int | None = None) -> np.ndarray:

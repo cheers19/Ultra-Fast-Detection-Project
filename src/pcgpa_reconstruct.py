@@ -8,11 +8,18 @@ Requires vendored ``pypret`` at ``vendor/pypret`` (not on PyPI for all platforms
 
 from __future__ import annotations
 
-PCGPA_API_VERSION = 5  # smart initial guess: FWHM from sigma_omega (same units as dt)
+PCGPA_API_VERSION = 6  # initial_guess_mode incl. random_initial (no dataset σ_ω prior)
 
 import sys
 from pathlib import Path
 from typing import Literal
+
+InitialGuessMode = Literal[
+    "dataset_sigma",
+    "trace_marginal_sqrt2",
+    "random_width",
+    "random_initial",
+]
 
 import numpy as np
 
@@ -244,6 +251,86 @@ def _sample_fwhm_t_for_restart(
     return float(fwhm_nom * rng.uniform(lo, hi))
 
 
+def _random_sigma_omega(rng: np.random.Generator, dt: float) -> float:
+    """Random spectral envelope std in rad / time unit (independent of dataset value)."""
+    span = 2.0 * np.pi / float(dt)
+    return float(rng.uniform(0.01 * span, 0.25 * span))
+
+
+def _sigma_omega_from_noisy_trace_marginal(
+    trace: np.ndarray,
+    omega_axis: np.ndarray,
+    *,
+    dt: float,
+    fallback_sigma: float,
+) -> float:
+    """
+    Gaussian fit to the spectral marginal of a noisy trace; return ``√2 × σ_fit``.
+    """
+    from scipy.optimize import curve_fit
+
+    from pulse_metrics import frog_trace_marginals, prepare_frog_trace_for_plot
+
+    trace_plot, _, _ = prepare_frog_trace_for_plot(
+        trace, omega_axis=omega_axis, dt=dt
+    )
+    spec, _ = frog_trace_marginals(trace_plot)
+    omega = np.asarray(omega_axis, dtype=float)
+    fallback = float(fallback_sigma)
+
+    def _gauss(w, amp, sigma):
+        return amp * np.exp(-0.5 * (w / sigma) ** 2)
+
+    try:
+        popt, _ = curve_fit(
+            _gauss,
+            omega,
+            spec,
+            p0=(float(np.max(spec)), fallback),
+            bounds=([0.0, 1e-12], [np.inf, np.inf]),
+            maxfev=10_000,
+        )
+        sigma_fit = float(popt[1])
+    except (RuntimeError, ValueError):
+        sigma_fit = fallback
+    return float(np.sqrt(2.0) * sigma_fit)
+
+
+def _fwhm_t_for_initial_guess(
+    mode: InitialGuessMode,
+    *,
+    rng: np.random.Generator,
+    fwhm_nom: float,
+    fwhm_scale_range: tuple[float, float],
+    n_restarts: int,
+    attempt: int,
+    dt: float,
+    trace: np.ndarray | None = None,
+    omega_axis: np.ndarray | None = None,
+    sigma_omega_fallback: float | None = None,
+    trace_sigma_omega: float | None = None,
+) -> float:
+    if mode == "dataset_sigma":
+        if n_restarts == 1:
+            return float(fwhm_nom)
+        return _sample_fwhm_t_for_restart(
+            rng, fwhm_nom, scale_range=fwhm_scale_range
+        )
+    if mode == "trace_marginal_sqrt2":
+        if trace_sigma_omega is None:
+            raise ValueError("trace_sigma_omega required for trace_marginal_sqrt2")
+        return fwhm_t_transform_limited(trace_sigma_omega)
+    if mode == "random_width":
+        return fwhm_t_transform_limited(_random_sigma_omega(rng, dt))
+    if mode == "random_initial":
+        # Random FWHM jitter around dt-only nominal — no dataset ``sigma_omega`` prior.
+        nom = fwhm_t_transform_limited(default_sigma_omega_from_dt(dt))
+        return _sample_fwhm_t_for_restart(
+            rng, nom, scale_range=fwhm_scale_range
+        )
+    raise ValueError(f"unknown initial_guess_mode: {mode!r}")
+
+
 def _initial_spectrum_guess(
     pulse,
     rng: np.random.Generator,
@@ -279,6 +366,8 @@ def reconstruct_pcgpa(
     fwhm_scale_range: tuple[float, float] = (0.5, 2.0),
     phase_max: float = 0.3 * np.pi,
     jitter_scale: float = 0.05,
+    initial_guess_mode: InitialGuessMode = "dataset_sigma",
+    omega_axis: np.ndarray | None = None,
 ) -> np.ndarray:
     """
     PCGPA retrieval from FROGNet-layout trace ``[N_omega, N_tau]``.
@@ -287,9 +376,15 @@ def reconstruct_pcgpa(
     random guess (default). ``reference_spectrum`` is only for optional
     post-hoc alignment via pypret ``pulse_error`` (not used in SNR sweeps).
 
-    Default initial guess: Gaussian envelope with transform-limited
-    ``fwhm_t`` from ``sigma_omega`` (or ``0.05*(2π/dt)`` if only ``dt`` is set),
-    random phase, and per-restart FWHM scaled in ``fwhm_scale_range``.
+    ``initial_guess_mode`` controls the Gaussian spectral envelope width:
+
+    - ``dataset_sigma`` (default): ``fwhm_t`` from ``sigma_omega``; jitter across
+      restarts via ``fwhm_scale_range``.
+    - ``trace_marginal_sqrt2``: fit the noisy trace spectral marginal, use
+      ``√2 × σ_fit`` (requires ``omega_axis``, e.g. ``w_vec``).
+    - ``random_width``: random ``σ_ω`` per restart, independent of dataset / trace.
+    - ``random_initial``: random Gaussian envelope width (``fwhm_scale_range`` jitter
+      around dt-only nominal); ignores passed ``sigma_omega``.
 
     ``n_restarts`` > 1 runs PCGPA from independent random guesses and keeps the
     result with the lowest trace error (recommended).
@@ -324,6 +419,23 @@ def reconstruct_pcgpa(
     else:
         fwhm_nom = fwhm_t_transform_limited(default_sigma_omega_from_dt(dt))
 
+    if initial_guess_mode == "trace_marginal_sqrt2" and omega_axis is None:
+        raise ValueError("omega_axis is required when initial_guess_mode='trace_marginal_sqrt2'")
+
+    sigma_fallback = (
+        float(sigma_omega)
+        if sigma_omega is not None
+        else default_sigma_omega_from_dt(dt)
+    )
+    trace_sigma_omega: float | None = None
+    if initial_guess_mode == "trace_marginal_sqrt2":
+        trace_sigma_omega = _sigma_omega_from_noisy_trace_marginal(
+            i_meas,
+            omega_axis,
+            dt=dt,
+            fallback_sigma=sigma_fallback,
+        )
+
     best_spec: np.ndarray | None = None
     best_trace_err = np.inf
 
@@ -331,12 +443,18 @@ def reconstruct_pcgpa(
         if initial_spectrum is not None and n_restarts == 1:
             guess = np.asarray(initial_spectrum, dtype=np.complex128)
         else:
-            fwhm_try = (
-                fwhm_nom
-                if n_restarts == 1
-                else _sample_fwhm_t_for_restart(
-                    rng, fwhm_nom, scale_range=fwhm_scale_range
-                )
+            fwhm_try = _fwhm_t_for_initial_guess(
+                initial_guess_mode,
+                rng=rng,
+                fwhm_nom=fwhm_nom,
+                fwhm_scale_range=fwhm_scale_range,
+                n_restarts=n_restarts,
+                attempt=attempt,
+                dt=dt,
+                trace=i_meas,
+                omega_axis=omega_axis,
+                sigma_omega_fallback=sigma_fallback,
+                trace_sigma_omega=trace_sigma_omega,
             )
             guess = _initial_spectrum_guess(
                 pulse,
@@ -422,6 +540,8 @@ def mean_metrics_at_snr_pcgpa(
     use_best_ambiguity: bool = True,
     show_progress: bool = False,
     fwhm_scale_range: tuple[float, float] = (0.5, 2.0),
+    initial_guess_mode: InitialGuessMode = "dataset_sigma",
+    omega_axis: np.ndarray | None = None,
 ) -> tuple[tuple[float, float], tuple[float, float]]:
     """
     Mean/std SIMILARITY_ERROR and L1 with **one** PCGPA reconstruction per pulse.
@@ -443,7 +563,7 @@ def mean_metrics_at_snr_pcgpa(
 
             iterator = tqdm(
                 idx,
-                desc=f"PCGPA @ {float(snr_db):.0f} dB",
+                desc=f"PCGPA/{initial_guess_mode} @ {float(snr_db):.0f} dB",
                 leave=False,
             )
         except ImportError:
@@ -462,6 +582,8 @@ def mean_metrics_at_snr_pcgpa(
             rng=_pcgpa_rng_for_pulse(seed, int(i), float(snr_db)),
             sigma_omega=sigma_omega,
             fwhm_scale_range=fwhm_scale_range,
+            initial_guess_mode=initial_guess_mode,
+            omega_axis=omega_axis,
         )
         if use_best_ambiguity:
             sim_per.append(best_similarity_error_ambiguity(e_rec, e_ref))
@@ -549,6 +671,8 @@ def mean_similarity_at_snr_pcgpa(
     use_best_ambiguity: bool = True,
     show_progress: bool = False,
     fwhm_scale_range: tuple[float, float] = (0.5, 2.0),
+    initial_guess_mode: InitialGuessMode = "dataset_sigma",
+    omega_axis: np.ndarray | None = None,
 ) -> tuple[float, float]:
     """Mean/std SIMILARITY_ERROR (= 1 - cos δE) for PCGPA over pulses."""
     (sim, _), _ = mean_metrics_at_snr_pcgpa(
@@ -565,6 +689,8 @@ def mean_similarity_at_snr_pcgpa(
         use_best_ambiguity=use_best_ambiguity,
         show_progress=show_progress,
         fwhm_scale_range=fwhm_scale_range,
+        initial_guess_mode=initial_guess_mode,
+        omega_axis=omega_axis,
     )
     return sim
 
@@ -584,6 +710,8 @@ def mean_l1_at_snr_pcgpa(
     use_best_ambiguity: bool = True,
     show_progress: bool = False,
     fwhm_scale_range: tuple[float, float] = (0.5, 2.0),
+    initial_guess_mode: InitialGuessMode = "dataset_sigma",
+    omega_axis: np.ndarray | None = None,
 ) -> tuple[float, float]:
     """Mean/std per-pulse L1 (sum over packed Re/Im) for PCGPA over pulses."""
     _, (l1, _) = mean_metrics_at_snr_pcgpa(
@@ -600,5 +728,7 @@ def mean_l1_at_snr_pcgpa(
         use_best_ambiguity=use_best_ambiguity,
         show_progress=show_progress,
         fwhm_scale_range=fwhm_scale_range,
+        initial_guess_mode=initial_guess_mode,
+        omega_axis=omega_axis,
     )
     return l1
