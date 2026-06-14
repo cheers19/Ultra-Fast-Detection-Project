@@ -381,6 +381,18 @@ def pulse_packed_l1_loss_torch(E_pred, E_true):
     return l1_packed_per_pulse_torch(E_pred, E_true).mean()
 
 
+def snr_db_l1_loss_torch(snr_pred, snr_true) -> "torch.Tensor":
+    """Mean L1 on SNR (dB); ``snr_true`` may be scalar or per-batch vector."""
+    if torch is None:
+        raise ImportError("torch is required for snr_db_l1_loss_torch")
+    target = snr_true
+    if not isinstance(target, torch.Tensor):
+        target = torch.full_like(snr_pred, float(target))
+    elif target.ndim == 0:
+        target = target.expand_as(snr_pred)
+    return (snr_pred - target).abs().mean()
+
+
 def mean_delta_e_torch(E_rec, E_orig) -> float:
     """Batch mean δE for packed tensors [B, 2N]."""
     return float(delta_e_per_pulse_torch(E_rec, E_orig).mean().item())
@@ -421,3 +433,10 @@ def snr_db_to_equivalent_n_pulses(
     snr1_linear = a_s1 / (pn1_over_ps1 * a_s1)
     snr_linear = snr_db_to_linear(snr_db)
     return float((snr_linear / snr1_linear) ** 2)
+
+
+def trace_l1_sum_numpy(i_rec: np.ndarray, i_ref: np.ndarray) -> float:
+    """L1 on trace: sum of |I_rec - I_ref| over all pixels (same convention as pulse L1 sum)."""
+    a = np.asarray(i_rec, dtype=np.float64)
+    b = np.asarray(i_ref, dtype=np.float64)
+    return float(np.sum(np.abs(a - b)))

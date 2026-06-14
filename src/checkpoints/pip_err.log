@@ -1,0 +1,4 @@
+WARNING: Ignoring invalid distribution ~orch (C:\Users\SharonLab\miniconda3\Lib\site-packages)
+ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
+torchaudio 2.7.0 requires torch==2.7.0, but you have torch 2.6.0+cu124 which is incompatible.
+torchvision 0.22.0 requires torch==2.7.0, but you have torch 2.6.0+cu124 which is incompatible.

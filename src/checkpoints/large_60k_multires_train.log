@@ -1,0 +1,30 @@
+DEVICE: cuda
+Training large_60k_multires: model=multires, n_train=60000, epochs=200
+Parameters: 9888640
+epoch 001/200  train_L1=4.01995  val_L1@15.0dB=3.46705
+epoch 002/200  train_L1=3.33643  val_L1@15.0dB=3.16531
+epoch 003/200  train_L1=3.14085  val_L1@15.0dB=3.09540
+epoch 004/200  train_L1=3.05194  val_L1@15.0dB=2.98148
+epoch 005/200  train_L1=2.99016  val_L1@15.0dB=2.98347
+epoch 006/200  train_L1=2.94508  val_L1@15.0dB=2.95967
+epoch 007/200  train_L1=2.91745  val_L1@15.0dB=2.89187
+epoch 008/200  train_L1=2.88523  val_L1@15.0dB=2.88546
+epoch 009/200  train_L1=2.87191  val_L1@15.0dB=2.90665
+epoch 010/200  train_L1=2.84697  val_L1@15.0dB=2.86784
+epoch 011/200  train_L1=2.82674  val_L1@15.0dB=2.88364
+epoch 012/200  train_L1=2.81666  val_L1@15.0dB=2.86844
+epoch 013/200  train_L1=2.80534  val_L1@15.0dB=2.85380
+epoch 014/200  train_L1=2.79039  val_L1@15.0dB=2.85334
+epoch 015/200  train_L1=2.78004  val_L1@15.0dB=2.82589
+epoch 016/200  train_L1=2.77660  val_L1@15.0dB=2.85443
+epoch 017/200  train_L1=2.75781  val_L1@15.0dB=2.84268
+epoch 018/200  train_L1=2.74367  val_L1@15.0dB=2.87797
+epoch 019/200  train_L1=2.73306  val_L1@15.0dB=2.86157
+epoch 020/200  train_L1=2.73261  val_L1@15.0dB=2.88593
+epoch 021/200  train_L1=2.71799  val_L1@15.0dB=2.84949
+epoch 022/200  train_L1=2.70251  val_L1@15.0dB=2.85042
+epoch 023/200  train_L1=2.68686  val_L1@15.0dB=2.88406
+epoch 024/200  train_L1=2.68974  val_L1@15.0dB=2.88904
+epoch 025/200  train_L1=2.69397  val_L1@15.0dB=2.88008
+epoch 026/200  train_L1=2.68643  val_L1@15.0dB=2.85108
+epoch 027/200  train_L1=2.66949  val_L1@15.0dB=2.88579

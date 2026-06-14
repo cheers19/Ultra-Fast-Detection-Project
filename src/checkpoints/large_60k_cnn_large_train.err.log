@@ -1,0 +1,22 @@
+Traceback (most recent call last):
+  File "d:\Haim\Haim 3rd paper\Ultra-Fast project\src\scripts\train_trace_to_pulse.py", line 101, in <module>
+    main()
+  File "d:\Haim\Haim 3rd paper\Ultra-Fast project\src\scripts\train_trace_to_pulse.py", line 75, in main
+    bundle = build_frog_dataloaders(
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Haim\Haim 3rd paper\Ultra-Fast project\src\dataset_utils.py", line 100, in build_frog_dataloaders
+    I_train = frog(E_train)
+              ^^^^^^^^^^^^^
+  File "C:\Users\SharonLab\miniconda3\Lib\site-packages\torch\nn\modules\module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SharonLab\miniconda3\Lib\site-packages\torch\nn\modules\module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Haim\Haim 3rd paper\Ultra-Fast project\src\frognet.py", line 105, in forward
+    [self._shift_with_zeros(e_complex, shift=int(tau.item())) for tau in delays],
+     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Haim\Haim 3rd paper\Ultra-Fast project\src\frognet.py", line 70, in _shift_with_zeros
+    out = torch.zeros_like(e_complex)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 30.00 MiB. GPU 0 has a total capacity of 4.00 GiB of which 393.14 MiB is free. Of the allocated memory 1.47 GiB is allocated by PyTorch, and 1.50 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)

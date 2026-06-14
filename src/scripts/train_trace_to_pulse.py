@@ -39,8 +39,8 @@ def parse_args() -> argparse.Namespace:
         "--model",
         type=str,
         default="cnn",
-        choices=["cnn", "cnn_large"],
-        help="architecture: cnn (baseline) or cnn_large (wider/deeper)",
+        choices=["cnn", "cnn_large", "multires"],
+        help="architecture: cnn (baseline), cnn_large, or multires (DeepFROG-style)",
     )
     p.add_argument("--device", type=str, default=None)
     return p.parse_args()

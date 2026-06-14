@@ -204,6 +204,40 @@ class _FrogNetPCGPARetriever:
         return self._retriever.result(pulse_original, full=full)
 
 
+def _pcgpa_retrieve_with_early_stop(
+    wrapper: _FrogNetPCGPARetriever,
+    measurement,
+    initial_guess,
+    *,
+    patience: int,
+) -> None:
+    """Run PCGPA iterations; stop when trace error fails to improve for ``patience`` steps."""
+    inner = wrapper._retriever
+    inner._retrieve_begin(measurement, initial_guess, None)
+    o = inner.options
+    res = inner._result
+    rs = inner._retrieval_state
+    spectrum = inner.initial_guess.copy()
+    R = res.trace_error
+    for i in range(o.maxiter):
+        if inner.logging and inner.log is not None:
+            if rs.approximate_error:
+                R = inner.trace_error(spectrum, store=False)
+            inner.log.trace_error.append(R)
+        R, new_spectrum = inner._retrieve_step(i, spectrum.copy())
+        if R < res.trace_error:
+            res.trace_error = R
+            res.approximate_error = rs.approximate_error
+            res.spectrum[:] = spectrum
+            rs.steps_since_improvement = 0
+        else:
+            rs.steps_since_improvement += 1
+        spectrum[:] = new_spectrum
+        if rs.steps_since_improvement >= patience:
+            break
+    inner._retrieve_end()
+
+
 from pulse_metrics import (
     best_delta_e_ambiguity,
     best_l1_ambiguity,
@@ -356,6 +390,7 @@ def reconstruct_pcgpa(
     n_points: int | None = None,
     dt: float = 1.0,
     maxiter: int = 300,
+    early_stop_patience: int | None = None,
     decomposition: Literal["power", "svd"] = "power",
     initial_spectrum: np.ndarray | None = None,
     reference_spectrum: np.ndarray | None = None,
@@ -470,7 +505,15 @@ def reconstruct_pcgpa(
             decomposition=decomposition,
             verbose=False,
         )
-        retriever.retrieve(measurement, guess)
+        if early_stop_patience is not None:
+            _pcgpa_retrieve_with_early_stop(
+                retriever,
+                measurement,
+                guess,
+                patience=int(early_stop_patience),
+            )
+        else:
+            retriever.retrieve(measurement, guess)
         res = retriever.result()
         if res.trace_error < best_trace_err:
             best_trace_err = float(res.trace_error)
@@ -505,6 +548,21 @@ def trace_from_field(
     return np.asarray(tmn).T
 
 
+def temporal_field_to_initial_spectrum(
+    e_t: np.ndarray,
+    *,
+    n_points: int | None = None,
+    dt: float = 1.0,
+) -> np.ndarray:
+    """Map a temporal field to the pypret spectral grid used by ``reconstruct_pcgpa``."""
+    e_t = np.asarray(e_t, dtype=np.complex128).ravel()
+    n = int(n_points) if n_points is not None else e_t.size
+    if n != e_t.size:
+        raise ValueError(f"n_points={n} must match e_t.size={e_t.size}")
+    ft, _, _ = make_pypret_setup(n, dt=dt)
+    return ft.forward(e_t)
+
+
 def _pcgpa_subsample_indices(
     batch_size: int, n_subsample: int | None, seed: int
 ) -> np.ndarray:
@@ -534,6 +592,7 @@ def mean_metrics_at_snr_pcgpa(
     dt: float = 1.0,
     sigma_omega: float | None = None,
     maxiter: int = 300,
+    early_stop_patience: int | None = None,
     n_subsample: int | None = None,
     seed: int = 0,
     n_restarts: int = 3,
@@ -578,6 +637,7 @@ def mean_metrics_at_snr_pcgpa(
             i_n,
             dt=dt,
             maxiter=maxiter,
+            early_stop_patience=early_stop_patience,
             n_restarts=n_restarts,
             rng=_pcgpa_rng_for_pulse(seed, int(i), float(snr_db)),
             sigma_omega=sigma_omega,
