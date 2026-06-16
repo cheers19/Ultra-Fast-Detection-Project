@@ -1,0 +1,167 @@
+[
+  {
+    "snr_db": 25.0,
+    "lam": 1.0,
+    "best_epoch": 100,
+    "stopped_epoch": 100,
+    "best_val_l1": 3.0440757274627686,
+    "val_l1_eval": 1.736715571085612,
+    "test_l1_eval": 1.817824093500773,
+    "trace_scale": 7.739162957157602,
+    "early_stop": false
+  },
+  {
+    "snr_db": 25.0,
+    "lam": 1.625,
+    "best_epoch": 68,
+    "stopped_epoch": 83,
+    "best_val_l1": 3.7955782413482666,
+    "val_l1_eval": 1.6541410525639852,
+    "test_l1_eval": 1.6428377827008565,
+    "trace_scale": 7.739162957157602,
+    "early_stop": true
+  },
+  {
+    "snr_db": 25.0,
+    "lam": 2.25,
+    "best_epoch": 66,
+    "stopped_epoch": 81,
+    "best_val_l1": 3.8530969619750977,
+    "val_l1_eval": 1.666125218073527,
+    "test_l1_eval": 1.6610730489095051,
+    "trace_scale": 7.739162957157602,
+    "early_stop": true
+  },
+  {
+    "snr_db": 25.0,
+    "lam": 2.875,
+    "best_epoch": 79,
+    "stopped_epoch": 94,
+    "best_val_l1": 3.6966798305511475,
+    "val_l1_eval": 1.6826964795589447,
+    "test_l1_eval": 1.6110864420731863,
+    "trace_scale": 7.739162957157602,
+    "early_stop": true
+  },
+  {
+    "snr_db": 25.0,
+    "lam": 3.5,
+    "best_epoch": 28,
+    "stopped_epoch": 43,
+    "best_val_l1": 4.183377265930176,
+    "val_l1_eval": 1.9268046617507935,
+    "test_l1_eval": 2.0621370633443195,
+    "trace_scale": 7.739162957157602,
+    "early_stop": true
+  },
+  {
+    "snr_db": 20.0,
+    "lam": 1.0,
+    "best_epoch": 100,
+    "stopped_epoch": 100,
+    "best_val_l1": 3.0115387439727783,
+    "val_l1_eval": 1.700614047050476,
+    "test_l1_eval": 1.645424097776413,
+    "trace_scale": 7.739162957157602,
+    "early_stop": false
+  },
+  {
+    "snr_db": 20.0,
+    "lam": 1.625,
+    "best_epoch": 94,
+    "stopped_epoch": 100,
+    "best_val_l1": 3.601706027984619,
+    "val_l1_eval": 1.5882038434346517,
+    "test_l1_eval": 1.575672976175944,
+    "trace_scale": 7.739162957157602,
+    "early_stop": false
+  },
+  {
+    "snr_db": 20.0,
+    "lam": 2.25,
+    "best_epoch": 93,
+    "stopped_epoch": 100,
+    "best_val_l1": 3.7213971614837646,
+    "val_l1_eval": 1.4083720684051513,
+    "test_l1_eval": 1.3682072242101033,
+    "trace_scale": 7.739162957157602,
+    "early_stop": false
+  },
+  {
+    "snr_db": 20.0,
+    "lam": 2.875,
+    "best_epoch": 51,
+    "stopped_epoch": 66,
+    "best_val_l1": 3.9597246646881104,
+    "val_l1_eval": 1.6766185462474823,
+    "test_l1_eval": 1.7727168718973796,
+    "trace_scale": 7.739162957157602,
+    "early_stop": true
+  },
+  {
+    "snr_db": 20.0,
+    "lam": 3.5,
+    "best_epoch": 76,
+    "stopped_epoch": 91,
+    "best_val_l1": 4.064448833465576,
+    "val_l1_eval": 1.4842884341875713,
+    "test_l1_eval": 1.5511837621529898,
+    "trace_scale": 7.739162957157602,
+    "early_stop": true
+  },
+  {
+    "snr_db": 15.0,
+    "lam": 1.0,
+    "best_epoch": 86,
+    "stopped_epoch": 100,
+    "best_val_l1": 3.260469436645508,
+    "val_l1_eval": 1.731696351369222,
+    "test_l1_eval": 1.5653048833211263,
+    "trace_scale": 7.739162957157602,
+    "early_stop": false
+  },
+  {
+    "snr_db": 15.0,
+    "lam": 1.625,
+    "best_epoch": 99,
+    "stopped_epoch": 100,
+    "best_val_l1": 3.483480930328369,
+    "val_l1_eval": 1.522460550069809,
+    "test_l1_eval": 1.4719281315803527,
+    "trace_scale": 7.739162957157602,
+    "early_stop": false
+  },
+  {
+    "snr_db": 15.0,
+    "lam": 2.25,
+    "best_epoch": 79,
+    "stopped_epoch": 94,
+    "best_val_l1": 3.673048496246338,
+    "val_l1_eval": 1.8209373573462169,
+    "test_l1_eval": 1.7809952477614084,
+    "trace_scale": 7.739162957157602,
+    "early_stop": true
+  },
+  {
+    "snr_db": 15.0,
+    "lam": 2.875,
+    "best_epoch": 95,
+    "stopped_epoch": 100,
+    "best_val_l1": 3.756542682647705,
+    "val_l1_eval": 1.4575605948766073,
+    "test_l1_eval": 1.584537148475647,
+    "trace_scale": 7.739162957157602,
+    "early_stop": false
+  },
+  {
+    "snr_db": 15.0,
+    "lam": 3.5,
+    "best_epoch": 40,
+    "stopped_epoch": 55,
+    "best_val_l1": 4.183802604675293,
+    "val_l1_eval": 1.8746109843254088,
+    "test_l1_eval": 2.082816594839096,
+    "trace_scale": 7.739162957157602,
+    "early_stop": true
+  }
+]

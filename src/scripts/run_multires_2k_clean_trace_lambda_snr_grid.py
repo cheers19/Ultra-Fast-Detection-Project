@@ -254,6 +254,8 @@ def main() -> None:
     parser.add_argument("--max-epochs", type=int, default=100)
     parser.add_argument("--patience", type=int, default=15)
     parser.add_argument("--snr-list", type=str, default="25,20,15")
+    parser.add_argument("--lambda-min", type=float, default=0.0)
+    parser.add_argument("--lambda-max", type=float, default=1.0)
     parser.add_argument("--lambda-steps", type=int, default=8)
     parser.add_argument(
         "--output",
@@ -283,7 +285,7 @@ def main() -> None:
         print("device: cpu (CUDA not available — training will be much slower)", flush=True)
     n = 64
     snr_grid = np.array([float(x) for x in args.snr_list.split(",")], dtype=np.float64)
-    lambda_grid = np.linspace(0.0, 1.0, int(args.lambda_steps))
+    lambda_grid = np.linspace(float(args.lambda_min), float(args.lambda_max), int(args.lambda_steps))
     n_eval = int(args.n_eval)
 
     out_npz = _SRC / args.output
