@@ -8,7 +8,13 @@ import numpy as np
 import torch
 from torch.utils.data import DataLoader, TensorDataset
 
-from data_generation import generate_pulses_gaussian
+from data_generation import (
+    SmoothedPhaseStochasticPulseConfig,
+    StochasticPulseConfig,
+    generate_pulses_gaussian,
+    generate_pulses_stochastic,
+    generate_pulses_stochastic_smoothed_phase,
+)
 from frognet import FROGNet
 
 
@@ -148,4 +154,142 @@ def build_frog_dataloaders(
         t_vec=t_vec,
         w_vec=w_vec,
         grid=grid,
+    )
+
+
+def build_stochastic_frog_dataloaders(
+    *,
+    n_train: int,
+    n_val: int,
+    n_test: int,
+    batch_size: int,
+    seed: int,
+    device: torch.device,
+    grid: StochasticPulseConfig | None = None,
+) -> FrogDatasetBundle:
+    """Same as ``build_frog_dataloaders`` but with SASE stochastic pulses (fs time grid)."""
+    grid = grid or StochasticPulseConfig()
+
+    p_train_c, _, _, _ = generate_pulses_stochastic(
+        n_pulses=n_train, config=grid, seed=seed
+    )
+    p_val_c, _, _, _ = generate_pulses_stochastic(
+        n_pulses=n_val, config=grid, seed=seed + 1
+    )
+    p_test_c, _, t_vec, w_vec = generate_pulses_stochastic(
+        n_pulses=n_test, config=grid, seed=seed + 2
+    )
+
+    E_train = pack_pulses_complex(p_train_c)
+    E_val = pack_pulses_complex(p_val_c)
+    E_test = pack_pulses_complex(p_test_c)
+
+    frog = FROGNet(num_delay_steps=grid.n).to(device)
+    frog.eval()
+    I_train = _frog_traces_batched(frog, E_train, device)
+    with torch.no_grad():
+        I_val = frog(E_val.to(device)).cpu()
+        I_test = frog(E_test.to(device)).cpu()
+
+    E_val = E_val.to(device)
+    E_test = E_test.to(device)
+    I_val = I_val.to(device)
+    I_test = I_test.to(device)
+
+    train_loader = DataLoader(
+        TensorDataset(I_train, E_train),
+        batch_size=batch_size,
+        shuffle=True,
+        drop_last=False,
+    )
+    val_loader = DataLoader(
+        TensorDataset(I_val, E_val),
+        batch_size=batch_size,
+        shuffle=False,
+        drop_last=False,
+    )
+    test_loader = DataLoader(
+        TensorDataset(I_test, E_test),
+        batch_size=batch_size,
+        shuffle=False,
+        drop_last=False,
+    )
+
+    pseudo_grid = PulseGridConfig(n=grid.n, t_total=grid.t_total_fs)
+    return FrogDatasetBundle(
+        train_loader=train_loader,
+        val_loader=val_loader,
+        test_loader=test_loader,
+        t_vec=t_vec,
+        w_vec=w_vec,
+        grid=pseudo_grid,
+    )
+
+
+def build_smoothed_phase_stochastic_frog_dataloaders(
+    *,
+    n_train: int,
+    n_val: int,
+    n_test: int,
+    batch_size: int,
+    seed: int,
+    device: torch.device,
+    grid: SmoothedPhaseStochasticPulseConfig | None = None,
+) -> FrogDatasetBundle:
+    """Same as ``build_stochastic_frog_dataloaders`` but with smoothed phase-noise SASE pulses."""
+    grid = grid or SmoothedPhaseStochasticPulseConfig()
+
+    p_train_c, _, _, _ = generate_pulses_stochastic_smoothed_phase(
+        n_pulses=n_train, config=grid, seed=seed
+    )
+    p_val_c, _, _, _ = generate_pulses_stochastic_smoothed_phase(
+        n_pulses=n_val, config=grid, seed=seed + 1
+    )
+    p_test_c, _, t_vec, w_vec = generate_pulses_stochastic_smoothed_phase(
+        n_pulses=n_test, config=grid, seed=seed + 2
+    )
+
+    E_train = pack_pulses_complex(p_train_c)
+    E_val = pack_pulses_complex(p_val_c)
+    E_test = pack_pulses_complex(p_test_c)
+
+    frog = FROGNet(num_delay_steps=grid.n).to(device)
+    frog.eval()
+    I_train = _frog_traces_batched(frog, E_train, device)
+    with torch.no_grad():
+        I_val = frog(E_val.to(device)).cpu()
+        I_test = frog(E_test.to(device)).cpu()
+
+    E_val = E_val.to(device)
+    E_test = E_test.to(device)
+    I_val = I_val.to(device)
+    I_test = I_test.to(device)
+
+    train_loader = DataLoader(
+        TensorDataset(I_train, E_train),
+        batch_size=batch_size,
+        shuffle=True,
+        drop_last=False,
+    )
+    val_loader = DataLoader(
+        TensorDataset(I_val, E_val),
+        batch_size=batch_size,
+        shuffle=False,
+        drop_last=False,
+    )
+    test_loader = DataLoader(
+        TensorDataset(I_test, E_test),
+        batch_size=batch_size,
+        shuffle=False,
+        drop_last=False,
+    )
+
+    pseudo_grid = PulseGridConfig(n=grid.n, t_total=grid.t_total_fs)
+    return FrogDatasetBundle(
+        train_loader=train_loader,
+        val_loader=val_loader,
+        test_loader=test_loader,
+        t_vec=t_vec,
+        w_vec=w_vec,
+        grid=pseudo_grid,
     )

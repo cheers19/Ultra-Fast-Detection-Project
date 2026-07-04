@@ -271,6 +271,70 @@ def mean_metric_cnn_at_snr(
     return float(arr.mean()), float(arr.std(ddof=0))
 
 
+def per_pulse_similarity_amb_cnn_at_snr(
+    model: nn.Module,
+    loader: DataLoader,
+    snr_db: float,
+    *,
+    add_noise_fn: Callable[[torch.Tensor, float], torch.Tensor] = add_trace_noise_awgn,
+) -> np.ndarray:
+    """Per-pulse best-ambiguity SIMILARITY_ERROR at one SNR."""
+    _, sim_per = per_pulse_amb_l1_and_sim_cnn_at_snr(
+        model, loader, snr_db, add_noise_fn=add_noise_fn
+    )
+    return sim_per
+
+
+def per_pulse_amb_l1_and_sim_cnn_at_snr(
+    model: nn.Module,
+    loader: DataLoader,
+    snr_db: float,
+    *,
+    add_noise_fn: Callable[[torch.Tensor, float], torch.Tensor] = add_trace_noise_awgn,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Per-pulse best-ambiguity L1 and SIMILARITY_ERROR at one SNR (single forward pass)."""
+    model.eval()
+    device = next(model.parameters()).device
+    l1_per: list[float] = []
+    sim_per: list[float] = []
+    with torch.no_grad():
+        for I_clean, E_true in loader:
+            I_clean = I_clean.to(device, non_blocking=True)
+            E_true = E_true.to(device, non_blocking=True)
+            I_noisy = add_noise_fn(I_clean, snr_db)
+            E_pred = model(I_noisy.unsqueeze(1))
+            rec = packed_batch_to_complex(E_pred)
+            true = packed_batch_to_complex(E_true)
+            for i in range(rec.shape[0]):
+                l1_per.append(float(best_l1_ambiguity(rec[i], true[i])))
+                sim_per.append(float(best_similarity_error_ambiguity(rec[i], true[i])))
+    return (
+        np.asarray(l1_per, dtype=np.float64),
+        np.asarray(sim_per, dtype=np.float64),
+    )
+
+
+def convergence_fraction_cnn_sweep(
+    model: nn.Module,
+    loader: DataLoader,
+    snr_sweep_db: np.ndarray,
+    *,
+    threshold: float = 0.1,
+    add_noise_fn: Callable[[torch.Tensor, float], torch.Tensor] = add_trace_noise_awgn,
+    verbose: bool = True,
+) -> np.ndarray:
+    """Fraction of test pulses with best-ambiguity SIMILARITY_ERROR < threshold."""
+    fracs: list[float] = []
+    for snr_db in snr_sweep_db:
+        if verbose:
+            print(f"  convergence @ {float(snr_db):.1f} dB …", flush=True)
+        per = per_pulse_similarity_amb_cnn_at_snr(
+            model, loader, float(snr_db), add_noise_fn=add_noise_fn
+        )
+        fracs.append(float(np.mean(per < float(threshold))))
+    return np.asarray(fracs, dtype=np.float64)
+
+
 def mean_l1_cnn_at_snr(
     model: nn.Module,
     loader: DataLoader,

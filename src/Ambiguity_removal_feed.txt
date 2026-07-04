@@ -1,0 +1,8 @@
+Disambiguation:
+
+1. In the network feed (data generation):
+
+Step 1: Find t_star = peak time |E(t)|. Resolved ambiguity: None (preparation for the next steps).
+Step 2: Multiply the field by exp(-i * phase in t_star). Resolved ambiguity: Global phase.
+Step 3 (conditional): If most of the energy (|E|^2) is at t > t_star -> flip in time + conjugate, then again Step 2. Resolved ambiguity: Time direction (flip+conj); Global phase (again, after flip).
+Step 4: Divide the field by its norm (norm = 1). Resolved ambiguity: Global scale/amplitude.

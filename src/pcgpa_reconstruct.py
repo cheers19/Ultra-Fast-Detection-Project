@@ -659,6 +659,170 @@ def mean_metrics_at_snr_pcgpa(
     return _mean_std(sim_per), _mean_std(l1_per)
 
 
+def per_pulse_amb_l1_and_sim_pcgpa_at_snr(
+    i_clean_batch: np.ndarray,
+    e_true_batch: np.ndarray,
+    snr_db: float,
+    *,
+    add_noise_fn,
+    dt: float = 1.0,
+    sigma_omega: float | None = None,
+    maxiter: int = 300,
+    early_stop_patience: int | None = None,
+    n_subsample: int | None = None,
+    seed: int = 0,
+    n_restarts: int = 3,
+    show_progress: bool = False,
+    fwhm_scale_range: tuple[float, float] = (0.5, 2.0),
+    initial_guess_mode: InitialGuessMode = "dataset_sigma",
+    omega_axis: np.ndarray | None = None,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Per-pulse best-ambiguity L1 and SIMILARITY_ERROR for PCGPA at one SNR."""
+    import torch
+
+    i_clean = np.asarray(i_clean_batch, dtype=np.float64)
+    e_true = np.asarray(e_true_batch, dtype=np.float64)
+    idx = _pcgpa_subsample_indices(i_clean.shape[0], n_subsample, seed)
+
+    l1_per: list[float] = []
+    sim_per: list[float] = []
+    iterator = idx
+    if show_progress:
+        try:
+            from tqdm.auto import tqdm
+
+            iterator = tqdm(
+                idx,
+                desc=f"PCGPA/{initial_guess_mode} @ {float(snr_db):.0f} dB",
+                leave=False,
+            )
+        except ImportError:
+            pass
+
+    for i in iterator:
+        i_c = torch.as_tensor(i_clean[i])
+        i_n = add_noise_fn(i_c.unsqueeze(0), float(snr_db)).squeeze(0).numpy()
+        e_ref = unpack_packed_field(e_true[i])
+        e_ref_packed = e_true[i]
+        e_rec = reconstruct_pcgpa(
+            i_n,
+            dt=dt,
+            maxiter=maxiter,
+            early_stop_patience=early_stop_patience,
+            n_restarts=n_restarts,
+            rng=_pcgpa_rng_for_pulse(seed, int(i), float(snr_db)),
+            sigma_omega=sigma_omega,
+            fwhm_scale_range=fwhm_scale_range,
+            initial_guess_mode=initial_guess_mode,
+            omega_axis=omega_axis,
+        )
+        sim_per.append(best_similarity_error_ambiguity(e_rec, e_ref))
+        l1_per.append(l1_packed_mae(e_rec, e_ref_packed, use_best_ambiguity=True))
+
+    return (
+        np.asarray(l1_per, dtype=np.float64),
+        np.asarray(sim_per, dtype=np.float64),
+    )
+
+
+def per_pulse_similarity_amb_pcgpa_at_snr(
+    i_clean_batch: np.ndarray,
+    e_true_batch: np.ndarray,
+    snr_db: float,
+    *,
+    add_noise_fn,
+    dt: float = 1.0,
+    sigma_omega: float | None = None,
+    maxiter: int = 300,
+    early_stop_patience: int | None = None,
+    n_subsample: int | None = None,
+    seed: int = 0,
+    n_restarts: int = 3,
+    show_progress: bool = False,
+    fwhm_scale_range: tuple[float, float] = (0.5, 2.0),
+    initial_guess_mode: InitialGuessMode = "dataset_sigma",
+    omega_axis: np.ndarray | None = None,
+) -> np.ndarray:
+    """Per-pulse best-ambiguity SIMILARITY_ERROR for PCGPA at one SNR."""
+    import torch
+
+    i_clean = np.asarray(i_clean_batch, dtype=np.float64)
+    e_true = np.asarray(e_true_batch, dtype=np.float64)
+    idx = _pcgpa_subsample_indices(i_clean.shape[0], n_subsample, seed)
+
+    sim_per: list[float] = []
+    iterator = idx
+    if show_progress:
+        try:
+            from tqdm.auto import tqdm
+
+            iterator = tqdm(
+                idx,
+                desc=f"PCGPA/{initial_guess_mode} @ {float(snr_db):.0f} dB",
+                leave=False,
+            )
+        except ImportError:
+            pass
+
+    for i in iterator:
+        i_c = torch.as_tensor(i_clean[i])
+        i_n = add_noise_fn(i_c.unsqueeze(0), float(snr_db)).squeeze(0).numpy()
+        e_ref = unpack_packed_field(e_true[i])
+        e_ref_packed = e_true[i]
+        e_rec = reconstruct_pcgpa(
+            i_n,
+            dt=dt,
+            maxiter=maxiter,
+            early_stop_patience=early_stop_patience,
+            n_restarts=n_restarts,
+            rng=_pcgpa_rng_for_pulse(seed, int(i), float(snr_db)),
+            sigma_omega=sigma_omega,
+            fwhm_scale_range=fwhm_scale_range,
+            initial_guess_mode=initial_guess_mode,
+            omega_axis=omega_axis,
+        )
+        sim_per.append(best_similarity_error_ambiguity(e_rec, e_ref))
+
+    return np.asarray(sim_per, dtype=np.float64)
+
+
+def convergence_fraction_pcgpa_sweep(
+    i_clean_batch: np.ndarray,
+    e_true_batch: np.ndarray,
+    snr_sweep_db: np.ndarray,
+    *,
+    threshold: float = 0.1,
+    add_noise_fn,
+    dt: float = 1.0,
+    sigma_omega: float | None = None,
+    maxiter: int = 300,
+    n_subsample: int | None = None,
+    seed: int = 0,
+    n_restarts: int = 3,
+    show_progress: bool = True,
+    omega_axis: np.ndarray | None = None,
+) -> np.ndarray:
+    """Fraction of test pulses with PCGPA best-ambiguity SIMILARITY_ERROR < threshold."""
+    fracs: list[float] = []
+    for snr_db in snr_sweep_db:
+        per = per_pulse_similarity_amb_pcgpa_at_snr(
+            i_clean_batch,
+            e_true_batch,
+            float(snr_db),
+            add_noise_fn=add_noise_fn,
+            dt=dt,
+            sigma_omega=sigma_omega,
+            maxiter=maxiter,
+            n_subsample=n_subsample,
+            seed=seed,
+            n_restarts=n_restarts,
+            show_progress=show_progress,
+            omega_axis=omega_axis,
+        )
+        fracs.append(float(np.mean(per < float(threshold))))
+    return np.asarray(fracs, dtype=np.float64)
+
+
 def mean_delta_e_at_snr_pcgpa(
     i_clean_batch: np.ndarray,
     e_true_batch: np.ndarray,

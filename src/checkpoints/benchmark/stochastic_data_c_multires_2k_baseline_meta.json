@@ -1,0 +1,8 @@
+{
+  "best_epoch": 21,
+  "stopped_epoch": 46,
+  "best_val_l1": 4.057714157104492,
+  "lam": 0.0,
+  "t_center_std_fs": 9.5,
+  "pulse_kind": "stochastic_data_c"
+}

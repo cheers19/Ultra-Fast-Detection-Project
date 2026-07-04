@@ -1,0 +1,40 @@
+Disambiguation:
+
+1. In the network feed (data generation):
+
+Step 1: Find t_star = peak time |E(t)|. Resolved ambiguity: None (preparation for the next steps).
+Step 2: Multiply the field by exp(-i * phase in t_star). Resolved ambiguity: Global phase.
+Step 3 (conditional): If most of the energy (|E|^2) is at t > t_star -> flip in time + conjugate, then again Step 2. Resolved ambiguity: Time direction (flip+conj); Global phase (again, after flip).
+Step 4: Divide the field by its norm (norm = 1). Resolved ambiguity: Global scale/amplitude.
+
+Steps not performed in the feed:
+• Time shift: Not resolved.
+• E vs. E* (conjugate without flip): Not explicitly solved
+
+2. On the network output (evaluation of the retrived pulses):
+
+• Check three bases: E, E*, flip(E)* (conj; flip+conj)
+• shift by |E| (time shift)
+• (L1 only) phi search (global phase)
+• choose the best base
+**************************************************************************************
+question:
+
+If you had to say which types of ambiguities have the lowest chance of appearing at the network output (and therefore probably do not require correction, with a high probability), what would they be?
+
+Answer:
+
+Lowest (needs least correction):
+
+1. Scale / norm — network trained on norm=1
+
+2. Flip+conj (time direction) — partially canonical in dataset
+
+Medium:
+
+3. E vs. E* — not resolved in feed
+
+Highest (almost always needs correction in estimation):
+
+4. Time shift — not resolved in feed
+5. Global phase — FROG is blind to it; required for L1.
