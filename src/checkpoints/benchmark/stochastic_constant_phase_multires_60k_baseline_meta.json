@@ -1,0 +1,8 @@
+{
+  "best_epoch": 13,
+  "stopped_epoch": 38,
+  "best_val_l1": 2.2518918752670287,
+  "lam": 0.0,
+  "n_train": 60000,
+  "pulse_kind": "stochastic_constant_phase"
+}

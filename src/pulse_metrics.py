@@ -144,6 +144,51 @@ def canonicalize_field(
     return e
 
 
+def _peak_amplitude_index(e_t: np.ndarray) -> int:
+    return int(np.argmax(np.abs(np.asarray(e_t, dtype=np.complex128).ravel())))
+
+
+def _remove_global_phase_at_index(e_t: np.ndarray, index: int) -> np.ndarray:
+    e = np.asarray(e_t, dtype=np.complex128).copy()
+    idx = int(index)
+    e *= np.exp(-1j * np.angle(e[idx]))
+    return e
+
+
+def canonicalize_field_tstar(
+    e_t: np.ndarray,
+    *,
+    return_t_star: bool = False,
+) -> np.ndarray | tuple[np.ndarray, int]:
+    """
+    Ambiguity removal anchored at the temporal peak ``t_* = argmax_t |E(t)|``.
+
+    1. ``t_*`` = index of ``|E|`` maximum.
+    2. ``E <- E * exp(-i * arg E(t_*))``  (global phase).
+    3. If more than half of ``|E|^2`` lies at ``t > t_*``: flip+conjugate, then repeat step 2
+       at the new peak.
+    4. ``E <- E / ||E||_2``  (global scale).
+    """
+    e = np.asarray(e_t, dtype=np.complex128).copy()
+
+    t_star = _peak_amplitude_index(e)
+    e = _remove_global_phase_at_index(e, t_star)
+
+    e2 = np.abs(e) ** 2
+    if float(np.sum(e2[t_star + 1 :])) > 0.5 * float(np.sum(e2)):
+        e = np.flip(e).conj()
+        t_star = _peak_amplitude_index(e)
+        e = _remove_global_phase_at_index(e, t_star)
+
+    nrm = np.linalg.norm(e)
+    if nrm > 0:
+        e /= nrm
+
+    if return_t_star:
+        return e, t_star
+    return e
+
+
 def delta_e_numpy(e_rec: np.ndarray, e_true: np.ndarray) -> float:
     """Complex overlap error δE (radians), phase-invariant."""
     e_rec = np.asarray(e_rec, dtype=np.complex128).ravel()

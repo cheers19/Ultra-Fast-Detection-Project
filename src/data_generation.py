@@ -211,3 +211,11 @@ def phase_t_unwrapped_at_zero(pulse_t: np.ndarray) -> np.ndarray:
     z = pulse_t.size // 2
     ph = np.unwrap(np.angle(pulse_t))
     return ph - ph[z]
+
+
+def phase_t_unwrapped_at_index(pulse_t: np.ndarray, index: int) -> np.ndarray:
+    """Unwrapped phase with φ = 0 at sample ``index`` (e.g. ``t_*`` after peak canonicalization)."""
+    pulse_t = np.asarray(pulse_t)
+    z = int(index)
+    ph = np.unwrap(np.angle(pulse_t))
+    return ph - ph[z]
