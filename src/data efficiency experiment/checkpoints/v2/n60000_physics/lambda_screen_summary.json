@@ -1,0 +1,75 @@
+{
+  "protocol": "v2",
+  "protocol_band": "C",
+  "LR": 0.001,
+  "TRACE_SCALE": 8.0,
+  "PATIENCE_STEPS": 3000,
+  "EXTENSION_STEPS": 1000,
+  "LAM_STAR": 0.6,
+  "TAG_STAR_SCREEN": "n60000_phys_lam0p6_v2",
+  "stage1_rows": [
+    {
+      "lam": 0.6,
+      "tag": "n60000_phys_lam0p6_v2",
+      "role": "lam_stage1",
+      "best_score": 1.2388567988574506,
+      "best_epoch": 9,
+      "best_step": 8442,
+      "stopped_epoch": 13,
+      "global_step": 12194
+    },
+    {
+      "lam": 1.8,
+      "tag": "n60000_phys_lam1p8_v2",
+      "role": "lam_stage1",
+      "best_score": 1.488045711517334,
+      "best_epoch": 5,
+      "best_step": 4690,
+      "stopped_epoch": 9,
+      "global_step": 8442
+    },
+    {
+      "lam": 3.5,
+      "tag": "n60000_phys_lam3p5_v2",
+      "role": "lam_stage1",
+      "best_score": 1.4117846065759658,
+      "best_epoch": 4,
+      "best_step": 3752,
+      "stopped_epoch": 8,
+      "global_step": 7504
+    }
+  ],
+  "fine_rows": [],
+  "rows": [
+    {
+      "lam": 0.6,
+      "tag": "n60000_phys_lam0p6_v2",
+      "role": "lam_stage1",
+      "best_score": 1.2388567988574506,
+      "best_epoch": 9,
+      "best_step": 8442,
+      "stopped_epoch": 13,
+      "global_step": 12194
+    },
+    {
+      "lam": 1.8,
+      "tag": "n60000_phys_lam1p8_v2",
+      "role": "lam_stage1",
+      "best_score": 1.488045711517334,
+      "best_epoch": 5,
+      "best_step": 4690,
+      "stopped_epoch": 9,
+      "global_step": 8442
+    },
+    {
+      "lam": 3.5,
+      "tag": "n60000_phys_lam3p5_v2",
+      "role": "lam_stage1",
+      "best_score": 1.4117846065759658,
+      "best_epoch": 4,
+      "best_step": 3752,
+      "stopped_epoch": 8,
+      "global_step": 7504
+    }
+  ]
+}

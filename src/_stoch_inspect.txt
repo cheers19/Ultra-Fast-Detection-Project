@@ -1,0 +1,109 @@
+﻿n_cells 25
+
+===== CELL 0 markdown src_len=441 n_out=0 =====
+SRC_HEAD: # SASE FEL Pulse Generation and Visualization Notebook  Multi-spike SASE FEL pulse: sum of Gaussian spikes with random phases.  * Time-domain fields $
+
+===== CELL 1 markdown src_len=3259 n_out=0 =====
+SRC_HEAD: ## Free Parameters Configuration  User-set quantities in the configuration code cell. **Derived** quantities (computed in the same cell) are listed at
+
+===== CELL 2 code src_len=4259 n_out=1 =====
+SRC_HEAD: import numpy as np import matplotlib.pyplot as plt  from spectral_grid import (     build_spectral_plot_grid,     compute_de_new_target,     compute_l
+--- STDOUT ---
+Configuration loaded successfully.
+Simulating 300 spikes over a 53.0 fs window with 64 points.
+Using Delta_omega_i with energy range 0.0006500000000000001 eV.
+Derived DELTA_OMEGA_RELATIVE_RANGE: 6.500000000000001e-08
+Field model for plotting: all
+Quadratic chirp BETA_FACTOR: -0.6
+Smoothed phase noise: std=0.628 rad, smooth sigma=1.6
+Pulse envelope: PULSE_EFFECTIVE_WIDTH=32.860 fs, SIGMA_T_CENTER=5.7275 fs
+Spectral NEW (target): dE=0.038671 eV  |  actual bin spacing=0.038406 eV  |  |E|_max axis=1.2290 eV
+Spectral OLD (legacy 64-pt FFT, display only): dE=0.076812 eV  |  |E|_max axis=2.4580 eV
+Spectral FFT: N_FFT=128, crop central 64 bins, dt=0.841270 fs
+
+
+===== CELL 3 markdown src_len=3376 n_out=0 =====
+SRC_HEAD: ## Spectral Resolution Control (Mathematica-Aligned)  **Goal:** choose spectral bin spacing from pulse physics, then realize it with zero-padded FFT a
+
+===== CELL 4 markdown src_len=4483 n_out=0 =====
+SRC_HEAD: ## Mathematical Documentation: Electric Fields, Amplitude & Phase  ### 1. Time grid  $$t_j = -\frac{T_{\mathrm{total}}}{2} + j\,\Delta t, \qquad j=0,\
+
+===== CELL 5 markdown src_len=1860 n_out=0 =====
+SRC_HEAD: ## Field Ambiguities and How We Remove Them  Complex field $E(t)$ has equivalent representations.  This notebook applies **`canonicalize_field_tstar`*
+
+===== CELL 6 markdown src_len=771 n_out=0 =====
+SRC_HEAD: ## Modified C1 Field (Updates)  $$E_{\mathrm{mod}}(t) = \sum_k A_k \exp\!\left(-\frac{(t-t_k)^2}{4\sigma_{\mathrm{spike}}^2}\right) e^{i\theta_k}$$  |
+
+===== CELL 7 markdown src_len=659 n_out=0 =====
+SRC_HEAD: ## Modified C1 Field (Updates)  $$E_{\mathrm{mod}}(t) = \sum_k A_k \exp\!\left(-\frac{(t-t_k)^2}{4\sigma_{\mathrm{spike}}^2}\right) e^{i\theta_k}$$  |
+
+===== CELL 8 markdown src_len=778 n_out=0 =====
+SRC_HEAD: ## Quadratic Chirp Model  $$E_{\mathrm{quad}}(t) = \sum_{k=1}^{N_{\mathrm{spikes}}} A_k \exp\!\left(-\frac{(t-t_k)^2}{2\sigma_k^2}\right) \exp\!\big(i
+
+===== CELL 9 markdown src_len=620 n_out=0 =====
+SRC_HEAD: ## Smoothed White-Noise Phase Model  $$\phi_k(t) = \mathrm{Smooth}_{\sigma_{\mathrm{smooth}}}\!\big[\xi_k(t)\big], \qquad \xi_k(t) \sim \mathcal{N}(\t
+
+===== CELL 10 markdown src_len=1002 n_out=0 =====
+SRC_HEAD: ## Pulse Generation Pipeline  1. Build **time grid** $t_j$ with $N=64$ samples over $T_{\mathrm{total}}=53$ fs. 2. Draw **spike parameters** $(t_k, A_
+
+===== CELL 11 code src_len=4797 n_out=1 =====
+SRC_HEAD: import numpy as np import matplotlib.pyplot as plt  from scipy.ndimage import gaussian_filter  from data_generation import phase_t_unwrapped_at_index,
+--- STDOUT ---
+Complex electric fields generated for all three models (same spike draw).
+Quadratic chirp: beta = -1.117952e-04 rad/fs^2  (BETA_FACTOR=-0.6)
+Smoothed phase noise: std=0.628 rad, smooth sigma=1.6
+Modified C1:           |phase(t_star)| = 2.634e-33 rad  (t_star=35, t=2.944 fs)
+Quadratic chirp:       |phase(t_star)| = 1.410e-17 rad  (t_star=29)
+Smoothed phase noise:  |phase(t_star)| = 4.224e-33 rad  (t_star=35)
+
+Raw vs canonical (Modified C1):
+  ||E_raw|| = 30.6729  (canonical is 1.0)
+  arg E_raw(t_star) = 2.1133 rad  (canonical forced to 0)
+  max ||E| shape diff (after normalizing raw) = 0.2097
+
+
+===== CELL 12 markdown src_len=1425 n_out=0 =====
+SRC_HEAD: ## Visualization ΓÇö **CANONICAL** plots (after `canonicalize_field_tstar`)  > **Plots below:** `f_t_*` / `f_v_*` **after** peak-anchored canonicalizati
+
+===== CELL 13 markdown src_len=657 n_out=0 =====
+SRC_HEAD: ## Real and Imaginary Parts ΓÇö Before vs After Canonicalization  Compare $\mathrm{Re}\,E$ and $\mathrm{Im}\,E$ **before** (*_raw) and **after** (canoni
+
+===== CELL 14 code src_len=2866 n_out=3 =====
+SRC_HEAD: def plot_reim_before_after(     f_t_raw,     f_t_canon,     f_v_raw,     f_v_canon,     model_label, ):     """4x2 grid: time/frequency x Re/Im, raw (
+
+===== CELL 15 code src_len=3351 n_out=1 =====
+SRC_HEAD: def plot_field_domain_panels(axs_block, f_t_field, f_v_field, model_label, t_star_idx):     """Plot 2x2 amplitude/phase panels for one field model."""
+
+===== CELL 16 markdown src_len=556 n_out=0 =====
+SRC_HEAD: ## Raw Pulses ΓÇö **NOT CANONICAL** (before `canonicalize_field_tstar`)  > **Plots below:** `f_t_*_raw` **before** ambiguity removal ΓÇö arbitrary global 
+
+===== CELL 17 code src_len=2695 n_out=1 =====
+SRC_HEAD: import torch  from frognet import FROGNet from pulse_metrics import prepare_frog_trace_for_plot   def compute_frog_trace_raw(f_t_field):     frog = FR
+
+===== CELL 18 markdown src_len=854 n_out=0 =====
+SRC_HEAD: ## SHG-FROG Spectrogram (legacy `FROGNet`) ΓÇö **CANONICAL** input fields  > **Plots below:** SHG-FROG traces from **canonical** `f_t_*` (after `canonic
+
+===== CELL 19 code src_len=2587 n_out=1 =====
+SRC_HEAD: import torch  from data_generation import phase_t_unwrapped_at_index  from frognet import FROGNet from pulse_metrics import prepare_frog_trace_for_plo
+
+===== CELL 20 markdown src_len=992 n_out=0 =====
+SRC_HEAD: ## SHG-FROG with Matched Spectral Grid (`FROGNetPadded`) ΓÇö **CANONICAL** input fields  > **Plots below:** padded FROG from **canonical** `f_t_*`; spec
+
+===== CELL 21 code src_len=2650 n_out=1 =====
+SRC_HEAD: import torch  from data_generation import phase_t_unwrapped_at_index  from frognet_padded import FROGNetPadded from pulse_metrics import prepare_frog_
+
+===== CELL 22 markdown src_len=1342 n_out=0 =====
+SRC_HEAD: ## Full C1 Field Including Frequency Offset $\Delta\omega_k$  In the models above, Modified C1 used only a **constant** spike phase $\theta_k$. Here w
+
+===== CELL 23 code src_len=3250 n_out=2 =====
+SRC_HEAD: # Full C1 envelope: include ╬ö╧ë_k┬╖(t - t_k) in the per-spike phase # (carrier ╧ëΓéÇ removed; relative spectral axis matches energy_ev_relative). from spec
+--- STDOUT ---
+C1+╬ö╧ë field built from same spike_params.
+  ||E_raw|| = 30.6752
+  t_star = 35  (t=2.944 fs)
+  |phase(t_star)| = 2.196e-33 rad
+  ╬ö╧ë_max = 9.875238e-04 rad/fs
+
+
+===== CELL 24 code src_len=0 n_out=0 =====
+SRC_HEAD: 

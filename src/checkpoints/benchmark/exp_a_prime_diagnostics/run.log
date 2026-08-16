@@ -1,0 +1,702 @@
+[cache] phase0a: final_train_L1=0.095412
+[cache] phase0b: real=5.5502 zero=5.9413
+phase0c: init_L1=7.8044 zero_pred=6.4961
+{
+  "n": 512,
+  "amp_peak_mean": 0.3297478991744105,
+  "support_frac_mean": 0.56121826171875,
+  "support_frac_std": 0.07700786579970421,
+  "spec_rms_bw_mean": 0.05876912304834074,
+  "trace_energy_mean": 22.271442413330078,
+  "trace_dynamic_range_db_mean": 12.722429275512695,
+  "grid": {
+    "n_spikes": 300,
+    "t_total_fs": 53.0,
+    "coherence_time_fs": 1.3250000000000002,
+    "t_center_std_fs": 5.727549044849916
+  }
+}
+phase1b: corr(dI,dE)=0.188  top_collision_score_mean=2.654
+
+=== phase2_ntrain_512 ===
+  n_train=512 spikes=300 canon=tstar frog=padded fpb=(8, 16, 32)
+epoch 001/120  train_L1=7.12614  val_L1@15.0dB=6.20240  *best
+epoch 002/120  train_L1=6.17778  val_L1@15.0dB=5.99326  *best
+epoch 003/120  train_L1=6.07623  val_L1@15.0dB=5.96541  *best
+epoch 004/120  train_L1=6.04298  val_L1@15.0dB=5.95432  *best
+epoch 005/120  train_L1=6.04216  val_L1@15.0dB=5.95509
+epoch 006/120  train_L1=6.06536  val_L1@15.0dB=5.96545
+epoch 007/120  train_L1=6.04131  val_L1@15.0dB=5.93072  *best
+epoch 008/120  train_L1=6.00682  val_L1@15.0dB=5.91787  *best
+epoch 009/120  train_L1=5.99682  val_L1@15.0dB=5.92813
+epoch 010/120  train_L1=5.99463  val_L1@15.0dB=5.91309  *best
+epoch 011/120  train_L1=5.98440  val_L1@15.0dB=5.87384  *best
+epoch 012/120  train_L1=5.95520  val_L1@15.0dB=5.89008
+epoch 013/120  train_L1=5.93510  val_L1@15.0dB=5.83653  *best
+epoch 014/120  train_L1=5.88521  val_L1@15.0dB=5.79239  *best
+epoch 015/120  train_L1=5.84181  val_L1@15.0dB=5.75037  *best
+epoch 016/120  train_L1=5.80405  val_L1@15.0dB=5.74041  *best
+epoch 017/120  train_L1=5.80294  val_L1@15.0dB=5.71176  *best
+epoch 018/120  train_L1=5.78896  val_L1@15.0dB=5.67907  *best
+epoch 019/120  train_L1=5.75899  val_L1@15.0dB=5.67983
+epoch 020/120  train_L1=5.74015  val_L1@15.0dB=5.66062  *best
+epoch 021/120  train_L1=5.72586  val_L1@15.0dB=5.67700
+epoch 022/120  train_L1=5.70439  val_L1@15.0dB=5.62657  *best
+epoch 023/120  train_L1=5.69207  val_L1@15.0dB=5.62802
+epoch 024/120  train_L1=5.66941  val_L1@15.0dB=5.60365  *best
+epoch 025/120  train_L1=5.67853  val_L1@15.0dB=5.59257  *best
+epoch 026/120  train_L1=5.64754  val_L1@15.0dB=5.55346  *best
+epoch 027/120  train_L1=5.59541  val_L1@15.0dB=5.53336  *best
+epoch 028/120  train_L1=5.59608  val_L1@15.0dB=5.58767
+epoch 029/120  train_L1=5.58949  val_L1@15.0dB=5.58950
+epoch 030/120  train_L1=5.54838  val_L1@15.0dB=5.48429  *best
+epoch 031/120  train_L1=5.50558  val_L1@15.0dB=5.47649  *best
+epoch 032/120  train_L1=5.48156  val_L1@15.0dB=5.43546  *best
+epoch 033/120  train_L1=5.45031  val_L1@15.0dB=5.42906  *best
+epoch 034/120  train_L1=5.40267  val_L1@15.0dB=5.41265  *best
+epoch 035/120  train_L1=5.37533  val_L1@15.0dB=5.41849
+epoch 036/120  train_L1=5.34542  val_L1@15.0dB=5.41907
+epoch 037/120  train_L1=5.33353  val_L1@15.0dB=5.42320
+epoch 038/120  train_L1=5.29957  val_L1@15.0dB=5.40719  *best
+epoch 039/120  train_L1=5.29236  val_L1@15.0dB=5.41733
+epoch 040/120  train_L1=5.24951  val_L1@15.0dB=5.43816
+epoch 041/120  train_L1=5.18298  val_L1@15.0dB=5.42140
+epoch 042/120  train_L1=5.14048  val_L1@15.0dB=5.40771
+epoch 043/120  train_L1=5.08015  val_L1@15.0dB=5.41587
+epoch 044/120  train_L1=5.03082  val_L1@15.0dB=5.48877
+epoch 045/120  train_L1=4.93653  val_L1@15.0dB=5.51396
+epoch 046/120  train_L1=4.85609  val_L1@15.0dB=5.48217
+epoch 047/120  train_L1=4.76767  val_L1@15.0dB=5.46712
+epoch 048/120  train_L1=4.63957  val_L1@15.0dB=5.51026
+epoch 049/120  train_L1=4.54207  val_L1@15.0dB=5.62617
+epoch 050/120  train_L1=4.51037  val_L1@15.0dB=5.49884
+epoch 051/120  train_L1=4.43244  val_L1@15.0dB=5.65953
+epoch 052/120  train_L1=4.31830  val_L1@15.0dB=5.59367
+epoch 053/120  train_L1=4.16465  val_L1@15.0dB=5.61968
+epoch 054/120  train_L1=4.02570  val_L1@15.0dB=5.68242
+epoch 055/120  train_L1=3.83467  val_L1@15.0dB=5.68497
+epoch 056/120  train_L1=3.69206  val_L1@15.0dB=5.69663
+epoch 057/120  train_L1=3.57372  val_L1@15.0dB=5.77608
+epoch 058/120  train_L1=3.46347  val_L1@15.0dB=5.80942
+epoch 059/120  train_L1=3.29806  val_L1@15.0dB=5.87179
+epoch 060/120  train_L1=3.06466  val_L1@15.0dB=5.80197
+epoch 061/120  train_L1=3.06078  val_L1@15.0dB=5.92753
+epoch 062/120  train_L1=2.81686  val_L1@15.0dB=5.90250
+epoch 063/120  train_L1=2.67166  val_L1@15.0dB=5.90953
+early stop @ epoch 63 (best epoch 38, val_L1=5.40719)
+  done: best_val_L1=5.4072  highSNR@30dB L1_amb=4.4699  wall=62.4s
+
+=== phase2_ntrain_2048 ===
+  n_train=2048 spikes=300 canon=tstar frog=padded fpb=(8, 16, 32)
+epoch 001/120  train_L1=6.33983  val_L1@15.0dB=5.94744  *best
+epoch 002/120  train_L1=6.02033  val_L1@15.0dB=5.92427  *best
+epoch 003/120  train_L1=5.99172  val_L1@15.0dB=5.89599  *best
+epoch 004/120  train_L1=5.95489  val_L1@15.0dB=5.79915  *best
+epoch 005/120  train_L1=5.82231  val_L1@15.0dB=5.70633  *best
+epoch 006/120  train_L1=5.74142  val_L1@15.0dB=5.59463  *best
+epoch 007/120  train_L1=5.66627  val_L1@15.0dB=5.52083  *best
+epoch 008/120  train_L1=5.61700  val_L1@15.0dB=5.48313  *best
+epoch 009/120  train_L1=5.58333  val_L1@15.0dB=5.47087  *best
+epoch 010/120  train_L1=5.53369  val_L1@15.0dB=5.39442  *best
+epoch 011/120  train_L1=5.47885  val_L1@15.0dB=5.35447  *best
+epoch 012/120  train_L1=5.41100  val_L1@15.0dB=5.29211  *best
+epoch 013/120  train_L1=5.37825  val_L1@15.0dB=5.27406  *best
+epoch 014/120  train_L1=5.31836  val_L1@15.0dB=5.21512  *best
+epoch 015/120  train_L1=5.24880  val_L1@15.0dB=5.19696  *best
+epoch 016/120  train_L1=5.20442  val_L1@15.0dB=5.20859
+epoch 017/120  train_L1=5.14120  val_L1@15.0dB=5.12702  *best
+epoch 018/120  train_L1=5.05467  val_L1@15.0dB=5.08452  *best
+epoch 019/120  train_L1=4.96266  val_L1@15.0dB=5.06208  *best
+epoch 020/120  train_L1=4.91651  val_L1@15.0dB=5.08943
+epoch 021/120  train_L1=4.79972  val_L1@15.0dB=5.11476
+epoch 022/120  train_L1=4.71234  val_L1@15.0dB=5.12621
+epoch 023/120  train_L1=4.57104  val_L1@15.0dB=5.11195
+epoch 024/120  train_L1=4.45304  val_L1@15.0dB=5.13696
+epoch 025/120  train_L1=4.26836  val_L1@15.0dB=5.15186
+epoch 026/120  train_L1=4.11644  val_L1@15.0dB=5.23946
+epoch 027/120  train_L1=3.90914  val_L1@15.0dB=5.22615
+epoch 028/120  train_L1=3.66060  val_L1@15.0dB=5.31436
+epoch 029/120  train_L1=3.53983  val_L1@15.0dB=5.34226
+epoch 030/120  train_L1=3.39202  val_L1@15.0dB=5.31498
+epoch 031/120  train_L1=3.22642  val_L1@15.0dB=5.42359
+epoch 032/120  train_L1=3.11351  val_L1@15.0dB=5.45962
+epoch 033/120  train_L1=2.95393  val_L1@15.0dB=5.44273
+epoch 034/120  train_L1=2.85113  val_L1@15.0dB=5.40701
+epoch 035/120  train_L1=2.64859  val_L1@15.0dB=5.42195
+epoch 036/120  train_L1=2.57678  val_L1@15.0dB=5.43055
+epoch 037/120  train_L1=2.40116  val_L1@15.0dB=5.46284
+epoch 038/120  train_L1=2.29031  val_L1@15.0dB=5.40689
+epoch 039/120  train_L1=2.31171  val_L1@15.0dB=5.45644
+epoch 040/120  train_L1=2.05511  val_L1@15.0dB=5.47183
+epoch 041/120  train_L1=2.11973  val_L1@15.0dB=5.39374
+epoch 042/120  train_L1=2.01498  val_L1@15.0dB=5.43021
+epoch 043/120  train_L1=1.91167  val_L1@15.0dB=5.43996
+epoch 044/120  train_L1=1.89874  val_L1@15.0dB=5.43749
+early stop @ epoch 44 (best epoch 19, val_L1=5.06208)
+  done: best_val_L1=5.0621  highSNR@30dB L1_amb=4.1218  wall=92.1s
+
+=== phase2_ntrain_8192 ===
+  n_train=8192 spikes=300 canon=tstar frog=padded fpb=(8, 16, 32)
+epoch 001/100  train_L1=6.04853  val_L1@15.0dB=5.70160  *best
+epoch 002/100  train_L1=5.67766  val_L1@15.0dB=5.48729  *best
+epoch 003/100  train_L1=5.51231  val_L1@15.0dB=5.29605  *best
+epoch 004/100  train_L1=5.33075  val_L1@15.0dB=5.21418  *best
+epoch 005/100  train_L1=5.18327  val_L1@15.0dB=5.02890  *best
+epoch 006/100  train_L1=5.06873  val_L1@15.0dB=4.98415  *best
+epoch 007/100  train_L1=4.97022  val_L1@15.0dB=4.93177  *best
+epoch 008/100  train_L1=4.89018  val_L1@15.0dB=4.86060  *best
+epoch 009/100  train_L1=4.80441  val_L1@15.0dB=4.96086
+epoch 010/100  train_L1=4.69013  val_L1@15.0dB=4.85453  *best
+epoch 011/100  train_L1=4.58623  val_L1@15.0dB=4.94700
+epoch 012/100  train_L1=4.44664  val_L1@15.0dB=4.90380
+epoch 013/100  train_L1=4.29628  val_L1@15.0dB=4.96086
+epoch 014/100  train_L1=4.18373  val_L1@15.0dB=5.00993
+epoch 015/100  train_L1=4.00043  val_L1@15.0dB=5.00655
+epoch 016/100  train_L1=3.87412  val_L1@15.0dB=5.07443
+epoch 017/100  train_L1=3.67094  val_L1@15.0dB=5.08923
+epoch 018/100  train_L1=3.49095  val_L1@15.0dB=5.09120
+epoch 019/100  train_L1=3.40528  val_L1@15.0dB=5.17266
+epoch 020/100  train_L1=3.22908  val_L1@15.0dB=5.17083
+epoch 021/100  train_L1=3.09199  val_L1@15.0dB=5.12666
+epoch 022/100  train_L1=3.04451  val_L1@15.0dB=5.26417
+epoch 023/100  train_L1=2.92986  val_L1@15.0dB=5.15356
+epoch 024/100  train_L1=2.84722  val_L1@15.0dB=5.24084
+epoch 025/100  train_L1=2.76484  val_L1@15.0dB=5.22233
+epoch 026/100  train_L1=2.70682  val_L1@15.0dB=5.23164
+epoch 027/100  train_L1=2.59720  val_L1@15.0dB=5.27076
+epoch 028/100  train_L1=2.59716  val_L1@15.0dB=5.31104
+epoch 029/100  train_L1=2.56598  val_L1@15.0dB=5.24077
+epoch 030/100  train_L1=2.50578  val_L1@15.0dB=5.18927
+epoch 031/100  train_L1=2.48531  val_L1@15.0dB=5.19167
+epoch 032/100  train_L1=2.48530  val_L1@15.0dB=5.21103
+epoch 033/100  train_L1=2.29209  val_L1@15.0dB=5.22635
+epoch 034/100  train_L1=2.28864  val_L1@15.0dB=5.24267
+epoch 035/100  train_L1=2.34321  val_L1@15.0dB=5.22663
+early stop @ epoch 35 (best epoch 10, val_L1=4.85453)
+  done: best_val_L1=4.8545  highSNR@30dB L1_amb=3.7182  wall=279.5s
+
+=== phase2_cap_tiny_n2048 ===
+  n_train=2048 spikes=300 canon=tstar frog=padded fpb=(4, 8, 16)
+epoch 001/100  train_L1=6.38148  val_L1@15.0dB=5.97672  *best
+epoch 002/100  train_L1=6.01907  val_L1@15.0dB=5.92355  *best
+epoch 003/100  train_L1=5.98931  val_L1@15.0dB=5.87354  *best
+epoch 004/100  train_L1=5.93313  val_L1@15.0dB=5.78884  *best
+epoch 005/100  train_L1=5.77631  val_L1@15.0dB=5.63584  *best
+epoch 006/100  train_L1=5.72566  val_L1@15.0dB=5.63717
+epoch 007/100  train_L1=5.68709  val_L1@15.0dB=5.58807  *best
+epoch 008/100  train_L1=5.64107  val_L1@15.0dB=5.54227  *best
+epoch 009/100  train_L1=5.61266  val_L1@15.0dB=5.50344  *best
+epoch 010/100  train_L1=5.58931  val_L1@15.0dB=5.41751  *best
+epoch 011/100  train_L1=5.57721  val_L1@15.0dB=5.45197
+epoch 012/100  train_L1=5.51250  val_L1@15.0dB=5.37552  *best
+epoch 013/100  train_L1=5.47402  val_L1@15.0dB=5.35067  *best
+epoch 014/100  train_L1=5.43096  val_L1@15.0dB=5.31056  *best
+epoch 015/100  train_L1=5.37932  val_L1@15.0dB=5.26559  *best
+epoch 016/100  train_L1=5.33330  val_L1@15.0dB=5.28397
+epoch 017/100  train_L1=5.26381  val_L1@15.0dB=5.24917  *best
+epoch 018/100  train_L1=5.20647  val_L1@15.0dB=5.21797  *best
+epoch 019/100  train_L1=5.15459  val_L1@15.0dB=5.19399  *best
+epoch 020/100  train_L1=5.04721  val_L1@15.0dB=5.18238  *best
+epoch 021/100  train_L1=4.98919  val_L1@15.0dB=5.15936  *best
+epoch 022/100  train_L1=4.92461  val_L1@15.0dB=5.13031  *best
+epoch 023/100  train_L1=4.77987  val_L1@15.0dB=5.14743
+epoch 024/100  train_L1=4.65289  val_L1@15.0dB=5.17636
+epoch 025/100  train_L1=4.54748  val_L1@15.0dB=5.17599
+epoch 026/100  train_L1=4.40786  val_L1@15.0dB=5.24105
+epoch 027/100  train_L1=4.20117  val_L1@15.0dB=5.30573
+epoch 028/100  train_L1=3.99458  val_L1@15.0dB=5.34622
+epoch 029/100  train_L1=3.87928  val_L1@15.0dB=5.33707
+epoch 030/100  train_L1=3.69886  val_L1@15.0dB=5.41518
+epoch 031/100  train_L1=3.50352  val_L1@15.0dB=5.51732
+epoch 032/100  train_L1=3.43161  val_L1@15.0dB=5.49805
+epoch 033/100  train_L1=3.25836  val_L1@15.0dB=5.50719
+epoch 034/100  train_L1=3.19767  val_L1@15.0dB=5.64204
+epoch 035/100  train_L1=2.98887  val_L1@15.0dB=5.56008
+epoch 036/100  train_L1=2.87163  val_L1@15.0dB=5.57087
+epoch 037/100  train_L1=2.70919  val_L1@15.0dB=5.53722
+epoch 038/100  train_L1=2.61114  val_L1@15.0dB=5.55772
+epoch 039/100  train_L1=2.67768  val_L1@15.0dB=5.60091
+epoch 040/100  train_L1=2.38440  val_L1@15.0dB=5.63695
+epoch 041/100  train_L1=2.48195  val_L1@15.0dB=5.59022
+epoch 042/100  train_L1=2.33439  val_L1@15.0dB=5.56180
+epoch 043/100  train_L1=2.19300  val_L1@15.0dB=5.61520
+epoch 044/100  train_L1=2.17419  val_L1@15.0dB=5.64589
+epoch 045/100  train_L1=2.19771  val_L1@15.0dB=5.58342
+epoch 046/100  train_L1=2.00005  val_L1@15.0dB=5.60950
+epoch 047/100  train_L1=2.07014  val_L1@15.0dB=5.64840
+early stop @ epoch 47 (best epoch 22, val_L1=5.13031)
+  done: best_val_L1=5.1303  highSNR@30dB L1_amb=4.0804  wall=55.3s
+
+=== phase2_cap_default_n2048 ===
+  n_train=2048 spikes=300 canon=tstar frog=padded fpb=(8, 16, 32)
+epoch 001/100  train_L1=6.34389  val_L1@15.0dB=5.96125  *best
+epoch 002/100  train_L1=6.02237  val_L1@15.0dB=5.92144  *best
+epoch 003/100  train_L1=5.99356  val_L1@15.0dB=5.89424  *best
+epoch 004/100  train_L1=5.96159  val_L1@15.0dB=5.83422  *best
+epoch 005/100  train_L1=5.86013  val_L1@15.0dB=5.69535  *best
+epoch 006/100  train_L1=5.75150  val_L1@15.0dB=5.60992  *best
+epoch 007/100  train_L1=5.68002  val_L1@15.0dB=5.54727  *best
+epoch 008/100  train_L1=5.62542  val_L1@15.0dB=5.49950  *best
+epoch 009/100  train_L1=5.59655  val_L1@15.0dB=5.48127  *best
+epoch 010/100  train_L1=5.54966  val_L1@15.0dB=5.42761  *best
+epoch 011/100  train_L1=5.51389  val_L1@15.0dB=5.39052  *best
+epoch 012/100  train_L1=5.45238  val_L1@15.0dB=5.36320  *best
+epoch 013/100  train_L1=5.40012  val_L1@15.0dB=5.31923  *best
+epoch 014/100  train_L1=5.33583  val_L1@15.0dB=5.28594  *best
+epoch 015/100  train_L1=5.26465  val_L1@15.0dB=5.19906  *best
+epoch 016/100  train_L1=5.21220  val_L1@15.0dB=5.24813
+epoch 017/100  train_L1=5.15913  val_L1@15.0dB=5.17563  *best
+epoch 018/100  train_L1=5.06383  val_L1@15.0dB=5.13459  *best
+epoch 019/100  train_L1=4.96377  val_L1@15.0dB=5.12081  *best
+epoch 020/100  train_L1=4.87175  val_L1@15.0dB=5.16859
+epoch 021/100  train_L1=4.71473  val_L1@15.0dB=5.13325
+epoch 022/100  train_L1=4.60969  val_L1@15.0dB=5.14960
+epoch 023/100  train_L1=4.43064  val_L1@15.0dB=5.19271
+epoch 024/100  train_L1=4.27075  val_L1@15.0dB=5.28017
+epoch 025/100  train_L1=4.09194  val_L1@15.0dB=5.25925
+epoch 026/100  train_L1=3.88134  val_L1@15.0dB=5.31072
+epoch 027/100  train_L1=3.71704  val_L1@15.0dB=5.42631
+epoch 028/100  train_L1=3.42667  val_L1@15.0dB=5.45525
+epoch 029/100  train_L1=3.28817  val_L1@15.0dB=5.44479
+epoch 030/100  train_L1=3.10933  val_L1@15.0dB=5.51053
+epoch 031/100  train_L1=2.92196  val_L1@15.0dB=5.49152
+epoch 032/100  train_L1=2.83183  val_L1@15.0dB=5.54603
+epoch 033/100  train_L1=2.67679  val_L1@15.0dB=5.56397
+epoch 034/100  train_L1=2.65755  val_L1@15.0dB=5.53477
+epoch 035/100  train_L1=2.43851  val_L1@15.0dB=5.50624
+epoch 036/100  train_L1=2.33104  val_L1@15.0dB=5.54292
+epoch 037/100  train_L1=2.18096  val_L1@15.0dB=5.55979
+epoch 038/100  train_L1=2.04940  val_L1@15.0dB=5.56728
+epoch 039/100  train_L1=2.07489  val_L1@15.0dB=5.51186
+epoch 040/100  train_L1=1.86901  val_L1@15.0dB=5.54908
+epoch 041/100  train_L1=1.93177  val_L1@15.0dB=5.56726
+epoch 042/100  train_L1=1.82831  val_L1@15.0dB=5.50611
+epoch 043/100  train_L1=1.74759  val_L1@15.0dB=5.56335
+epoch 044/100  train_L1=1.71643  val_L1@15.0dB=5.52095
+early stop @ epoch 44 (best epoch 19, val_L1=5.12081)
+  done: best_val_L1=5.1208  highSNR@30dB L1_amb=4.1384  wall=90.7s
+
+=== phase2_cap_wide_n2048 ===
+  n_train=2048 spikes=300 canon=tstar frog=padded fpb=(16, 32, 64)
+epoch 001/100  train_L1=8.72410  val_L1@15.0dB=5.96741  *best
+epoch 002/100  train_L1=6.02425  val_L1@15.0dB=5.93959  *best
+epoch 003/100  train_L1=5.99666  val_L1@15.0dB=5.88479  *best
+epoch 004/100  train_L1=5.92196  val_L1@15.0dB=5.78783  *best
+epoch 005/100  train_L1=5.80121  val_L1@15.0dB=5.67807  *best
+epoch 006/100  train_L1=5.73084  val_L1@15.0dB=5.63073  *best
+epoch 007/100  train_L1=5.69498  val_L1@15.0dB=5.62234  *best
+epoch 008/100  train_L1=5.65147  val_L1@15.0dB=5.53144  *best
+epoch 009/100  train_L1=5.60016  val_L1@15.0dB=5.45114  *best
+epoch 010/100  train_L1=5.56213  val_L1@15.0dB=5.44565  *best
+epoch 011/100  train_L1=5.50907  val_L1@15.0dB=5.37083  *best
+epoch 012/100  train_L1=5.45654  val_L1@15.0dB=5.36835  *best
+epoch 013/100  train_L1=5.42550  val_L1@15.0dB=5.39694
+epoch 014/100  train_L1=5.34116  val_L1@15.0dB=5.25964  *best
+epoch 015/100  train_L1=5.27148  val_L1@15.0dB=5.23069  *best
+epoch 016/100  train_L1=5.19681  val_L1@15.0dB=5.21096  *best
+epoch 017/100  train_L1=5.10664  val_L1@15.0dB=5.21444
+epoch 018/100  train_L1=5.01749  val_L1@15.0dB=5.20789  *best
+epoch 019/100  train_L1=4.88969  val_L1@15.0dB=5.15191  *best
+epoch 020/100  train_L1=4.73281  val_L1@15.0dB=5.21602
+epoch 021/100  train_L1=4.58923  val_L1@15.0dB=5.21174
+epoch 022/100  train_L1=4.43723  val_L1@15.0dB=5.26838
+epoch 023/100  train_L1=4.22628  val_L1@15.0dB=5.22458
+epoch 024/100  train_L1=4.02463  val_L1@15.0dB=5.38971
+epoch 025/100  train_L1=3.80218  val_L1@15.0dB=5.38268
+epoch 026/100  train_L1=3.61924  val_L1@15.0dB=5.40250
+epoch 027/100  train_L1=3.42534  val_L1@15.0dB=5.45165
+epoch 028/100  train_L1=3.18855  val_L1@15.0dB=5.44336
+epoch 029/100  train_L1=3.06784  val_L1@15.0dB=5.48729
+epoch 030/100  train_L1=2.90967  val_L1@15.0dB=5.61800
+epoch 031/100  train_L1=2.74587  val_L1@15.0dB=5.57372
+epoch 032/100  train_L1=2.66361  val_L1@15.0dB=5.57617
+epoch 033/100  train_L1=2.54463  val_L1@15.0dB=5.58973
+epoch 034/100  train_L1=2.50679  val_L1@15.0dB=5.61872
+epoch 035/100  train_L1=2.32959  val_L1@15.0dB=5.64972
+epoch 036/100  train_L1=2.25838  val_L1@15.0dB=5.61293
+epoch 037/100  train_L1=2.12846  val_L1@15.0dB=5.56069
+epoch 038/100  train_L1=2.03295  val_L1@15.0dB=5.57334
+epoch 039/100  train_L1=2.07874  val_L1@15.0dB=5.62243
+epoch 040/100  train_L1=1.82583  val_L1@15.0dB=5.59168
+epoch 041/100  train_L1=1.91464  val_L1@15.0dB=5.58849
+epoch 042/100  train_L1=1.81355  val_L1@15.0dB=5.55829
+epoch 043/100  train_L1=1.71730  val_L1@15.0dB=5.66363
+epoch 044/100  train_L1=1.71255  val_L1@15.0dB=5.62519
+early stop @ epoch 44 (best epoch 19, val_L1=5.15191)
+  done: best_val_L1=5.1519  highSNR@30dB L1_amb=4.1079  wall=178.3s
+
+Phase 2 n_train:
+name                                         valL1      hiL1     hiSim    ep
+phase2_ntrain_512                           5.4072    4.4699    0.2139    38
+phase2_ntrain_2048                          5.0621    4.1218    0.1669    19
+phase2_ntrain_8192                          4.8545    3.7182    0.1346    10
+
+Phase 2 capacity:
+name                                         valL1      hiL1     hiSim    ep
+phase2_cap_tiny_n2048                       5.1303    4.0804    0.1669    22
+phase2_cap_default_n2048                    5.1208    4.1384    0.1669    19
+phase2_cap_wide_n2048                       5.1519    4.1079    0.1676    19
+{
+  "train_name": "phase2_ntrain_2048",
+  "snr_db": 30.0,
+  "pulse_l1_amb_mean": 4.279968459159136,
+  "pulse_l1_amb_std": 0.9123682289717829,
+  "trace_l1_mean": 97.88976377248764,
+  "trace_l1_std": 12.784303126222415,
+  "trace_over_pulse_ratio": 22.871608629331693
+}
+
+=== phase3_frog_padded_n2048 ===
+  n_train=2048 spikes=300 canon=tstar frog=padded fpb=(8, 16, 32)
+epoch 001/100  train_L1=6.33848  val_L1@15.0dB=5.95775  *best
+epoch 002/100  train_L1=6.01262  val_L1@15.0dB=5.92626  *best
+epoch 003/100  train_L1=5.98616  val_L1@15.0dB=5.88618  *best
+epoch 004/100  train_L1=5.92637  val_L1@15.0dB=5.77067  *best
+epoch 005/100  train_L1=5.80602  val_L1@15.0dB=5.69642  *best
+epoch 006/100  train_L1=5.74546  val_L1@15.0dB=5.59957  *best
+epoch 007/100  train_L1=5.67364  val_L1@15.0dB=5.51802  *best
+epoch 008/100  train_L1=5.62359  val_L1@15.0dB=5.48877  *best
+epoch 009/100  train_L1=5.60117  val_L1@15.0dB=5.49552
+epoch 010/100  train_L1=5.55671  val_L1@15.0dB=5.40821  *best
+epoch 011/100  train_L1=5.52026  val_L1@15.0dB=5.42505
+epoch 012/100  train_L1=5.47647  val_L1@15.0dB=5.36401  *best
+epoch 013/100  train_L1=5.41628  val_L1@15.0dB=5.33306  *best
+epoch 014/100  train_L1=5.37886  val_L1@15.0dB=5.30020  *best
+epoch 015/100  train_L1=5.31153  val_L1@15.0dB=5.18253  *best
+epoch 016/100  train_L1=5.25559  val_L1@15.0dB=5.25907
+epoch 017/100  train_L1=5.22060  val_L1@15.0dB=5.15690  *best
+epoch 018/100  train_L1=5.11458  val_L1@15.0dB=5.13876  *best
+epoch 019/100  train_L1=5.04147  val_L1@15.0dB=5.05326  *best
+epoch 020/100  train_L1=4.94889  val_L1@15.0dB=5.08895
+epoch 021/100  train_L1=4.84292  val_L1@15.0dB=5.13614
+epoch 022/100  train_L1=4.76815  val_L1@15.0dB=5.07805
+epoch 023/100  train_L1=4.65421  val_L1@15.0dB=5.15583
+epoch 024/100  train_L1=4.51477  val_L1@15.0dB=5.18184
+epoch 025/100  train_L1=4.31051  val_L1@15.0dB=5.21410
+epoch 026/100  train_L1=4.16921  val_L1@15.0dB=5.26056
+epoch 027/100  train_L1=3.99217  val_L1@15.0dB=5.33830
+epoch 028/100  train_L1=3.70601  val_L1@15.0dB=5.28706
+epoch 029/100  train_L1=3.57956  val_L1@15.0dB=5.42506
+epoch 030/100  train_L1=3.38212  val_L1@15.0dB=5.43809
+epoch 031/100  train_L1=3.18303  val_L1@15.0dB=5.50370
+epoch 032/100  train_L1=3.06523  val_L1@15.0dB=5.38902
+epoch 033/100  train_L1=2.89408  val_L1@15.0dB=5.37388
+epoch 034/100  train_L1=2.86722  val_L1@15.0dB=5.48254
+epoch 035/100  train_L1=2.63805  val_L1@15.0dB=5.51343
+epoch 036/100  train_L1=2.49985  val_L1@15.0dB=5.49542
+epoch 037/100  train_L1=2.33281  val_L1@15.0dB=5.51423
+epoch 038/100  train_L1=2.20777  val_L1@15.0dB=5.45595
+epoch 039/100  train_L1=2.23782  val_L1@15.0dB=5.50156
+epoch 040/100  train_L1=1.99831  val_L1@15.0dB=5.43873
+epoch 041/100  train_L1=2.04946  val_L1@15.0dB=5.48874
+epoch 042/100  train_L1=1.96020  val_L1@15.0dB=5.38743
+epoch 043/100  train_L1=1.82951  val_L1@15.0dB=5.45250
+epoch 044/100  train_L1=1.80254  val_L1@15.0dB=5.56641
+early stop @ epoch 44 (best epoch 19, val_L1=5.05326)
+  done: best_val_L1=5.0533  highSNR@30dB L1_amb=4.1630  wall=91.0s
+
+=== phase3_frog_plain_n2048 ===
+  n_train=2048 spikes=300 canon=tstar frog=plain fpb=(8, 16, 32)
+epoch 001/100  train_L1=6.35207  val_L1@15.0dB=5.96602  *best
+epoch 002/100  train_L1=6.01953  val_L1@15.0dB=5.91279  *best
+epoch 003/100  train_L1=5.98263  val_L1@15.0dB=5.87603  *best
+epoch 004/100  train_L1=5.93578  val_L1@15.0dB=5.80569  *best
+epoch 005/100  train_L1=5.87094  val_L1@15.0dB=5.74711  *best
+epoch 006/100  train_L1=5.76976  val_L1@15.0dB=5.64992  *best
+epoch 007/100  train_L1=5.70447  val_L1@15.0dB=5.59158  *best
+epoch 008/100  train_L1=5.66217  val_L1@15.0dB=5.55596  *best
+epoch 009/100  train_L1=5.63026  val_L1@15.0dB=5.55175  *best
+epoch 010/100  train_L1=5.57470  val_L1@15.0dB=5.47054  *best
+epoch 011/100  train_L1=5.53365  val_L1@15.0dB=5.47216
+epoch 012/100  train_L1=5.47797  val_L1@15.0dB=5.41336  *best
+epoch 013/100  train_L1=5.44798  val_L1@15.0dB=5.39529  *best
+epoch 014/100  train_L1=5.40563  val_L1@15.0dB=5.35303  *best
+epoch 015/100  train_L1=5.34801  val_L1@15.0dB=5.30545  *best
+epoch 016/100  train_L1=5.33081  val_L1@15.0dB=5.31303
+epoch 017/100  train_L1=5.28134  val_L1@15.0dB=5.30982
+epoch 018/100  train_L1=5.22672  val_L1@15.0dB=5.25589  *best
+epoch 019/100  train_L1=5.15359  val_L1@15.0dB=5.26904
+epoch 020/100  train_L1=5.09451  val_L1@15.0dB=5.25870
+epoch 021/100  train_L1=5.00226  val_L1@15.0dB=5.29073
+epoch 022/100  train_L1=4.98949  val_L1@15.0dB=5.27028
+epoch 023/100  train_L1=4.86443  val_L1@15.0dB=5.23050  *best
+epoch 024/100  train_L1=4.80172  val_L1@15.0dB=5.27418
+epoch 025/100  train_L1=4.70150  val_L1@15.0dB=5.31234
+epoch 026/100  train_L1=4.58168  val_L1@15.0dB=5.26219
+epoch 027/100  train_L1=4.46309  val_L1@15.0dB=5.26563
+epoch 028/100  train_L1=4.32132  val_L1@15.0dB=5.28552
+epoch 029/100  train_L1=4.17996  val_L1@15.0dB=5.37095
+epoch 030/100  train_L1=4.09133  val_L1@15.0dB=5.40470
+epoch 031/100  train_L1=3.94199  val_L1@15.0dB=5.34884
+epoch 032/100  train_L1=3.81620  val_L1@15.0dB=5.37809
+epoch 033/100  train_L1=3.69619  val_L1@15.0dB=5.39464
+epoch 034/100  train_L1=3.62779  val_L1@15.0dB=5.36700
+epoch 035/100  train_L1=3.39888  val_L1@15.0dB=5.41852
+epoch 036/100  train_L1=3.28643  val_L1@15.0dB=5.48312
+epoch 037/100  train_L1=3.11151  val_L1@15.0dB=5.48344
+epoch 038/100  train_L1=2.96676  val_L1@15.0dB=5.49188
+epoch 039/100  train_L1=2.90557  val_L1@15.0dB=5.42604
+epoch 040/100  train_L1=2.67701  val_L1@15.0dB=5.44774
+epoch 041/100  train_L1=2.72639  val_L1@15.0dB=5.55111
+epoch 042/100  train_L1=2.59571  val_L1@15.0dB=5.47339
+epoch 043/100  train_L1=2.42211  val_L1@15.0dB=5.50722
+epoch 044/100  train_L1=2.37787  val_L1@15.0dB=5.45038
+epoch 045/100  train_L1=2.34261  val_L1@15.0dB=5.49870
+epoch 046/100  train_L1=2.15830  val_L1@15.0dB=5.53545
+epoch 047/100  train_L1=2.17917  val_L1@15.0dB=5.47346
+epoch 048/100  train_L1=2.04405  val_L1@15.0dB=5.50475
+early stop @ epoch 48 (best epoch 23, val_L1=5.23050)
+  done: best_val_L1=5.2305  highSNR@30dB L1_amb=4.2449  wall=98.8s
+
+=== phase3_canon_tstar_n2048 ===
+  n_train=2048 spikes=300 canon=tstar frog=padded fpb=(8, 16, 32)
+epoch 001/100  train_L1=6.33841  val_L1@15.0dB=5.95852  *best
+epoch 002/100  train_L1=6.01492  val_L1@15.0dB=5.92225  *best
+epoch 003/100  train_L1=5.98630  val_L1@15.0dB=5.89940  *best
+epoch 004/100  train_L1=5.92279  val_L1@15.0dB=5.77758  *best
+epoch 005/100  train_L1=5.80416  val_L1@15.0dB=5.66548  *best
+epoch 006/100  train_L1=5.73880  val_L1@15.0dB=5.59897  *best
+epoch 007/100  train_L1=5.66998  val_L1@15.0dB=5.51188  *best
+epoch 008/100  train_L1=5.61273  val_L1@15.0dB=5.47794  *best
+epoch 009/100  train_L1=5.58829  val_L1@15.0dB=5.47074  *best
+epoch 010/100  train_L1=5.54958  val_L1@15.0dB=5.41645  *best
+epoch 011/100  train_L1=5.51193  val_L1@15.0dB=5.39852  *best
+epoch 012/100  train_L1=5.46152  val_L1@15.0dB=5.31400  *best
+epoch 013/100  train_L1=5.42262  val_L1@15.0dB=5.29025  *best
+epoch 014/100  train_L1=5.34200  val_L1@15.0dB=5.25799  *best
+epoch 015/100  train_L1=5.26395  val_L1@15.0dB=5.16280  *best
+epoch 016/100  train_L1=5.20487  val_L1@15.0dB=5.20830
+epoch 017/100  train_L1=5.17361  val_L1@15.0dB=5.11984  *best
+epoch 018/100  train_L1=5.06060  val_L1@15.0dB=5.08380  *best
+epoch 019/100  train_L1=4.96641  val_L1@15.0dB=5.06603  *best
+epoch 020/100  train_L1=4.88112  val_L1@15.0dB=5.10264
+epoch 021/100  train_L1=4.77693  val_L1@15.0dB=5.10183
+epoch 022/100  train_L1=4.68407  val_L1@15.0dB=5.13534
+epoch 023/100  train_L1=4.53869  val_L1@15.0dB=5.11095
+epoch 024/100  train_L1=4.40853  val_L1@15.0dB=5.13296
+epoch 025/100  train_L1=4.24805  val_L1@15.0dB=5.20911
+epoch 026/100  train_L1=4.10903  val_L1@15.0dB=5.27029
+epoch 027/100  train_L1=3.89552  val_L1@15.0dB=5.23376
+epoch 028/100  train_L1=3.65982  val_L1@15.0dB=5.24570
+epoch 029/100  train_L1=3.51252  val_L1@15.0dB=5.35439
+epoch 030/100  train_L1=3.39214  val_L1@15.0dB=5.34186
+epoch 031/100  train_L1=3.17505  val_L1@15.0dB=5.46432
+epoch 032/100  train_L1=3.07524  val_L1@15.0dB=5.40825
+epoch 033/100  train_L1=2.90279  val_L1@15.0dB=5.38633
+epoch 034/100  train_L1=2.82800  val_L1@15.0dB=5.38848
+epoch 035/100  train_L1=2.62098  val_L1@15.0dB=5.42890
+epoch 036/100  train_L1=2.49304  val_L1@15.0dB=5.47568
+epoch 037/100  train_L1=2.32910  val_L1@15.0dB=5.38915
+epoch 038/100  train_L1=2.21127  val_L1@15.0dB=5.41694
+epoch 039/100  train_L1=2.25406  val_L1@15.0dB=5.34093
+epoch 040/100  train_L1=2.00341  val_L1@15.0dB=5.45799
+epoch 041/100  train_L1=2.05170  val_L1@15.0dB=5.39198
+epoch 042/100  train_L1=1.93755  val_L1@15.0dB=5.35921
+epoch 043/100  train_L1=1.84984  val_L1@15.0dB=5.44654
+epoch 044/100  train_L1=1.81295  val_L1@15.0dB=5.47402
+early stop @ epoch 44 (best epoch 19, val_L1=5.06603)
+  done: best_val_L1=5.0660  highSNR@30dB L1_amb=4.0905  wall=91.2s
+
+=== phase3_canon_t0_n2048 ===
+  n_train=2048 spikes=300 canon=t0 frog=padded fpb=(8, 16, 32)
+epoch 001/100  train_L1=6.26244  val_L1@15.0dB=5.78735  *best
+epoch 002/100  train_L1=5.87287  val_L1@15.0dB=5.69462  *best
+epoch 003/100  train_L1=5.78863  val_L1@15.0dB=5.57286  *best
+epoch 004/100  train_L1=5.52481  val_L1@15.0dB=5.28763  *best
+epoch 005/100  train_L1=5.36912  val_L1@15.0dB=5.19701  *best
+epoch 006/100  train_L1=5.30553  val_L1@15.0dB=5.18211  *best
+epoch 007/100  train_L1=5.22294  val_L1@15.0dB=5.08545  *best
+epoch 008/100  train_L1=5.17670  val_L1@15.0dB=5.07066  *best
+epoch 009/100  train_L1=5.10680  val_L1@15.0dB=4.99213  *best
+epoch 010/100  train_L1=5.06451  val_L1@15.0dB=5.00665
+epoch 011/100  train_L1=5.01478  val_L1@15.0dB=4.97083  *best
+epoch 012/100  train_L1=4.96627  val_L1@15.0dB=4.92676  *best
+epoch 013/100  train_L1=4.91797  val_L1@15.0dB=4.86060  *best
+epoch 014/100  train_L1=4.87161  val_L1@15.0dB=4.83151  *best
+epoch 015/100  train_L1=4.82470  val_L1@15.0dB=4.79827  *best
+epoch 016/100  train_L1=4.76968  val_L1@15.0dB=4.79878
+epoch 017/100  train_L1=4.70618  val_L1@15.0dB=4.78149  *best
+epoch 018/100  train_L1=4.65228  val_L1@15.0dB=4.78103  *best
+epoch 019/100  train_L1=4.57213  val_L1@15.0dB=4.75114  *best
+epoch 020/100  train_L1=4.46041  val_L1@15.0dB=4.75957
+epoch 021/100  train_L1=4.36905  val_L1@15.0dB=4.78990
+epoch 022/100  train_L1=4.29522  val_L1@15.0dB=4.80458
+epoch 023/100  train_L1=4.15076  val_L1@15.0dB=4.78448
+epoch 024/100  train_L1=4.03362  val_L1@15.0dB=4.81855
+epoch 025/100  train_L1=3.86988  val_L1@15.0dB=4.93561
+epoch 026/100  train_L1=3.71915  val_L1@15.0dB=4.92366
+epoch 027/100  train_L1=3.53598  val_L1@15.0dB=4.91429
+epoch 028/100  train_L1=3.33468  val_L1@15.0dB=4.97264
+epoch 029/100  train_L1=3.23608  val_L1@15.0dB=5.06037
+epoch 030/100  train_L1=3.08739  val_L1@15.0dB=5.03080
+epoch 031/100  train_L1=2.92218  val_L1@15.0dB=5.05022
+epoch 032/100  train_L1=2.85273  val_L1@15.0dB=5.05590
+epoch 033/100  train_L1=2.71208  val_L1@15.0dB=5.04422
+epoch 034/100  train_L1=2.69726  val_L1@15.0dB=5.12381
+epoch 035/100  train_L1=2.51574  val_L1@15.0dB=5.21567
+epoch 036/100  train_L1=2.39273  val_L1@15.0dB=5.21128
+epoch 037/100  train_L1=2.28605  val_L1@15.0dB=5.10030
+epoch 038/100  train_L1=2.16606  val_L1@15.0dB=5.11997
+epoch 039/100  train_L1=2.19829  val_L1@15.0dB=5.19798
+epoch 040/100  train_L1=1.96985  val_L1@15.0dB=5.11299
+epoch 041/100  train_L1=2.03279  val_L1@15.0dB=5.12010
+epoch 042/100  train_L1=1.92759  val_L1@15.0dB=5.10231
+epoch 043/100  train_L1=1.81624  val_L1@15.0dB=5.14106
+epoch 044/100  train_L1=1.81825  val_L1@15.0dB=5.14420
+early stop @ epoch 44 (best epoch 19, val_L1=4.75114)
+  done: best_val_L1=4.7511  highSNR@30dB L1_amb=3.8450  wall=91.2s
+
+=== phase3_spikes_30_n2048 ===
+  n_train=2048 spikes=30 canon=tstar frog=padded fpb=(8, 16, 32)
+epoch 001/100  train_L1=6.89449  val_L1@15.0dB=6.53142  *best
+epoch 002/100  train_L1=6.60335  val_L1@15.0dB=6.49402  *best
+epoch 003/100  train_L1=6.58067  val_L1@15.0dB=6.49566
+epoch 004/100  train_L1=6.55713  val_L1@15.0dB=6.41362  *best
+epoch 005/100  train_L1=6.46013  val_L1@15.0dB=6.31439  *best
+epoch 006/100  train_L1=6.39650  val_L1@15.0dB=6.35437
+epoch 007/100  train_L1=6.35925  val_L1@15.0dB=6.26368  *best
+epoch 008/100  train_L1=6.31809  val_L1@15.0dB=6.22368  *best
+epoch 009/100  train_L1=6.28877  val_L1@15.0dB=6.17505  *best
+epoch 010/100  train_L1=6.26466  val_L1@15.0dB=6.16013  *best
+epoch 011/100  train_L1=6.22584  val_L1@15.0dB=6.16888
+epoch 012/100  train_L1=6.19721  val_L1@15.0dB=6.10822  *best
+epoch 013/100  train_L1=6.16889  val_L1@15.0dB=6.07912  *best
+epoch 014/100  train_L1=6.11900  val_L1@15.0dB=6.04627  *best
+epoch 015/100  train_L1=6.07193  val_L1@15.0dB=6.05639
+epoch 016/100  train_L1=6.01056  val_L1@15.0dB=6.01391  *best
+epoch 017/100  train_L1=5.94322  val_L1@15.0dB=5.98866  *best
+epoch 018/100  train_L1=5.86594  val_L1@15.0dB=6.03260
+epoch 019/100  train_L1=5.79400  val_L1@15.0dB=5.99566
+epoch 020/100  train_L1=5.66139  val_L1@15.0dB=6.01672
+epoch 021/100  train_L1=5.51063  val_L1@15.0dB=6.16917
+epoch 022/100  train_L1=5.38058  val_L1@15.0dB=6.15860
+epoch 023/100  train_L1=5.14540  val_L1@15.0dB=6.13013
+epoch 024/100  train_L1=4.94511  val_L1@15.0dB=6.17327
+epoch 025/100  train_L1=4.69993  val_L1@15.0dB=6.24100
+epoch 026/100  train_L1=4.47381  val_L1@15.0dB=6.30378
+epoch 027/100  train_L1=4.18681  val_L1@15.0dB=6.32893
+epoch 028/100  train_L1=3.92092  val_L1@15.0dB=6.36446
+epoch 029/100  train_L1=3.73304  val_L1@15.0dB=6.48363
+epoch 030/100  train_L1=3.53014  val_L1@15.0dB=6.51577
+epoch 031/100  train_L1=3.30196  val_L1@15.0dB=6.59161
+epoch 032/100  train_L1=3.19565  val_L1@15.0dB=6.43047
+epoch 033/100  train_L1=3.03483  val_L1@15.0dB=6.52351
+epoch 034/100  train_L1=3.02977  val_L1@15.0dB=6.57775
+epoch 035/100  train_L1=2.78394  val_L1@15.0dB=6.51417
+epoch 036/100  train_L1=2.67132  val_L1@15.0dB=6.64603
+epoch 037/100  train_L1=2.55801  val_L1@15.0dB=6.45165
+epoch 038/100  train_L1=2.42585  val_L1@15.0dB=6.52584
+epoch 039/100  train_L1=2.51113  val_L1@15.0dB=6.39864
+epoch 040/100  train_L1=2.18433  val_L1@15.0dB=6.55280
+epoch 041/100  train_L1=2.31895  val_L1@15.0dB=6.48921
+epoch 042/100  train_L1=2.19852  val_L1@15.0dB=6.45002
+early stop @ epoch 42 (best epoch 17, val_L1=5.98866)
+  done: best_val_L1=5.9887  highSNR@30dB L1_amb=5.0057  wall=80.0s
+
+=== phase3_spikes_100_n2048 ===
+  n_train=2048 spikes=100 canon=tstar frog=padded fpb=(8, 16, 32)
+epoch 001/100  train_L1=6.61917  val_L1@15.0dB=6.23963  *best
+epoch 002/100  train_L1=6.27407  val_L1@15.0dB=6.20818  *best
+epoch 003/100  train_L1=6.21948  val_L1@15.0dB=6.11673  *best
+epoch 004/100  train_L1=6.10596  val_L1@15.0dB=5.99753  *best
+epoch 005/100  train_L1=6.02776  val_L1@15.0dB=5.95971  *best
+epoch 006/100  train_L1=5.97326  val_L1@15.0dB=5.94073  *best
+epoch 007/100  train_L1=5.93837  val_L1@15.0dB=5.91305  *best
+epoch 008/100  train_L1=5.88443  val_L1@15.0dB=5.87469  *best
+epoch 009/100  train_L1=5.82859  val_L1@15.0dB=5.86237  *best
+epoch 010/100  train_L1=5.77954  val_L1@15.0dB=5.82605  *best
+epoch 011/100  train_L1=5.72830  val_L1@15.0dB=5.80028  *best
+epoch 012/100  train_L1=5.65910  val_L1@15.0dB=5.81453
+epoch 013/100  train_L1=5.63032  val_L1@15.0dB=5.81355
+epoch 014/100  train_L1=5.57030  val_L1@15.0dB=5.76103  *best
+epoch 015/100  train_L1=5.47543  val_L1@15.0dB=5.77007
+epoch 016/100  train_L1=5.39525  val_L1@15.0dB=5.80105
+epoch 017/100  train_L1=5.32776  val_L1@15.0dB=5.73266  *best
+epoch 018/100  train_L1=5.19354  val_L1@15.0dB=5.78578
+epoch 019/100  train_L1=5.10035  val_L1@15.0dB=5.79306
+epoch 020/100  train_L1=4.95601  val_L1@15.0dB=5.75781
+epoch 021/100  train_L1=4.77538  val_L1@15.0dB=5.81127
+epoch 022/100  train_L1=4.64361  val_L1@15.0dB=5.88184
+epoch 023/100  train_L1=4.45518  val_L1@15.0dB=5.87186
+epoch 024/100  train_L1=4.24317  val_L1@15.0dB=6.00040
+epoch 025/100  train_L1=4.04733  val_L1@15.0dB=5.98257
+epoch 026/100  train_L1=3.85073  val_L1@15.0dB=6.09716
+epoch 027/100  train_L1=3.62165  val_L1@15.0dB=6.05771
+epoch 028/100  train_L1=3.36781  val_L1@15.0dB=6.14437
+epoch 029/100  train_L1=3.27024  val_L1@15.0dB=6.08519
+epoch 030/100  train_L1=3.14226  val_L1@15.0dB=6.15343
+epoch 031/100  train_L1=2.91795  val_L1@15.0dB=6.21528
+epoch 032/100  train_L1=2.88720  val_L1@15.0dB=6.15483
+epoch 033/100  train_L1=2.73744  val_L1@15.0dB=6.18018
+epoch 034/100  train_L1=2.74351  val_L1@15.0dB=6.14152
+epoch 035/100  train_L1=2.52265  val_L1@15.0dB=6.15260
+epoch 036/100  train_L1=2.40840  val_L1@15.0dB=6.20605
+epoch 037/100  train_L1=2.26781  val_L1@15.0dB=6.16659
+epoch 038/100  train_L1=2.17548  val_L1@15.0dB=6.22763
+epoch 039/100  train_L1=2.31476  val_L1@15.0dB=6.13707
+epoch 040/100  train_L1=1.98727  val_L1@15.0dB=6.24091
+epoch 041/100  train_L1=2.11384  val_L1@15.0dB=6.23152
+epoch 042/100  train_L1=1.99897  val_L1@15.0dB=6.15796
+early stop @ epoch 42 (best epoch 17, val_L1=5.73266)
+  done: best_val_L1=5.7327  highSNR@30dB L1_amb=4.4746  wall=82.1s
+
+=== phase3_spikes_300_n2048 ===
+  n_train=2048 spikes=300 canon=tstar frog=padded fpb=(8, 16, 32)
+epoch 001/100  train_L1=6.34281  val_L1@15.0dB=5.97937  *best
+epoch 002/100  train_L1=6.02209  val_L1@15.0dB=5.91942  *best
+epoch 003/100  train_L1=5.98858  val_L1@15.0dB=5.89035  *best
+epoch 004/100  train_L1=5.93307  val_L1@15.0dB=5.78687  *best
+epoch 005/100  train_L1=5.80639  val_L1@15.0dB=5.67013  *best
+epoch 006/100  train_L1=5.72653  val_L1@15.0dB=5.57987  *best
+epoch 007/100  train_L1=5.66016  val_L1@15.0dB=5.51593  *best
+epoch 008/100  train_L1=5.60354  val_L1@15.0dB=5.47736  *best
+epoch 009/100  train_L1=5.58881  val_L1@15.0dB=5.46606  *best
+epoch 010/100  train_L1=5.53658  val_L1@15.0dB=5.38660  *best
+epoch 011/100  train_L1=5.48073  val_L1@15.0dB=5.35784  *best
+epoch 012/100  train_L1=5.42243  val_L1@15.0dB=5.35308  *best
+epoch 013/100  train_L1=5.36423  val_L1@15.0dB=5.30203  *best
+epoch 014/100  train_L1=5.30148  val_L1@15.0dB=5.20263  *best
+epoch 015/100  train_L1=5.24015  val_L1@15.0dB=5.17604  *best
+epoch 016/100  train_L1=5.17765  val_L1@15.0dB=5.18244
+epoch 017/100  train_L1=5.11316  val_L1@15.0dB=5.12344  *best
+epoch 018/100  train_L1=5.02865  val_L1@15.0dB=5.12615
+epoch 019/100  train_L1=4.91401  val_L1@15.0dB=5.03917  *best
+epoch 020/100  train_L1=4.80696  val_L1@15.0dB=5.09424
+epoch 021/100  train_L1=4.67385  val_L1@15.0dB=5.12219
+epoch 022/100  train_L1=4.59485  val_L1@15.0dB=5.15620
+epoch 023/100  train_L1=4.43558  val_L1@15.0dB=5.12439
+epoch 024/100  train_L1=4.28278  val_L1@15.0dB=5.21736
+epoch 025/100  train_L1=4.08727  val_L1@15.0dB=5.25339
+epoch 026/100  train_L1=3.93375  val_L1@15.0dB=5.32038
+epoch 027/100  train_L1=3.71642  val_L1@15.0dB=5.30106
+epoch 028/100  train_L1=3.49334  val_L1@15.0dB=5.32781
+epoch 029/100  train_L1=3.37644  val_L1@15.0dB=5.32872
+epoch 030/100  train_L1=3.23496  val_L1@15.0dB=5.43886
+epoch 031/100  train_L1=3.03081  val_L1@15.0dB=5.40934
+epoch 032/100  train_L1=2.95833  val_L1@15.0dB=5.44121
+epoch 033/100  train_L1=2.82192  val_L1@15.0dB=5.52654
+epoch 034/100  train_L1=2.80483  val_L1@15.0dB=5.40177
+epoch 035/100  train_L1=2.56998  val_L1@15.0dB=5.46800
+epoch 036/100  train_L1=2.49136  val_L1@15.0dB=5.44674
+epoch 037/100  train_L1=2.34378  val_L1@15.0dB=5.40403
+epoch 038/100  train_L1=2.22962  val_L1@15.0dB=5.46877
+epoch 039/100  train_L1=2.27888  val_L1@15.0dB=5.41442
+epoch 040/100  train_L1=2.02269  val_L1@15.0dB=5.47093
+epoch 041/100  train_L1=2.11768  val_L1@15.0dB=5.41740
+epoch 042/100  train_L1=2.00643  val_L1@15.0dB=5.39481
+epoch 043/100  train_L1=1.90851  val_L1@15.0dB=5.47102
+epoch 044/100  train_L1=1.91044  val_L1@15.0dB=5.48167
+early stop @ epoch 44 (best epoch 19, val_L1=5.03917)
+  done: best_val_L1=5.0392  highSNR@30dB L1_amb=4.1735  wall=91.4s
+
+Phase 3 ablations:
+name                                         valL1      hiL1     hiSim    ep
+phase3_frog_padded_n2048                    5.0533    4.1630    0.1743    19
+phase3_frog_plain_n2048                     5.2305    4.2449    0.1860    23
+phase3_canon_tstar_n2048                    5.0660    4.0905    0.1654    19
+phase3_canon_t0_n2048                       4.7511    3.8450    0.1435    19
+phase3_spikes_30_n2048                      5.9887    5.0057    0.2325    17
+phase3_spikes_100_n2048                     5.7327    4.4746    0.1909    17
+phase3_spikes_300_n2048                     5.0392    4.1735    0.1711    19
+
+Wrote D:\Haim\Haim 3rd paper\Ultra-Fast project\src\checkpoints\benchmark\exp_a_prime_diagnostics\summary_all.json

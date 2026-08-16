@@ -1,0 +1,173 @@
+{
+  "protocol": "v2",
+  "LR": 0.001,
+  "TRACE_SCALE": 8.0,
+  "LAM_STAR": 12.0,
+  "TAG_STAR": "n866_phys_lam12_v2",
+  "coarse_rows": [
+    {
+      "lam": 0.75,
+      "tag": "n866_phys_lam0p75_v2",
+      "role": "lam_coarse",
+      "best_score": 1.8537041518092154,
+      "best_epoch": 85,
+      "best_step": 1190,
+      "stopped_epoch": 143,
+      "global_step": 2002
+    },
+    {
+      "lam": 1.5,
+      "tag": "n866_phys_lam1p5_v2",
+      "role": "lam_coarse",
+      "best_score": 1.760354622900486,
+      "best_epoch": 140,
+      "best_step": 1960,
+      "stopped_epoch": 198,
+      "global_step": 2772
+    },
+    {
+      "lam": 3.0,
+      "tag": "n866_phys_lam3_v2",
+      "role": "lam_coarse",
+      "best_score": 1.7114111492037773,
+      "best_epoch": 187,
+      "best_step": 2618,
+      "stopped_epoch": 245,
+      "global_step": 3430
+    },
+    {
+      "lam": 6.0,
+      "tag": "n866_phys_lam6_v2",
+      "role": "lam_coarse",
+      "best_score": 1.6475943684577943,
+      "best_epoch": 202,
+      "best_step": 2828,
+      "stopped_epoch": 260,
+      "global_step": 3640
+    },
+    {
+      "lam": 12.0,
+      "tag": "n866_phys_lam12_v2",
+      "role": "lam_coarse",
+      "best_score": 1.5566752225160598,
+      "best_epoch": 181,
+      "best_step": 2534,
+      "stopped_epoch": 239,
+      "global_step": 3346
+    },
+    {
+      "lam": 15.0,
+      "tag": "n866_phys_lam15_v2",
+      "role": "lam_coarse",
+      "best_score": 1.5689142259955406,
+      "best_epoch": 249,
+      "best_step": 3486,
+      "stopped_epoch": 307,
+      "global_step": 4298
+    }
+  ],
+  "fine_rows": [
+    {
+      "lam": 8.48528137423857,
+      "tag": "n866_phys_lam8p48528_v2",
+      "role": "lam_fine",
+      "best_score": 1.6204753255844115,
+      "best_epoch": 152,
+      "best_step": 2128,
+      "stopped_epoch": 210,
+      "global_step": 2940
+    },
+    {
+      "lam": 13.416407864998739,
+      "tag": "n866_phys_lam13p4164_v2",
+      "role": "lam_fine",
+      "best_score": 1.583529384434223,
+      "best_epoch": 213,
+      "best_step": 2982,
+      "stopped_epoch": 271,
+      "global_step": 3794
+    }
+  ],
+  "rows": [
+    {
+      "lam": 0.75,
+      "tag": "n866_phys_lam0p75_v2",
+      "role": "lam_coarse",
+      "best_score": 1.8537041518092154,
+      "best_epoch": 85,
+      "best_step": 1190,
+      "stopped_epoch": 143,
+      "global_step": 2002
+    },
+    {
+      "lam": 1.5,
+      "tag": "n866_phys_lam1p5_v2",
+      "role": "lam_coarse",
+      "best_score": 1.760354622900486,
+      "best_epoch": 140,
+      "best_step": 1960,
+      "stopped_epoch": 198,
+      "global_step": 2772
+    },
+    {
+      "lam": 3.0,
+      "tag": "n866_phys_lam3_v2",
+      "role": "lam_coarse",
+      "best_score": 1.7114111492037773,
+      "best_epoch": 187,
+      "best_step": 2618,
+      "stopped_epoch": 245,
+      "global_step": 3430
+    },
+    {
+      "lam": 6.0,
+      "tag": "n866_phys_lam6_v2",
+      "role": "lam_coarse",
+      "best_score": 1.6475943684577943,
+      "best_epoch": 202,
+      "best_step": 2828,
+      "stopped_epoch": 260,
+      "global_step": 3640
+    },
+    {
+      "lam": 12.0,
+      "tag": "n866_phys_lam12_v2",
+      "role": "lam_coarse",
+      "best_score": 1.5566752225160598,
+      "best_epoch": 181,
+      "best_step": 2534,
+      "stopped_epoch": 239,
+      "global_step": 3346
+    },
+    {
+      "lam": 15.0,
+      "tag": "n866_phys_lam15_v2",
+      "role": "lam_coarse",
+      "best_score": 1.5689142259955406,
+      "best_epoch": 249,
+      "best_step": 3486,
+      "stopped_epoch": 307,
+      "global_step": 4298
+    },
+    {
+      "lam": 8.48528137423857,
+      "tag": "n866_phys_lam8p48528_v2",
+      "role": "lam_fine",
+      "best_score": 1.6204753255844115,
+      "best_epoch": 152,
+      "best_step": 2128,
+      "stopped_epoch": 210,
+      "global_step": 2940
+    },
+    {
+      "lam": 13.416407864998739,
+      "tag": "n866_phys_lam13p4164_v2",
+      "role": "lam_fine",
+      "best_score": 1.583529384434223,
+      "best_epoch": 213,
+      "best_step": 2982,
+      "stopped_epoch": 271,
+      "global_step": 3794
+    }
+  ]
+}

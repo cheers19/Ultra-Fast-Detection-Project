@@ -1,0 +1,9 @@
+{
+  "train_name": "phase2_ntrain_2048",
+  "snr_db": 30.0,
+  "pulse_l1_amb_mean": 4.279968459159136,
+  "pulse_l1_amb_std": 0.9123682289717829,
+  "trace_l1_mean": 97.88976377248764,
+  "trace_l1_std": 12.784303126222415,
+  "trace_over_pulse_ratio": 22.871608629331693
+}

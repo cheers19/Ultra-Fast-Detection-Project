@@ -1,8 +1,12 @@
 {
-  "best_epoch": 13,
-  "stopped_epoch": 38,
-  "best_val_l1": 2.2518918752670287,
+  "best_epoch": 9,
+  "stopped_epoch": 145,
+  "best_val_l1": 2.269372682571411,
+  "final_val_l1": 2.466870279312134,
+  "restore_best": false,
   "lam": 0.0,
   "n_train": 60000,
-  "pulse_kind": "stochastic_constant_phase"
+  "pulse_kind": "stochastic_constant_phase",
+  "matched_2k_lam15_stopped_epoch": 145,
+  "patience": 100000
 }

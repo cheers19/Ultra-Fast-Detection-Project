@@ -1,0 +1,20 @@
+{
+  "n_train": 2498,
+  "model": "physics",
+  "lambda": 15.0,
+  "LR_star": 0.001,
+  "trace_scale": 8.0,
+  "batch_size": 300,
+  "best_epoch": 198,
+  "best_score_val_amb": 1.4257013383507728,
+  "stopped_epoch": 200,
+  "global_step": 1800,
+  "wall_time_data_sec": 29.462620500009507,
+  "wall_time_train_sec": 1957.091396600008,
+  "device": "cuda",
+  "data": "filtered_c1",
+  "tag": "n2498_phys_lam15_final",
+  "snapshot_val_index": 0,
+  "snapshot_snr_db": 10.0,
+  "snapshot_noise_seed": 12345
+}

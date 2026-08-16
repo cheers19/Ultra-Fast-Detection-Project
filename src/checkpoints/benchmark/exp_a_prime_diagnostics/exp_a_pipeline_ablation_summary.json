@@ -1,0 +1,84 @@
+{
+  "exp_a_reference": {
+    "lambda_opt": 1.5,
+    "best_val_at_opt": 2.533209009170532,
+    "lambda_baseline": 0.0,
+    "best_val_at_baseline": 2.639013147354126,
+    "best_val_l1": [
+      2.639013147354126,
+      2.5769499921798706,
+      2.533209009170532,
+      2.630550060272217,
+      2.6129994106292727
+    ],
+    "source": "D:\\Haim\\Haim 3rd paper\\Ultra-Fast project\\src\\checkpoints\\benchmark\\stochastic_multires_2k_noisy_trace_lambda.npz"
+  },
+  "fraction_from_nyquist_padded": 0.52,
+  "pulse_config": "StochasticPulseConfig() Exp A defaults",
+  "variants": [
+    {
+      "variant": "plain_t0",
+      "note": "Exp A control: plain FROGNet + t0",
+      "lambda_opt": 0.75,
+      "best_val_at_opt": 2.557802257537842,
+      "lambda_baseline": 0.0,
+      "best_val_at_baseline": 2.625088863372803,
+      "best_val_l1": [
+        2.625088863372803,
+        2.557802257537842,
+        2.5750561332702637,
+        2.628303270339966,
+        2.6534801292419434
+      ],
+      "cached": false
+    },
+    {
+      "variant": "padded_tstar",
+      "note": "full new pipeline: padded FROG + t*",
+      "lambda_opt": 0.0,
+      "best_val_at_opt": 3.002336416244507,
+      "lambda_baseline": 0.0,
+      "best_val_at_baseline": 3.002336416244507,
+      "best_val_l1": [
+        3.002336416244507,
+        3.043662395477295,
+        3.076032772064209,
+        3.105345458984375,
+        3.0778809547424317
+      ],
+      "cached": false
+    },
+    {
+      "variant": "plain_tstar",
+      "note": "t* only (plain FROG)",
+      "lambda_opt": 0.0,
+      "best_val_at_opt": 3.0897432136535645,
+      "lambda_baseline": 0.0,
+      "best_val_at_baseline": 3.0897432136535645,
+      "best_val_l1": [
+        3.0897432136535645,
+        3.122330780029297,
+        3.131604118347168,
+        3.1751160049438476,
+        3.281399059295654
+      ],
+      "cached": false
+    },
+    {
+      "variant": "padded_t0",
+      "note": "padded FROG only (t0)",
+      "lambda_opt": 0.75,
+      "best_val_at_opt": 2.465394763946533,
+      "lambda_baseline": 0.0,
+      "best_val_at_baseline": 2.5370162963867187,
+      "best_val_l1": [
+        2.5370162963867187,
+        2.465394763946533,
+        2.508352689743042,
+        2.5441702365875245,
+        2.5767178535461426
+      ],
+      "cached": false
+    }
+  ]
+}

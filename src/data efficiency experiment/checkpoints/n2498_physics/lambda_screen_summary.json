@@ -1,0 +1,131 @@
+{
+  "LR_STAR": 0.001,
+  "LAM_STAR": 15.0,
+  "TRACE_SCALE": 8.0,
+  "coarse_rows": [
+    {
+      "lam": 3.0,
+      "tag": "n2498_phys_lam3_screen",
+      "role": "lam_coarse",
+      "best_score": 1.6951759412884713,
+      "best_epoch": 98,
+      "best_step": 882,
+      "stopped_epoch": 100,
+      "global_step": 900,
+      "wall_time_train_sec": 5621.2246729999315,
+      "trace_scale": 8.0
+    },
+    {
+      "lam": 6.0,
+      "tag": "n2498_phys_lam6_screen",
+      "role": "lam_coarse",
+      "best_score": 1.8500847190618515,
+      "best_epoch": 99,
+      "best_step": 891,
+      "stopped_epoch": 100,
+      "global_step": 900,
+      "wall_time_train_sec": 8697.622058799956,
+      "trace_scale": 8.0
+    },
+    {
+      "lam": 12.0,
+      "tag": "n2498_phys_lam12_screen",
+      "role": "lam_coarse",
+      "best_score": 1.7237418332695962,
+      "best_epoch": 100,
+      "best_step": 900,
+      "stopped_epoch": 100,
+      "global_step": 900,
+      "wall_time_train_sec": 1684.5396686999593,
+      "trace_scale": 8.0
+    },
+    {
+      "lam": 15.0,
+      "tag": "n2498_phys_lam15_screen",
+      "role": "lam_coarse",
+      "best_score": 1.620680131316185,
+      "best_epoch": 100,
+      "best_step": 900,
+      "stopped_epoch": 100,
+      "global_step": 900,
+      "wall_time_train_sec": 3624.8369698000606,
+      "trace_scale": 8.0
+    }
+  ],
+  "fine_rows": [
+    {
+      "lam": 13.416407864998739,
+      "tag": "n2498_phys_lam13p4164_screen",
+      "role": "lam_fine",
+      "best_score": 1.7802682667970657,
+      "best_epoch": 98,
+      "best_step": 882,
+      "stopped_epoch": 100,
+      "global_step": 900,
+      "wall_time_train_sec": 4323.951855899999,
+      "trace_scale": 8.0
+    }
+  ],
+  "rows": [
+    {
+      "lam": 3.0,
+      "tag": "n2498_phys_lam3_screen",
+      "role": "lam_coarse",
+      "best_score": 1.6951759412884713,
+      "best_epoch": 98,
+      "best_step": 882,
+      "stopped_epoch": 100,
+      "global_step": 900,
+      "wall_time_train_sec": 5621.2246729999315,
+      "trace_scale": 8.0
+    },
+    {
+      "lam": 6.0,
+      "tag": "n2498_phys_lam6_screen",
+      "role": "lam_coarse",
+      "best_score": 1.8500847190618515,
+      "best_epoch": 99,
+      "best_step": 891,
+      "stopped_epoch": 100,
+      "global_step": 900,
+      "wall_time_train_sec": 8697.622058799956,
+      "trace_scale": 8.0
+    },
+    {
+      "lam": 12.0,
+      "tag": "n2498_phys_lam12_screen",
+      "role": "lam_coarse",
+      "best_score": 1.7237418332695962,
+      "best_epoch": 100,
+      "best_step": 900,
+      "stopped_epoch": 100,
+      "global_step": 900,
+      "wall_time_train_sec": 1684.5396686999593,
+      "trace_scale": 8.0
+    },
+    {
+      "lam": 15.0,
+      "tag": "n2498_phys_lam15_screen",
+      "role": "lam_coarse",
+      "best_score": 1.620680131316185,
+      "best_epoch": 100,
+      "best_step": 900,
+      "stopped_epoch": 100,
+      "global_step": 900,
+      "wall_time_train_sec": 3624.8369698000606,
+      "trace_scale": 8.0
+    },
+    {
+      "lam": 13.416407864998739,
+      "tag": "n2498_phys_lam13p4164_screen",
+      "role": "lam_fine",
+      "best_score": 1.7802682667970657,
+      "best_epoch": 98,
+      "best_step": 882,
+      "stopped_epoch": 100,
+      "global_step": 900,
+      "wall_time_train_sec": 4323.951855899999,
+      "trace_scale": 8.0
+    }
+  ]
+}

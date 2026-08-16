@@ -1,0 +1,16 @@
+{
+  "n_train": 2498,
+  "model": "plain",
+  "lambda": 0.0,
+  "LR_star": 0.001,
+  "batch_size": 300,
+  "best_epoch": 70,
+  "best_score_val_amb": 1.9460664850473404,
+  "stopped_epoch": 95,
+  "global_step": 855,
+  "wall_time_data_sec": 29.26107809995301,
+  "wall_time_train_sec": 1048.6167929999065,
+  "device": "cuda",
+  "data": "filtered_c1",
+  "tag": "n2498_plain_lr0p001_final"
+}

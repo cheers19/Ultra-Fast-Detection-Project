@@ -1,0 +1,15 @@
+{
+  "n": 512,
+  "amp_peak_mean": 0.3297478991744105,
+  "support_frac_mean": 0.56121826171875,
+  "support_frac_std": 0.07700786579970421,
+  "spec_rms_bw_mean": 0.05876912304834075,
+  "trace_energy_mean": 22.271442413330078,
+  "trace_dynamic_range_db_mean": 12.722429275512695,
+  "grid": {
+    "n_spikes": 300,
+    "t_total_fs": 53.0,
+    "coherence_time_fs": 1.3250000000000002,
+    "t_center_std_fs": 5.727549044849916
+  }
+}

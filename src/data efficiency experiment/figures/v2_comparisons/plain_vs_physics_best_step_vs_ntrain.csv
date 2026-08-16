@@ -1,0 +1,13 @@
+kind,n_train,tag,best_step,best_epoch,source
+physics,300,n300_phys_lam6_v2,1285,257,d:\Haim\Haim 3rd paper\Ultra-Fast project\src\data efficiency experiment\checkpoints\v2\n300_physics\campaign_summary.json
+physics,866,n866_phys_lam12_v2,2534,181,d:\Haim\Haim 3rd paper\Ultra-Fast project\src\data efficiency experiment\checkpoints\v2\n866_physics\campaign_summary.json
+physics,2048,filtered_c1_multires_lam4p5,2560,80,d:\Haim\Haim 3rd paper\Ultra-Fast project\src\checkpoints\benchmark\filtered_c1_multires_2k_diagnostics\filtered_c1_multires_lam4p5_meta.json
+physics,7207,n7207_phys_lam1p8_v2_ext2000,5537,49,d:\Haim\Haim 3rd paper\Ultra-Fast project\src\data efficiency experiment\checkpoints\v2\n7207_physics\campaign_summary.json
+physics,20794,n20794_phys_lam4p3_v2_ext2000,12025,37,d:\Haim\Haim 3rd paper\Ultra-Fast project\src\data efficiency experiment\checkpoints\v2\n20794_physics\campaign_summary.json
+physics,60000,n60000_phys_lam0p6_v2_ext1000,8442,9,d:\Haim\Haim 3rd paper\Ultra-Fast project\src\data efficiency experiment\checkpoints\v2\n60000_physics\campaign_summary.json
+plain,300,n300_plain_lr1e-3_v2,2010,402,d:\Haim\Haim 3rd paper\Ultra-Fast project\src\data efficiency experiment\checkpoints\v2\n300_plain\campaign_summary.json
+plain,866,n866_plain_lr1e-3_v2,2128,152,d:\Haim\Haim 3rd paper\Ultra-Fast project\src\data efficiency experiment\checkpoints\v2\n866_plain\campaign_summary.json
+plain,2048,filtered_c1_multires_lam0,1056,33,d:\Haim\Haim 3rd paper\Ultra-Fast project\src\checkpoints\benchmark\filtered_c1_multires_2k_diagnostics\filtered_c1_multires_lam0_meta.json
+plain,7207,n7207_plain_lr1e-3_v2,11752,104,d:\Haim\Haim 3rd paper\Ultra-Fast project\src\data efficiency experiment\checkpoints\v2\n7207_plain\campaign_summary.json
+plain,20794,n20794_plain_lr1e-3_v2,6500,20,d:\Haim\Haim 3rd paper\Ultra-Fast project\src\data efficiency experiment\checkpoints\v2\n20794_plain\campaign_summary.json
+plain,60000,n60000_plain_lr1e-3_v2,13132,14,d:\Haim\Haim 3rd paper\Ultra-Fast project\src\data efficiency experiment\checkpoints\v2\n60000_plain\campaign_summary.json

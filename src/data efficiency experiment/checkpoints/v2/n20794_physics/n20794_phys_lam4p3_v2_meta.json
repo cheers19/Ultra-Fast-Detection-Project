@@ -1,0 +1,50 @@
+{
+  "best_epoch": 37,
+  "best_score": 1.187481901496649,
+  "stopped_epoch": 52,
+  "lam": 4.3,
+  "trace_scale": 8.0,
+  "pulse_loss_mode": "raw",
+  "ambiguity_backend": "legacy",
+  "trace_loss_ref": "clean",
+  "device": "cuda",
+  "train_snr_db_range": [
+    0.0,
+    30.0
+  ],
+  "train_snr_db_values": null,
+  "val_snr_db_range": [
+    -10.0,
+    30.0
+  ],
+  "val_snr_db_values": [
+    -10.0,
+    0.0,
+    30.0
+  ],
+  "n_train": 20794,
+  "n_val": 200,
+  "seed": 0,
+  "loader_builder": "filtered_c1",
+  "canonicalize_mode": "t0",
+  "lr": 0.001,
+  "batch_size": 64,
+  "max_steps": 187500,
+  "global_step": 16900,
+  "best_step": 12025,
+  "early_stop_mode": "steps",
+  "early_stop_frac": 0.9,
+  "patience": 4700,
+  "wall_time_data_sec": 171.33142509986646,
+  "wall_time_train_sec": 4230.320761699928,
+  "extension_steps": null,
+  "hit_extension_budget": false,
+  "has_train_state": true,
+  "role": "lam_stage1",
+  "protocol": "v2",
+  "protocol_band": "B",
+  "val_snr_policy": "discrete_{-10,0,30}",
+  "screen_patience_steps": 4700,
+  "extension_steps_requested": null,
+  "wall_time_total_sec": 4401.958521499997
+}

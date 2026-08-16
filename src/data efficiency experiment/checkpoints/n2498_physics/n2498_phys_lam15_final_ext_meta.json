@@ -1,0 +1,39 @@
+{
+  "best_epoch": 212,
+  "best_score": 1.468330878019333,
+  "stopped_epoch": 237,
+  "lam": 15.0,
+  "trace_scale": 8.0,
+  "pulse_loss_mode": "raw",
+  "ambiguity_backend": "legacy",
+  "trace_loss_ref": "clean",
+  "device": "cuda",
+  "train_snr_db_range": [
+    0.0,
+    30.0
+  ],
+  "train_snr_db_values": null,
+  "val_snr_db_range": [
+    0.0,
+    30.0
+  ],
+  "val_snr_db_values": null,
+  "n_train": 2498,
+  "n_val": 200,
+  "seed": 0,
+  "loader_builder": "filtered_c1",
+  "canonicalize_mode": "t0",
+  "lr": 0.001,
+  "batch_size": 300,
+  "max_steps": 5400,
+  "global_step": 2133,
+  "best_step": 1908,
+  "early_stop_mode": "steps",
+  "early_stop_frac": 0.9,
+  "patience": 225,
+  "wall_time_data_sec": 29.24628739990294,
+  "wall_time_train_sec": 5046.85256020003,
+  "role": "final_lam15_extended",
+  "wall_time_total_sec": 5077.796980000101,
+  "note": "Extended max_steps=600*K so stop is likely via patience, not the previous 200*K ceiling."
+}

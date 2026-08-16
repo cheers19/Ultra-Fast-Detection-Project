@@ -189,6 +189,78 @@ def canonicalize_field_tstar(
     return e
 
 
+def canonicalize_field_mixed(
+    e_t: np.ndarray,
+    *,
+    phase_mode: str = "t0",
+    flip_mode: str = "re",
+    zero_index: int | None = None,
+) -> np.ndarray:
+    """
+    Mix phase-anchor and flip heuristics from the two generator notebooks.
+
+    ``phase_mode``:
+      - ``\"t0\"``: zero global phase at grid center (method 1 / ``canonicalize_field``)
+      - ``\"tstar\"``: zero global phase at peak |E| (method 2 / ``canonicalize_field_tstar``)
+
+    ``flip_mode``:
+      - ``\"re\"``: flip+conj if Re-area to the right of the phase anchor exceeds the left
+        (method 1)
+      - ``\"energy\"``: flip+conj if more than half of |E|^2 lies after the phase anchor
+        (method 2)
+
+    Always finishes with L2 normalization. Does not remove time-shift ambiguity.
+    """
+    if phase_mode not in ("t0", "tstar"):
+        raise ValueError(f"phase_mode must be 't0' or 'tstar' (got {phase_mode!r})")
+    if flip_mode not in ("re", "energy"):
+        raise ValueError(f"flip_mode must be 're' or 'energy' (got {flip_mode!r})")
+
+    e = np.asarray(e_t, dtype=np.complex128).copy()
+    n = e.shape[-1]
+    z_grid = n // 2 if zero_index is None else int(zero_index)
+
+    def _phase_anchor(field: np.ndarray) -> int:
+        if phase_mode == "tstar":
+            return _peak_amplitude_index(field)
+        return z_grid
+
+    anchor = _phase_anchor(e)
+    e = _remove_global_phase_at_index(e, anchor)
+
+    do_flip = False
+    if flip_mode == "re":
+        left = float(np.sum(e[:anchor].real))
+        right = float(np.sum(e[anchor + 1 :].real))
+        do_flip = right > left
+    else:
+        e2 = np.abs(e) ** 2
+        do_flip = float(np.sum(e2[anchor + 1 :])) > 0.5 * float(np.sum(e2))
+
+    if do_flip:
+        e = np.flip(e).conj()
+        anchor = _phase_anchor(e)
+        e = _remove_global_phase_at_index(e, anchor)
+
+    nrm = np.linalg.norm(e)
+    if nrm > 0:
+        e /= nrm
+    return e
+
+
+# Named mixes used by Data C canonicalization ablation:
+# (1) phase=t0, flip=re      → method 1 / method 1
+# (2) phase=t0, flip=energy  → method 1 / method 2
+# (3) phase=tstar, flip=re   → method 2 / method 1
+# (4) phase=tstar, flip=energy → method 2 / method 2
+CANON_MIX_MODES: dict[str, tuple[str, str]] = {
+    "t0_re": ("t0", "re"),
+    "t0_energy": ("t0", "energy"),
+    "tstar_re": ("tstar", "re"),
+    "tstar_energy": ("tstar", "energy"),
+}
+
+
 def delta_e_numpy(e_rec: np.ndarray, e_true: np.ndarray) -> float:
     """Complex overlap error δE (radians), phase-invariant."""
     e_rec = np.asarray(e_rec, dtype=np.complex128).ravel()
@@ -300,6 +372,267 @@ def best_l1_ambiguity_field(e_rec: np.ndarray, e_true: np.ndarray) -> np.ndarray
             best_phi = phi
     assert best_c is not None
     return apply_global_phase(best_c, best_phi)
+
+
+# ---------------------------------------------------------------------------
+# Fast best-ambiguity (batched GPU + FFT |E| shift). Legacy API above is kept.
+# ---------------------------------------------------------------------------
+
+
+def _best_shift_by_amplitude_fft(
+    e_rec: np.ndarray,
+    e_true: np.ndarray,
+    *,
+    max_shift: int | None = None,
+) -> int:
+    """Same objective as ``_best_shift_by_amplitude``, via linear FFT correlation."""
+    e_rec = np.asarray(e_rec, dtype=np.complex128).ravel()
+    e_true = np.asarray(e_true, dtype=np.complex128).ravel()
+    n = e_true.size
+    if e_rec.size != n:
+        raise ValueError("e_rec and e_true must have the same length")
+    lim = (n - 1) if max_shift is None else min(int(max_shift), n - 1)
+    a = np.abs(e_rec)
+    a_ref = np.abs(e_true)
+    ref_norm = float(np.linalg.norm(a_ref)) + 1e-30
+    n_fft = 2 * n - 1
+    c = np.fft.irfft(np.fft.rfft(a_ref, n_fft) * np.conj(np.fft.rfft(a, n_fft)), n_fft)
+    corr_full = np.concatenate([c[-(n - 1) :], c[:n]])  # lags -(n-1)..+(n-1)
+    lags = np.arange(-(n - 1), n)
+    a2 = a * a
+    csum = np.concatenate([[0.0], np.cumsum(a2)])
+    shift_norm = np.empty_like(corr_full)
+    for i, k in enumerate(lags):
+        if k >= 0:
+            shift_norm[i] = np.sqrt(csum[n - k] - csum[0] + 1e-30)
+        else:
+            shift_norm[i] = np.sqrt(csum[n] - csum[-k] + 1e-30)
+    scores = corr_full / (shift_norm * ref_norm)
+    mask = np.abs(lags) <= lim
+    best_i = int(np.argmax(np.where(mask, scores, -np.inf)))
+    return int(lags[best_i])
+
+
+def best_l1_ambiguity_params_fast(
+    e_rec: np.ndarray,
+    e_true: np.ndarray,
+    *,
+    n_phase: int = 128,
+    max_shift: int | None = None,
+) -> tuple[int, int, float]:
+    """Return ``(base_kind, shift, phi)`` with FFT shift search (legacy-equivalent)."""
+    e_true = np.asarray(e_true, dtype=np.complex128).ravel()
+    true_packed = pack_complex_field(e_true)
+    best_val = np.inf
+    best = (0, 0, 0.0)
+    for bi, base in enumerate(_ambiguity_bases(e_rec)):
+        k = _best_shift_by_amplitude_fft(base, e_true, max_shift=max_shift)
+        c = _shift_field_zeros(base, k)
+        phi = global_phase_min_l1(c, e_true, n_phase=n_phase)
+        val = _l1_packed_vs_true_packed(apply_global_phase(c, phi), true_packed)
+        if val < best_val:
+            best_val = val
+            best = (bi, int(k), float(phi))
+    return best
+
+
+def best_l1_ambiguity_fast(
+    e_rec: np.ndarray,
+    e_true: np.ndarray,
+    *,
+    n_phase: int = 128,
+    max_shift: int | None = None,
+) -> float:
+    """Fast best-ambiguity L1 (FFT |E| shift); same search space as ``best_l1_ambiguity``."""
+    bi, k, phi = best_l1_ambiguity_params_fast(
+        e_rec, e_true, n_phase=n_phase, max_shift=max_shift
+    )
+    base = _ambiguity_bases(e_rec)[bi]
+    return _l1_packed_vs_true_packed(
+        apply_global_phase(_shift_field_zeros(base, k), phi),
+        pack_complex_field(np.asarray(e_true, dtype=np.complex128).ravel()),
+    )
+
+
+def best_l1_ambiguity_field_fast(
+    e_rec: np.ndarray,
+    e_true: np.ndarray,
+    *,
+    n_phase: int = 128,
+    max_shift: int | None = None,
+) -> np.ndarray:
+    """Fast field variant of ``best_l1_ambiguity_field``."""
+    bi, k, phi = best_l1_ambiguity_params_fast(
+        e_rec, e_true, n_phase=n_phase, max_shift=max_shift
+    )
+    base = _ambiguity_bases(e_rec)[bi]
+    return apply_global_phase(_shift_field_zeros(base, k), phi)
+
+
+def best_l1_ambiguity_params_fast_torch(
+    E_pred: "torch.Tensor",
+    E_true: "torch.Tensor",
+    *,
+    n_phase: int = 128,
+    max_shift: int | None = None,
+) -> tuple["torch.Tensor", "torch.Tensor", "torch.Tensor"]:
+    """
+    Batched GPU best-ambiguity parameters.
+
+    Returns
+    -------
+    base_kind : LongTensor [B]  (0=id, 1=conj, 2=flip+conj)
+    shift : LongTensor [B]
+    phi : Tensor [B]
+    """
+    if torch is None:
+        raise ImportError("torch is required for best_l1_ambiguity_params_fast_torch")
+    if E_pred.ndim != 2 or E_true.ndim != 2:
+        raise ValueError("E_pred / E_true must be [B, 2N]")
+    bsz, two_n = E_pred.shape
+    n = two_n // 2
+    device = E_pred.device
+    dtype = E_pred.dtype
+
+    e = torch.complex(E_pred[:, :n], E_pred[:, n:])
+    e_t = torch.complex(E_true[:, :n], E_true[:, n:])
+    bases = torch.stack([e, torch.conj(e), torch.flip(torch.conj(e), dims=[-1])], dim=1)
+    a = torch.abs(bases)  # [B,3,N]
+    a_ref = torch.abs(e_t)  # [B,N]
+    lim = (n - 1) if max_shift is None else min(int(max_shift), n - 1)
+
+    n_fft = 2 * n - 1
+    A = torch.fft.rfft(a, n=n_fft)  # [B,3,F]
+    R = torch.fft.rfft(a_ref, n=n_fft).unsqueeze(1)  # [B,1,F]
+    c = torch.fft.irfft(R * torch.conj(A), n=n_fft)  # [B,3,n_fft]
+    corr_full = torch.cat([c[..., -(n - 1) :], c[..., :n]], dim=-1)  # lags -(n-1)..+(n-1)
+
+    a2 = a * a
+    csum = torch.cumsum(a2, dim=-1)
+    csum = torch.cat([torch.zeros(bsz, 3, 1, device=device, dtype=dtype), csum], dim=-1)
+    lags = torch.arange(-(n - 1), n, device=device)
+    # shift_norm[b,bi,i] for lag lags[i]
+    # k>=0: sqrt(csum[..., n-k] - csum[..., 0])
+    # k<0: sqrt(csum[..., n] - csum[..., -k])
+    k_pos = lags.clamp(min=0)
+    k_neg = (-lags).clamp(min=0)
+    # gather: for each lag index
+    idx_hi = (n - k_pos).long()  # for k>=0 use csum[n-k]; for k<0 unused
+    idx_lo = k_neg.long()  # for k<0 use csum[-k]
+    # Broadcast [2n-1] -> [B,3,2n-1]
+    csum_exp = csum  # [B,3,N+1]
+    # Build norms with a loop over lag dimension is OK for N=64; vectorize with gather
+    norms_sq = torch.empty(bsz, 3, 2 * n - 1, device=device, dtype=dtype)
+    for i, k in enumerate(range(-(n - 1), n)):
+        if k >= 0:
+            norms_sq[:, :, i] = csum_exp[:, :, n - k] - csum_exp[:, :, 0]
+        else:
+            norms_sq[:, :, i] = csum_exp[:, :, n] - csum_exp[:, :, -k]
+    shift_norm = torch.sqrt(norms_sq + 1e-30)
+    ref_norm = torch.linalg.vector_norm(a_ref, dim=-1).clamp_min(1e-30).view(bsz, 1, 1)
+    scores = corr_full / (shift_norm * ref_norm)
+    if lim < n - 1:
+        scores = scores.masked_fill(lags.abs().view(1, 1, -1) > lim, -1e30)
+    best_lag_idx = scores.argmax(dim=-1)  # [B,3]
+    best_k = lags[best_lag_idx]  # [B,3]
+
+    # Apply shifts (zero-pad) for each base, then phase grid L1
+    phis = torch.arange(int(n_phase), device=device, dtype=dtype) * (
+        2.0 * float(np.pi) / float(n_phase)
+    )
+    true_packed = E_true  # [B,2N]
+    best_base = torch.zeros(bsz, dtype=torch.long, device=device)
+    best_shift = torch.zeros(bsz, dtype=torch.long, device=device)
+    best_phi = torch.zeros(bsz, dtype=dtype, device=device)
+    best_val = torch.full((bsz,), float("inf"), device=device, dtype=dtype)
+
+    for bi in range(3):
+        base = bases[:, bi, :]  # [B,N]
+        k_b = best_k[:, bi]  # [B]
+        shifted = torch.zeros_like(base)
+        for b in range(bsz):
+            k = int(k_b[b].item())
+            if k == 0:
+                shifted[b] = base[b]
+            elif abs(k) >= n:
+                pass
+            elif k > 0:
+                shifted[b, k:] = base[b, : n - k]
+            else:
+                shifted[b, : n + k] = base[b, -k:]
+        # phase sweep: [B, n_phase, N]
+        rot = shifted.unsqueeze(1) * torch.exp(1j * phis.view(1, -1, 1))
+        packed = torch.cat([rot.real, rot.imag], dim=-1)  # [B,P,2N]
+        l1 = (packed - true_packed.unsqueeze(1)).abs().sum(dim=-1)  # [B,P]
+        phi_idx = l1.argmin(dim=-1)
+        val = l1.gather(1, phi_idx.unsqueeze(1)).squeeze(1)
+        phi = phis[phi_idx]
+        better = val < best_val
+        best_val = torch.where(better, val, best_val)
+        best_base = torch.where(better, torch.full_like(best_base, bi), best_base)
+        best_shift = torch.where(better, k_b, best_shift)
+        best_phi = torch.where(better, phi, best_phi)
+
+    return best_base, best_shift, best_phi
+
+
+def apply_ambiguity_params_torch(
+    E_pred: "torch.Tensor",
+    base_kind: "torch.Tensor",
+    shift: "torch.Tensor",
+    phi: "torch.Tensor",
+) -> "torch.Tensor":
+    """Apply per-sample ambiguity transforms to packed ``E_pred`` (differentiable w.r.t. E_pred)."""
+    if torch is None:
+        raise ImportError("torch is required")
+    bsz, two_n = E_pred.shape
+    n = two_n // 2
+    out = []
+    for i in range(bsz):
+        e = torch.complex(E_pred[i, :n], E_pred[i, n:])
+        bi = int(base_kind[i].item())
+        k = int(shift[i].item())
+        if bi == 1:
+            e = torch.conj(e)
+        elif bi == 2:
+            e = torch.flip(torch.conj(e), dims=[0])
+        if k == 0:
+            pass
+        elif abs(k) >= n:
+            e = torch.zeros_like(e)
+        elif k > 0:
+            out_e = torch.zeros_like(e)
+            out_e[k:] = e[: n - k]
+            e = out_e
+        else:
+            out_e = torch.zeros_like(e)
+            out_e[: n + k] = e[-k:]
+            e = out_e
+        e = e * torch.exp(1j * phi[i].to(dtype=E_pred.dtype))
+        out.append(torch.cat([e.real, e.imag], dim=0))
+    return torch.stack(out, dim=0)
+
+
+def align_pred_best_l1_ambiguity_torch_fast(
+    E_pred: "torch.Tensor",
+    E_true: "torch.Tensor",
+    *,
+    n_phase: int = 128,
+    max_shift: int | None = None,
+) -> "torch.Tensor":
+    """
+    Align packed predictions via fast batched best-ambiguity (FFT shift + GPU phase).
+
+    Discrete choice has no grad; applied transforms keep grad through ``E_pred``.
+    """
+    with torch.no_grad():
+        base_kind, shift, phi = best_l1_ambiguity_params_fast_torch(
+            E_pred.detach(),
+            E_true.detach(),
+            n_phase=n_phase,
+            max_shift=max_shift,
+        )
+    return apply_ambiguity_params_torch(E_pred, base_kind, shift, phi)
 
 
 def l1_packed_mae(

@@ -1,0 +1,36 @@
+{
+  "EXAMPLE_INDEX": 75,
+  "EXAMPLE_SNR_DB": 10.0,
+  "SEED": 0,
+  "N_TEST": 512,
+  "device": "cuda",
+  "tags": {
+    "physics_2k": "filtered_c1_multires_lam4p5",
+    "plain_2k": "filtered_c1_multires_lam0",
+    "plain_60k": "filtered_c1_multires_60k_lam0"
+  },
+  "metrics": [
+    {
+      "key": "physics_2k",
+      "l1_amb": 0.028490372002124786,
+      "sim_amb": 0.029420987884333893,
+      "t_l1_ms": 2.5430999230593443,
+      "t_sim_ms": 2.1222999785095453
+    },
+    {
+      "key": "plain_2k",
+      "l1_amb": 0.04596779868006706,
+      "sim_amb": 0.05884795281332622,
+      "t_l1_ms": 3.3638000022619963,
+      "t_sim_ms": 2.1788000594824553
+    },
+    {
+      "key": "plain_60k",
+      "l1_amb": 0.030638255178928375,
+      "sim_amb": 0.02202769950896355,
+      "t_l1_ms": 2.684399951249361,
+      "t_sim_ms": 2.127900021150708
+    }
+  ],
+  "note": "I_noisy included: bit-exact restore via arrays.npz (noise = I_noisy - I_clean)."
+}

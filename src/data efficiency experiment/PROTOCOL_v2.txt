@@ -1,0 +1,463 @@
+================================================================================
+Data-Efficiency Experiment — Training & Evaluation Protocol  (VERSION 2)
+================================================================================
+
+Status: PROTOCOL v2 (supersedes v1 rules for new runs; keep PROTOCOL.txt / .md
+as the historical v1 reference).
+
+Readable copies:
+  - PROTOCOL_v2.txt   (this file)
+  - PROTOCOL_v2.md    (markdown mirror)
+
+Code in this folder may import existing modules from the parent src directory
+(e.g. data_generation, dataset_utils, data_c_amb_loss_diagnostics, train,
+frognet). From notebooks or scripts here, run:
+
+  import setup_src_path  # adds parent src/ to sys.path
+
+Or keep the working directory as src. Prefer writing artifacts under this folder
+(checkpoints/, runs/) with paths anchored to this directory.
+
+Reference style for logging / plots / SNR sweep / test example @ 10 dB:
+  data efficiency experiment/plain_multires_n2498_NB.ipynb
+and the Multires 2K diagnostics notebook:
+  filtered_c1_multires_2k_diagnostics_NB.ipynb
+
+
+--------------------------------------------------------------------------------
+1. Experiment scope
+--------------------------------------------------------------------------------
+
+For each training size n_train below, train and evaluate:
+
+  1. Plain network:   lambda = 0
+  2. Physics network: lambda > 0 (TRACE loss term), with trace_scale = 8 always
+
+Training-set sizes (same campaign ladder as v1 unless revised later):
+
+  n_train in {300, 866, 2498, 7207, 20794, 60000}
+
+Process sizes from small to large. For each n:
+  plain (fixed LR, one train) -> physics (lambda tune per §5; then official
+  physics checkpoint per §5 band rules) -> shared test.
+
+DATA FAMILY (ALL MODELS):
+  Every plain and physics model — for every n_train — uses spectrally filtered
+  C1, matching filtered_c1_multires_2k_diagnostics_NB.ipynb
+  (FilteredC1PulseConfig / generate_pulses_filtered_c1 + physical FROGNet).
+  Do not mix in Data C / unfiltered C1 / other generators for this experiment.
+
+
+--------------------------------------------------------------------------------
+2. Shared fixed settings (all models, all n)
+--------------------------------------------------------------------------------
+
+  Architecture              Multires
+  Pulse / TRACE data        Filtered C1 ONLY (same generator as
+                            filtered_c1_multires_2k_diagnostics_NB.ipynb);
+                            used for train, val, and test for all models
+  Batch size B              64
+  drop_last                 False
+  Optimizer                 Adam
+  Learning rate (plain &
+  physics)                  1e-3  (fixed; same as
+                            filtered_c1_multires_2k_diagnostics_NB.ipynb;
+                            NO LR tuning in v2)
+  n_val                     200 — identical val set for every model and every n
+  n_test                    Fixed (e.g. 512) — identical test set for every
+                            model and every n
+  Train SNR                 Uniform in [0, 30] dB (resampled each use)
+  Val SNR                   Discrete set {-10, 0, 30} dB
+                            (NOT continuous U[0, 30]).
+                            Implementation: each val batch / val pass, sample
+                            SNR uniformly from {-10, 0, 30} dB
+                            (e.g. val_snr_db_values = [-10, 0, 30]).
+                            Same policy for plain and physics.
+  Selection metric          Validation pulse L1 after best ambiguity
+  K (steps/epoch)           K = ceil(n_train / B)   (informational; budgets
+                            below are absolute step counts, not 25*K formulas)
+  Early stopping            Validate every epoch (curves still plotted vs
+                            epoch). Stop when
+                            (current_step - t_best) >= patience_steps
+                            with patience_steps from §2.1 for plain, and from
+                            §2.1 or §5 (physics lambda screens) as specified.
+                            early_stop_mode = "steps"
+  Physics TRACE scale       trace_scale = 8 for all physics runs (do not use a
+                            data-dependent / calibrated scale)
+  Canonicalization          Same as diagnostics notebook (t0)
+  Seeds                     Train pulses may depend on n; val and test
+                            pulses/seeds fixed once and reused for all models
+
+
+--------------------------------------------------------------------------------
+2.1 Step budgets and patience (plain; physics defaults)
+--------------------------------------------------------------------------------
+
+Default budgets depend only on n_train (not on lambda). Same numbers for
+**plain** always, and for **physics** unless §5 overrides screen patience
+(and post-selection extension) for large-n lambda tuning.
+
+Both max_steps and patience_steps are operator-adjustable when you explicitly
+decide to change them for a given run; record any override in meta.
+
+  If n_train <= 3000:
+      max_steps       = 6400
+      patience_steps  = 800
+
+  If n_train > 3000:
+      max_steps       = 187500
+      patience_steps  = 23437
+
+Physics lambda-tuning overrides (screens only; see §5):
+  - If 6000 <= n_train < 45000: patience_steps = 4700 during lambda screens
+  - If n_train >= 45000:        patience_steps = 3000 during lambda screens
+  - If n_train < 6000:          no override — use §2.1 table as above
+
+max_steps during screens still follows the §2.1 band unless overridden in meta.
+(n_train = 45000 is treated with the >=45000 physics screen rules.)
+
+Implementation may set max_epochs = ceil(max_steps / K); early stop usually
+finishes sooner.
+
+Budget table (B = 64), campaign n_train (defaults; physics screen patience
+may differ — see “phys screen pat.”):
+
+  N       K      max_steps   patience_steps   phys screen pat.   notes
+  -----   ----   ---------   --------------   ----------------   -------------
+  300     5      6400        800              800 (no override)  n < 6000, §5.A
+  866     14     6400        800              800 (no override)  n < 6000, §5.A
+  2498    40     6400        800              800 (no override)  n < 6000, §5.A
+  7207    113    187500      23437            4700               §5.B mid band
+  20794   325    187500      23437            4700               §5.B mid band
+  60000   938    187500      23437            3000               §5.C large
+
+For comparison: Multires 2K diagnostics used B=64, MAX_EPOCHS=200
+(~6400 steps at n=2048), patience=25 epochs (~800 steps).
+
+
+--------------------------------------------------------------------------------
+3. Logging during training (plain and physics)
+--------------------------------------------------------------------------------
+
+Required for every training run that produces an official or screening
+checkpoint (same spirit as Multires 2K diagnostics and as
+plain_multires_n2498_NB.ipynb):
+
+Every epoch, record:
+
+  1. Pulse L1 (train & val): raw and best-ambiguity
+  2. TRACE L1 (train & val)
+  3. Gradient norms: ||grad L_data||, ||grad L_reg||, ||grad L_total||
+     For lambda = 0: total loss is L_data only; still compute ||grad L_reg||
+     for diagnostics and label it as not entering the loss.
+  4. Per-batch timings (ms/batch mean +/- over epochs):
+     data_prep_sec, loss_data_fwd_sec, loss_reg_fwd_sec,
+     total_backward_sec, optimizer_step_sec
+  5. Wall-clock: dataset generation time; total train time; time to best
+     checkpoint
+
+Reconstruction evolution snapshots
+----------------------------------
+Every 2 epochs (and also at best / stop if those epochs are odd):
+
+  - Fix one validation example for the whole experiment (same sample for all
+    models).
+  - Apply a fixed noisy TRACE at SNR = 10 dB (same noise realization across
+    epochs).
+  - Save I_noisy, E_true, E_pred (+ epoch / step).
+
+Hyperparameter-tuning runs (lambda screens)
+-------------------------------------------
+Required — same practice as physics_multires_n2498_NB.ipynb (coarse/fine
+"sanity curves"):
+
+For **every** lambda candidate (coarse and fine):
+  - Save the same per-epoch train/val histories as §3 (pulse L1 raw+amb,
+    TRACE L1, grads, timings).
+  - **Plot** train & val pulse L1 (raw + best-amb) and train & val TRACE L1
+    for that lambda (per-run sanity curves).
+  - For §5.B / §5.C: also save a **full train-state** checkpoint at stop
+    (see §5.0) so the winning run can be resumed exactly.
+
+Also **required**:
+  - Overlay figure of val best-amb pulse L1 vs epoch for all coarse lambdas.
+  - Overlay figure of val best-amb pulse L1 vs epoch for all screened lambdas
+    (coarse + fine, if any) before declaring lambda*.
+
+Do not declare lambda* without these screen curves and overlays.
+
+
+--------------------------------------------------------------------------------
+4. Plain network (lambda = 0)
+--------------------------------------------------------------------------------
+
+Goal: produce the official plain checkpoint for this n. No LR tuning.
+
+4.1 Fixed hyperparameters
+-------------------------
+  - lambda = 0
+  - LR = 1e-3   (as in filtered_c1_multires_2k_diagnostics_NB.ipynb)
+  - B, val SNR policy, max_steps, patience_steps: §2 / §2.1
+    (plain always uses the §2.1 table; not the §5 physics screen overrides)
+
+4.2 Procedure
+-------------
+  1. Train once with §2 settings, §2.1 budgets, and §3 logging + snapshots.
+  2. Save: best checkpoint, history (curves + grads + timings), snapshots,
+     meta (n, LR=1e-3, lambda=0, seeds, best/stop step, max_steps,
+     patience_steps, val SNR policy).
+
+There is no TRACE weight in the optimized loss (lambda = 0).
+
+
+--------------------------------------------------------------------------------
+5. Physics network (lambda > 0) — lambda tuning by n_train band
+--------------------------------------------------------------------------------
+
+Goal: choose lambda with fixed LR = 1e-3 and trace_scale = 8, then obtain the
+official physics checkpoint for this n. The procedure **depends on n_train**:
+
+  Band A:  n_train < 6000
+  Band B:  6000 <= n_train < 45000
+  Band C:  n_train >= 45000
+
+Loss form (all bands):
+
+  L = L_data + lambda * L_reg ,   where L_reg uses TRACE scale 8.
+
+5.0 Fixed for all physics runs + full train-state (bands B/C)
+-------------------------------------------------------------
+  - trace_scale = 8 always
+  - LR = 1e-3 (same as plain / diagnostics; do not retune)
+  - Selection metric: validation pulse L1 (best-amb), lower is better
+
+Full train-state checkpoint (required at end of every §5.B / §5.C screen run,
+and as the resume input for the post-selection extension). Save / load enough
+to continue **exactly** from the stop point, including at least:
+
+  - model.state_dict()
+  - optimizer.state_dict()          (Adam moments)
+  - RNG states: torch (CPU/CUDA), numpy, Python random
+  - global_step, epoch / stopped_epoch
+  - best_score, best_step, best_epoch, and best model weights
+  - early-stop bookkeeping needed for a seamless resume
+  - training history so far (to append during extension)
+  - hyperparams: lam, lr, trace_scale, patience_steps, max_steps, seeds, ...
+
+Optional but recommended if needed for bit-exact data order: DataLoader
+generator / worker seeds and any noise generators used in the train loop.
+
+Typical disk: Multires weights ~40 MB; Adam ~80 MB; full resume ~120 MB
+per lambda screen (RNG/meta negligible).
+
+
+--------------------------------------------------------------------------------
+5.A  Band A — n_train < 6000  (legacy lambda protocol)
+--------------------------------------------------------------------------------
+
+Same lambda protocol as earlier Protocol v2 (unchanged):
+
+  - max_steps / patience_steps: identical to §2.1 (same as plain for this n).
+    Screens use these full budgets — not a shorter screen budget.
+  - Coarse grid: lambda in {0.75, 1.5, 3, 6, 12} (optional extra point 15).
+  - Fine: geometric midpoints between the coarse winner and its coarse
+    neighbors; optionally one more bisection (2-4 fine points total).
+  - lambda* = argmin over coarse+fine of val best-amb pulse L1.
+  - Official physics model = **saved best checkpoint of that winning
+    screening run**.
+  - Do **not** start a new final training from scratch after selection
+    (unlike Protocol v1 §5.4). No post-selection step extension in Band A.
+  - Proceed to §6 on that checkpoint.
+
+
+--------------------------------------------------------------------------------
+5.B  Band B — 6000 <= n_train < 45000  (mid / large-data compact screen)
+--------------------------------------------------------------------------------
+
+Campaign examples: n_train in {7207, 20794}.
+
+Screen patience (overrides §2.1 patience for these physics screens only):
+
+  patience_steps = 4700
+
+max_steps still from §2.1 unless overridden in meta.
+
+Stage 1 — coarse screen only
+----------------------------
+  lambda in {0.6, 1.8, 4.3}
+
+  Train each with §2 / screen patience 4700 / §3 (+ full train-state at stop).
+  Rank by val pulse L1 (best-amb).
+
+Stage 2 — optional single geometric (engineering) mean
+-------------------------------------------------------
+  - If Stage-1 winner is an **edge** (0.6 or 4.3): **do not** add any further
+    lambda. lambda* is that edge value (best among the three Stage-1 runs).
+  - If Stage-1 winner is **1.8**: add **one** extra lambda =
+
+      sqrt( 1.8 * lam_side )
+
+    where lam_side is whichever of {0.6, 4.3} got the **worse** (higher)
+    Stage-1 val score. Train that extra point with the same screen budgets
+    and full train-state save.
+
+Stage 3 — declare lambda*
+-------------------------
+  - If no Stage-2 point: lambda* = best among the three Stage-1 lambdas.
+  - If Stage-2 ran: lambda* = best among all screened lambdas (the three
+    Stage-1 values plus the one geometric-mean value).
+  - Required overlays before declaring lambda* (§3).
+
+Stage 4 — exact resume extension of the winning run (+2000 steps)
+-----------------------------------------------------------------
+  - Load the **full train-state** of the winning lambda* screen (stop point).
+  - Remember screening best_score / best_step / best_epoch (and best weights).
+  - Continue training **exactly** from the saved stop state for **2000 more
+    optimizer steps** (append history; keep §3 logging / snapshots).
+  - During extension, update best_* whenever val best-amb improves.
+  - Official physics checkpoint = best weights over **screen + extension**
+    (report best_step, best_epoch, best_score, and stop step after extension).
+  - Do **not** retrain from scratch. Do **not** re-run other lambdas.
+
+
+--------------------------------------------------------------------------------
+5.C  Band C — n_train >= 45000  (largest compact screen)
+--------------------------------------------------------------------------------
+
+Campaign example: n_train = 60000. (n_train = 45000 uses this band.)
+
+Screen patience (overrides §2.1 patience for these physics screens only):
+
+  patience_steps = 3000
+
+max_steps still from §2.1 unless overridden in meta.
+
+Stage 1 — coarse screen only
+----------------------------
+  lambda in {0.6, 1.8, 3.5}
+
+  Train each with §2 / screen patience 3000 / §3 (+ full train-state at stop).
+  Rank by val pulse L1 (best-amb).
+
+Stage 2 — optional single geometric (engineering) mean
+-------------------------------------------------------
+  - If Stage-1 winner is an **edge** (0.6 or 3.5): **do not** add further
+    lambda. lambda* is that edge (best among the three Stage-1 runs).
+  - If Stage-1 winner is **1.8**: add **one** extra lambda =
+
+      sqrt( 1.8 * lam_side )
+
+    where lam_side is whichever of {0.6, 3.5} got the **worse** (higher)
+    Stage-1 val score. Same budgets + full train-state save.
+
+Stage 3 — declare lambda*
+-------------------------
+  Same rule as §5.B Stage 3 (best among Stage-1 three, or among Stage-1+one
+  fine if Stage-2 ran). Overlays required.
+
+Stage 4 — exact resume extension of the winning run (+1000 steps)
+-----------------------------------------------------------------
+  Same as §5.B Stage 4, except continue for **1000 more optimizer steps**
+  (not 2000). Official checkpoint = best over screen + extension.
+
+
+--------------------------------------------------------------------------------
+6. Evaluation (after each official checkpoint: plain + physics winner)
+--------------------------------------------------------------------------------
+
+Use the same held-out test set for every model. Required deliverables match
+Protocol v1 / plain_multires_n2498_NB.ipynb:
+
+  1. SNR sweep (same grid as the diagnostics notebook, e.g. [-10, 30] dB
+     step 5): report best-amb pulse L1 and similarity (and PCGPA if included
+     in the campaign).
+  2. Single test example @ SNR = 10 dB: clean TRACE, noisy TRACE, |E(t)|,
+     phase after best-amb — for plain and physics.
+  3. Summary row per model: n_train, plain/physics, LR, lambda (0 or
+     lambda*), trace_scale (8 if physics), best/stop step, max_steps,
+     patience_steps (and physics screen patience / extension steps if used),
+     key val/test metrics, wall-clock and mean batch timings.
+
+Also retain training-time logs from §3: timings, gradient norms, reconstruction
+evolution snapshots.
+
+
+--------------------------------------------------------------------------------
+7. Per-n checklist
+--------------------------------------------------------------------------------
+
+For a given n_train:
+
+  [ ] Build / load shared val (200) with SNR in {-10, 0, 30} dB; shared test;
+      train of size n
+  [ ] Confirm plain budget band: n<=3000 -> (6400, 800); else (187500, 23437)
+      unless you explicitly override and log the override
+  [ ] Confirm physics lambda band: A (n<6000) / B ([6000,45000)) / C (>=45000)
+  [ ] Plain: LR=1e-3, lambda=0; one train + full §3 logs + snapshots
+  [ ] Physics Band A: coarse {0.75,1.5,3,6,12} (+opt 15) -> fine bisection;
+      winner checkpoint = official (no retrain, no extension)
+  [ ] Physics Band B: patience=4700; coarse {0.6,1.8,4.3}; optional one
+      geometric mean if 1.8 wins vs worse edge; declare lambda*; exact-resume
+      +2000 steps; official = best(screen+extension)
+  [ ] Physics Band C: patience=3000; coarse {0.6,1.8,3.5}; optional one
+      geometric mean if 1.8 wins vs worse edge; declare lambda*; exact-resume
+      +1000 steps; official = best(screen+extension)
+  [ ] HP screens: per-lambda curves; overlays; full train-state saves (B/C)
+  [ ] Test SNR sweep + example @ 10 dB on plain and physics official
+  [ ] Archive meta and timings for cross-n comparison
+
+
+--------------------------------------------------------------------------------
+8. Fairness notes (do not violate)
+--------------------------------------------------------------------------------
+
+  - Same B=64, val set, test set, val SNR policy {-10,0,30}, early-stop rule
+    family, and architecture across models for a given n.
+  - Different K across n is expected; do not force equal step counts.
+  - Physics always uses trace_scale = 8.
+  - No LR tuning (plain or physics); LR fixed at 1e-3.
+  - Band A: official physics = lambda-screen winner (no scratch retrain).
+  - Bands B/C: official physics = best of (winning screen + exact-resume
+    extension); still no scratch retrain; other lambdas are not extended.
+  - Plain patience always follows §2.1; physics screen patience follows §5
+    when in Band B/C.
+  - Any further change to max_steps / patience_steps must be an explicit
+    operator decision and recorded in meta.
+
+
+--------------------------------------------------------------------------------
+9. Diff vs Protocol v1 (summary)
+--------------------------------------------------------------------------------
+
+  - B: 300 -> 64
+  - Plain: no LR grid; LR fixed 1e-3
+  - Budgets: absolute bands by n_train (<=3000 vs >3000), not 100*K / 200*K
+  - Val SNR: U[0,30] -> discrete {-10, 0, 30} dB
+  - Physics Band A (n<6000): lambda grid {0.75,1.5,3,6,12} (+opt 15) +
+    geometric bisection; official = screen winner (no scratch retrain)
+  - Physics Bands B/C (n>=6000): compact 3-point lambda grids, optional one
+    geometric-mean fine only if center wins; exact-resume short extension
+    after lambda* (+2000 / +1000 steps); full optimizer/RNG state saves
+  - Logging / SNR sweep / test@10 dB / snapshots / grads / timings: same
+    documentation requirements as v1
+
+
+--------------------------------------------------------------------------------
+10. Suggested artifact layout (under this folder)
+--------------------------------------------------------------------------------
+
+  data efficiency experiment/
+    PROTOCOL.txt               # v1 (historical)
+    PROTOCOL.md                # v1 (historical)
+    PROTOCOL_v2.txt            # this file
+    PROTOCOL_v2.md             # markdown mirror
+    setup_src_path.py
+    checkpoints/
+      v2/
+        n{n}_plain_lr1e-3/...
+        n{n}_phys_lam{lam}/...   # include *_train_state.pt for B/C screens
+    sweeps/                    # optional lambda screen summaries
+    figures/
+
+Use consistent tags including n, lam, lr, protocol=v2, band (A/B/C), and seed
+in filenames.

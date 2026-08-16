@@ -1,0 +1,28 @@
+{
+  "protocol": "v2",
+  "n_train": 7207,
+  "model": "plain",
+  "lambda": 0.0,
+  "LR": 0.001,
+  "batch_size": 64,
+  "max_steps": 187500,
+  "patience_steps": 23437,
+  "val_snr_values": [
+    -10.0,
+    0.0,
+    30.0
+  ],
+  "best_epoch": 104,
+  "best_step": 11752,
+  "best_score_val_amb": 1.7739677000045777,
+  "stopped_epoch": 312,
+  "global_step": 35256,
+  "wall_time_data_sec": 70.56518689985387,
+  "wall_time_train_sec": 9173.166316000046,
+  "device": "cuda",
+  "data": "filtered_c1",
+  "tag": "n7207_plain_lr1e-3_v2",
+  "snapshot_val_index": 0,
+  "snapshot_snr_db": 10.0,
+  "snapshot_noise_seed": 12345
+}

@@ -1,0 +1,400 @@
+device: cuda (NVIDIA RTX A2000 Laptop GPU)
+Data C: t_center_std=9.5 fs
+trace_scale = 7.7260
+stochastic pulses: 2048 train / 200 val / 512 test
+train SNR in [0, 30] dB; val @ 15 dB (n=200)
+
+--- lam = 0.0000 (1/5) ---
+  lam=0.0000  epoch 001/200  train_pulse_L1=5.82702  val_L1@15dB=5.13513  val_L1_amb=4.51178
+  lam=0.0000  epoch 002/200  train_pulse_L1=5.24744  val_L1@15dB=5.04748  val_L1_amb=4.34103
+  lam=0.0000  epoch 003/200  train_pulse_L1=5.13128  val_L1@15dB=4.78201  val_L1_amb=4.11978
+  lam=0.0000  epoch 004/200  train_pulse_L1=4.79227  val_L1@15dB=4.53732  val_L1_amb=3.78764
+  lam=0.0000  epoch 005/200  train_pulse_L1=4.61836  val_L1@15dB=4.45107  val_L1_amb=3.75742
+  lam=0.0000  epoch 006/200  train_pulse_L1=4.56217  val_L1@15dB=4.40040  val_L1_amb=3.70422
+  lam=0.0000  epoch 007/200  train_pulse_L1=4.52669  val_L1@15dB=4.33304  val_L1_amb=3.58179
+  lam=0.0000  epoch 008/200  train_pulse_L1=4.47497  val_L1@15dB=4.32192  val_L1_amb=3.60351
+  lam=0.0000  epoch 009/200  train_pulse_L1=4.41047  val_L1@15dB=4.25095  val_L1_amb=3.45232
+  lam=0.0000  epoch 010/200  train_pulse_L1=4.35581  val_L1@15dB=4.20511  val_L1_amb=3.30344
+  lam=0.0000  epoch 011/200  train_pulse_L1=4.31218  val_L1@15dB=4.17520  val_L1_amb=3.25484
+  lam=0.0000  epoch 012/200  train_pulse_L1=4.26722  val_L1@15dB=4.16864  val_L1_amb=3.19849
+  lam=0.0000  epoch 013/200  train_pulse_L1=4.21678  val_L1@15dB=4.11721  val_L1_amb=3.25719
+  lam=0.0000  epoch 014/200  train_pulse_L1=4.18295  val_L1@15dB=4.09705  val_L1_amb=3.22293
+  lam=0.0000  epoch 015/200  train_pulse_L1=4.13078  val_L1@15dB=4.10689  val_L1_amb=3.13251
+  lam=0.0000  epoch 016/200  train_pulse_L1=4.06442  val_L1@15dB=4.10167  val_L1_amb=3.05667
+  lam=0.0000  epoch 017/200  train_pulse_L1=4.03307  val_L1@15dB=4.09280  val_L1_amb=3.02651
+  lam=0.0000  epoch 018/200  train_pulse_L1=3.99488  val_L1@15dB=4.06827  val_L1_amb=3.08178
+  lam=0.0000  epoch 019/200  train_pulse_L1=3.94626  val_L1@15dB=4.06891  val_L1_amb=3.04617
+  lam=0.0000  epoch 020/200  train_pulse_L1=3.88394  val_L1@15dB=4.07751  val_L1_amb=3.03819
+  lam=0.0000  epoch 021/200  train_pulse_L1=3.82775  val_L1@15dB=4.08371  val_L1_amb=3.01050
+  lam=0.0000  epoch 022/200  train_pulse_L1=3.77683  val_L1@15dB=4.10252  val_L1_amb=3.01274
+  lam=0.0000  epoch 023/200  train_pulse_L1=3.72299  val_L1@15dB=4.08141  val_L1_amb=2.97860
+  lam=0.0000  epoch 024/200  train_pulse_L1=3.64999  val_L1@15dB=4.12629  val_L1_amb=2.94520
+  lam=0.0000  epoch 025/200  train_pulse_L1=3.56081  val_L1@15dB=4.13001  val_L1_amb=2.98633
+  lam=0.0000  epoch 026/200  train_pulse_L1=3.52029  val_L1@15dB=4.15046  val_L1_amb=2.96249
+  lam=0.0000  epoch 027/200  train_pulse_L1=3.39940  val_L1@15dB=4.14507  val_L1_amb=2.98327
+  lam=0.0000  epoch 028/200  train_pulse_L1=3.27927  val_L1@15dB=4.16176  val_L1_amb=2.94239
+  lam=0.0000  epoch 029/200  train_pulse_L1=3.24378  val_L1@15dB=4.29797  val_L1_amb=2.96804
+  lam=0.0000  epoch 030/200  train_pulse_L1=3.17263  val_L1@15dB=4.23983  val_L1_amb=3.06572
+  lam=0.0000  epoch 031/200  train_pulse_L1=3.04734  val_L1@15dB=4.26387  val_L1_amb=2.97909
+  lam=0.0000  epoch 032/200  train_pulse_L1=2.99927  val_L1@15dB=4.26427  val_L1_amb=2.98581
+  lam=0.0000  epoch 033/200  train_pulse_L1=2.92460  val_L1@15dB=4.28158  val_L1_amb=3.00114
+  lam=0.0000  epoch 034/200  train_pulse_L1=2.89370  val_L1@15dB=4.35216  val_L1_amb=3.05666
+  lam=0.0000  epoch 035/200  train_pulse_L1=2.77192  val_L1@15dB=4.41614  val_L1_amb=3.01768
+  lam=0.0000  epoch 036/200  train_pulse_L1=2.66911  val_L1@15dB=4.40305  val_L1_amb=3.06821
+  lam=0.0000  epoch 037/200  train_pulse_L1=2.60522  val_L1@15dB=4.48100  val_L1_amb=3.08614
+  lam=0.0000  epoch 038/200  train_pulse_L1=2.48607  val_L1@15dB=4.42170  val_L1_amb=3.02939
+  lam=0.0000  epoch 039/200  train_pulse_L1=2.47355  val_L1@15dB=4.47540  val_L1_amb=3.06166
+  lam=0.0000  epoch 040/200  train_pulse_L1=2.31598  val_L1@15dB=4.38964  val_L1_amb=3.01760
+  lam=0.0000  epoch 041/200  train_pulse_L1=2.34673  val_L1@15dB=4.47140  val_L1_amb=3.12018
+  lam=0.0000  epoch 042/200  train_pulse_L1=2.27203  val_L1@15dB=4.46880  val_L1_amb=3.10613
+  lam=0.0000  epoch 043/200  train_pulse_L1=2.16585  val_L1@15dB=4.43989  val_L1_amb=3.08590
+  early stop: no val improvement for 25 epochs; stopped at epoch 43, best epoch 18
+  lam=0.0000  best_epoch=18  best_val_L1=4.06827  best_val_L1_amb=3.08178
+
+--- lam = 0.7500 (2/5) ---
+  lam=0.7500  epoch 001/200  train_pulse_L1=6.57663  val_L1@15dB=5.45882  val_L1_amb=4.43808
+  lam=0.7500  epoch 002/200  train_pulse_L1=5.62066  val_L1@15dB=5.36687  val_L1_amb=4.26065
+  lam=0.7500  epoch 003/200  train_pulse_L1=5.57580  val_L1@15dB=5.49759  val_L1_amb=4.35437
+  lam=0.7500  epoch 004/200  train_pulse_L1=5.44780  val_L1@15dB=5.06241  val_L1_amb=3.97355
+  lam=0.7500  epoch 005/200  train_pulse_L1=5.12158  val_L1@15dB=4.90125  val_L1_amb=3.80940
+  lam=0.7500  epoch 006/200  train_pulse_L1=4.98345  val_L1@15dB=4.80840  val_L1_amb=3.69500
+  lam=0.7500  epoch 007/200  train_pulse_L1=4.89216  val_L1@15dB=4.76377  val_L1_amb=3.56210
+  lam=0.7500  epoch 008/200  train_pulse_L1=4.89096  val_L1@15dB=4.65061  val_L1_amb=3.48327
+  lam=0.7500  epoch 009/200  train_pulse_L1=4.83087  val_L1@15dB=4.64907  val_L1_amb=3.38934
+  lam=0.7500  epoch 010/200  train_pulse_L1=4.76357  val_L1@15dB=4.54284  val_L1_amb=3.22949
+  lam=0.7500  epoch 011/200  train_pulse_L1=4.73851  val_L1@15dB=4.53716  val_L1_amb=3.16137
+  lam=0.7500  epoch 012/200  train_pulse_L1=4.67828  val_L1@15dB=4.48495  val_L1_amb=3.09383
+  lam=0.7500  epoch 013/200  train_pulse_L1=4.64538  val_L1@15dB=4.42197  val_L1_amb=3.04575
+  lam=0.7500  epoch 014/200  train_pulse_L1=4.60684  val_L1@15dB=4.42219  val_L1_amb=2.98574
+  lam=0.7500  epoch 015/200  train_pulse_L1=4.55010  val_L1@15dB=4.39518  val_L1_amb=2.97591
+  lam=0.7500  epoch 016/200  train_pulse_L1=4.52739  val_L1@15dB=4.41095  val_L1_amb=2.91526
+  lam=0.7500  epoch 017/200  train_pulse_L1=4.49539  val_L1@15dB=4.38831  val_L1_amb=2.91157
+  lam=0.7500  epoch 018/200  train_pulse_L1=4.48213  val_L1@15dB=4.40991  val_L1_amb=2.90482
+  lam=0.7500  epoch 019/200  train_pulse_L1=4.43696  val_L1@15dB=4.35768  val_L1_amb=2.81149
+  lam=0.7500  epoch 020/200  train_pulse_L1=4.39994  val_L1@15dB=4.36134  val_L1_amb=2.81579
+  lam=0.7500  epoch 021/200  train_pulse_L1=4.40113  val_L1@15dB=4.36492  val_L1_amb=2.80487
+  lam=0.7500  epoch 022/200  train_pulse_L1=4.36302  val_L1@15dB=4.31801  val_L1_amb=2.70034
+  lam=0.7500  epoch 023/200  train_pulse_L1=4.30655  val_L1@15dB=4.29694  val_L1_amb=2.70714
+  lam=0.7500  epoch 024/200  train_pulse_L1=4.28777  val_L1@15dB=4.28021  val_L1_amb=2.69900
+  lam=0.7500  epoch 025/200  train_pulse_L1=4.27852  val_L1@15dB=4.33624  val_L1_amb=2.66834
+  lam=0.7500  epoch 026/200  train_pulse_L1=4.24094  val_L1@15dB=4.29102  val_L1_amb=2.69172
+  lam=0.7500  epoch 027/200  train_pulse_L1=4.19947  val_L1@15dB=4.30366  val_L1_amb=2.65874
+  lam=0.7500  epoch 028/200  train_pulse_L1=4.14679  val_L1@15dB=4.26744  val_L1_amb=2.63924
+  lam=0.7500  epoch 029/200  train_pulse_L1=4.13291  val_L1@15dB=4.26375  val_L1_amb=2.61249
+  lam=0.7500  epoch 030/200  train_pulse_L1=4.09482  val_L1@15dB=4.25275  val_L1_amb=2.59631
+  lam=0.7500  epoch 031/200  train_pulse_L1=4.07043  val_L1@15dB=4.32314  val_L1_amb=2.67232
+  lam=0.7500  epoch 032/200  train_pulse_L1=4.03251  val_L1@15dB=4.25363  val_L1_amb=2.57310
+  lam=0.7500  epoch 033/200  train_pulse_L1=4.01109  val_L1@15dB=4.18318  val_L1_amb=2.62161
+  lam=0.7500  epoch 034/200  train_pulse_L1=3.97568  val_L1@15dB=4.24588  val_L1_amb=2.56502
+  lam=0.7500  epoch 035/200  train_pulse_L1=3.92670  val_L1@15dB=4.26578  val_L1_amb=2.55991
+  lam=0.7500  epoch 036/200  train_pulse_L1=3.89045  val_L1@15dB=4.21325  val_L1_amb=2.58175
+  lam=0.7500  epoch 037/200  train_pulse_L1=3.85940  val_L1@15dB=4.26036  val_L1_amb=2.56446
+  lam=0.7500  epoch 038/200  train_pulse_L1=3.81839  val_L1@15dB=4.25150  val_L1_amb=2.55086
+  lam=0.7500  epoch 039/200  train_pulse_L1=3.78259  val_L1@15dB=4.26587  val_L1_amb=2.61515
+  lam=0.7500  epoch 040/200  train_pulse_L1=3.73819  val_L1@15dB=4.26846  val_L1_amb=2.57522
+  lam=0.7500  epoch 041/200  train_pulse_L1=3.67835  val_L1@15dB=4.21807  val_L1_amb=2.59042
+  lam=0.7500  epoch 042/200  train_pulse_L1=3.66025  val_L1@15dB=4.25911  val_L1_amb=2.59851
+  lam=0.7500  epoch 043/200  train_pulse_L1=3.67033  val_L1@15dB=4.25672  val_L1_amb=2.53867
+  lam=0.7500  epoch 044/200  train_pulse_L1=3.58872  val_L1@15dB=4.29822  val_L1_amb=2.55917
+  lam=0.7500  epoch 045/200  train_pulse_L1=3.55356  val_L1@15dB=4.29248  val_L1_amb=2.58630
+  lam=0.7500  epoch 046/200  train_pulse_L1=3.50711  val_L1@15dB=4.27487  val_L1_amb=2.56973
+  lam=0.7500  epoch 047/200  train_pulse_L1=3.45666  val_L1@15dB=4.30754  val_L1_amb=2.60726
+  lam=0.7500  epoch 048/200  train_pulse_L1=3.41886  val_L1@15dB=4.29190  val_L1_amb=2.57572
+  lam=0.7500  epoch 049/200  train_pulse_L1=3.39919  val_L1@15dB=4.25665  val_L1_amb=2.57163
+  lam=0.7500  epoch 050/200  train_pulse_L1=3.38677  val_L1@15dB=4.23499  val_L1_amb=2.57427
+  lam=0.7500  epoch 051/200  train_pulse_L1=3.31171  val_L1@15dB=4.23703  val_L1_amb=2.58686
+  lam=0.7500  epoch 052/200  train_pulse_L1=3.27074  val_L1@15dB=4.27706  val_L1_amb=2.60820
+  lam=0.7500  epoch 053/200  train_pulse_L1=3.20869  val_L1@15dB=4.25188  val_L1_amb=2.56628
+  lam=0.7500  epoch 054/200  train_pulse_L1=3.19359  val_L1@15dB=4.29422  val_L1_amb=2.65833
+  lam=0.7500  epoch 055/200  train_pulse_L1=3.13149  val_L1@15dB=4.29159  val_L1_amb=2.62484
+  lam=0.7500  epoch 056/200  train_pulse_L1=3.08732  val_L1@15dB=4.32548  val_L1_amb=2.65958
+  lam=0.7500  epoch 057/200  train_pulse_L1=3.08009  val_L1@15dB=4.33023  val_L1_amb=2.72032
+  lam=0.7500  epoch 058/200  train_pulse_L1=3.03477  val_L1@15dB=4.30285  val_L1_amb=2.67331
+  early stop: no val improvement for 25 epochs; stopped at epoch 58, best epoch 33
+  lam=0.7500  best_epoch=33  best_val_L1=4.18318  best_val_L1_amb=2.62161
+
+--- lam = 1.5000 (3/5) ---
+  lam=1.5000  epoch 001/200  train_pulse_L1=6.35018  val_L1@15dB=5.89028  val_L1_amb=4.63425
+  lam=1.5000  epoch 002/200  train_pulse_L1=5.75987  val_L1@15dB=5.61535  val_L1_amb=4.43504
+  lam=1.5000  epoch 003/200  train_pulse_L1=5.67710  val_L1@15dB=5.44953  val_L1_amb=4.33269
+  lam=1.5000  epoch 004/200  train_pulse_L1=5.57556  val_L1@15dB=5.22723  val_L1_amb=4.12589
+  lam=1.5000  epoch 005/200  train_pulse_L1=5.30098  val_L1@15dB=5.04668  val_L1_amb=3.94402
+  lam=1.5000  epoch 006/200  train_pulse_L1=5.18012  val_L1@15dB=5.06922  val_L1_amb=3.86124
+  lam=1.5000  epoch 007/200  train_pulse_L1=5.11422  val_L1@15dB=5.02691  val_L1_amb=3.81605
+  lam=1.5000  epoch 008/200  train_pulse_L1=5.08369  val_L1@15dB=4.87702  val_L1_amb=3.57086
+  lam=1.5000  epoch 009/200  train_pulse_L1=4.99207  val_L1@15dB=4.81251  val_L1_amb=3.42007
+  lam=1.5000  epoch 010/200  train_pulse_L1=4.91404  val_L1@15dB=4.73378  val_L1_amb=3.33413
+  lam=1.5000  epoch 011/200  train_pulse_L1=4.86084  val_L1@15dB=4.64962  val_L1_amb=3.19717
+  lam=1.5000  epoch 012/200  train_pulse_L1=4.82134  val_L1@15dB=4.59206  val_L1_amb=3.13858
+  lam=1.5000  epoch 013/200  train_pulse_L1=4.76324  val_L1@15dB=4.61344  val_L1_amb=3.08381
+  lam=1.5000  epoch 014/200  train_pulse_L1=4.71902  val_L1@15dB=5.27227  val_L1_amb=3.96925
+  lam=1.5000  epoch 015/200  train_pulse_L1=4.78764  val_L1@15dB=4.54924  val_L1_amb=3.06564
+  lam=1.5000  epoch 016/200  train_pulse_L1=4.69641  val_L1@15dB=4.49447  val_L1_amb=2.95343
+  lam=1.5000  epoch 017/200  train_pulse_L1=4.64945  val_L1@15dB=4.49159  val_L1_amb=2.92203
+  lam=1.5000  epoch 018/200  train_pulse_L1=4.61326  val_L1@15dB=4.46201  val_L1_amb=2.87290
+  lam=1.5000  epoch 019/200  train_pulse_L1=4.60106  val_L1@15dB=4.45880  val_L1_amb=2.86981
+  lam=1.5000  epoch 020/200  train_pulse_L1=4.59823  val_L1@15dB=4.46328  val_L1_amb=2.84967
+  lam=1.5000  epoch 021/200  train_pulse_L1=4.57232  val_L1@15dB=4.47752  val_L1_amb=2.82948
+  lam=1.5000  epoch 022/200  train_pulse_L1=4.54597  val_L1@15dB=4.44736  val_L1_amb=2.75689
+  lam=1.5000  epoch 023/200  train_pulse_L1=4.52696  val_L1@15dB=4.46680  val_L1_amb=2.79166
+  lam=1.5000  epoch 024/200  train_pulse_L1=4.50894  val_L1@15dB=4.43093  val_L1_amb=2.73302
+  lam=1.5000  epoch 025/200  train_pulse_L1=4.46619  val_L1@15dB=4.37395  val_L1_amb=2.66253
+  lam=1.5000  epoch 026/200  train_pulse_L1=4.45016  val_L1@15dB=4.37254  val_L1_amb=2.65554
+  lam=1.5000  epoch 027/200  train_pulse_L1=4.43453  val_L1@15dB=4.39054  val_L1_amb=2.64605
+  lam=1.5000  epoch 028/200  train_pulse_L1=4.38693  val_L1@15dB=4.33800  val_L1_amb=2.58518
+  lam=1.5000  epoch 029/200  train_pulse_L1=4.36376  val_L1@15dB=4.39276  val_L1_amb=2.62314
+  lam=1.5000  epoch 030/200  train_pulse_L1=4.34869  val_L1@15dB=4.35586  val_L1_amb=2.56309
+  lam=1.5000  epoch 031/200  train_pulse_L1=4.31063  val_L1@15dB=4.38803  val_L1_amb=2.56563
+  lam=1.5000  epoch 032/200  train_pulse_L1=4.30983  val_L1@15dB=4.39783  val_L1_amb=2.53689
+  lam=1.5000  epoch 033/200  train_pulse_L1=4.28207  val_L1@15dB=4.33533  val_L1_amb=2.55728
+  lam=1.5000  epoch 034/200  train_pulse_L1=4.26043  val_L1@15dB=4.37515  val_L1_amb=2.52683
+  lam=1.5000  epoch 035/200  train_pulse_L1=4.22468  val_L1@15dB=4.40498  val_L1_amb=2.54117
+  lam=1.5000  epoch 036/200  train_pulse_L1=4.19118  val_L1@15dB=4.38224  val_L1_amb=2.47898
+  lam=1.5000  epoch 037/200  train_pulse_L1=4.20171  val_L1@15dB=4.35284  val_L1_amb=2.51365
+  lam=1.5000  epoch 038/200  train_pulse_L1=4.14924  val_L1@15dB=4.38386  val_L1_amb=2.48216
+  lam=1.5000  epoch 039/200  train_pulse_L1=4.11169  val_L1@15dB=4.38563  val_L1_amb=2.48649
+  lam=1.5000  epoch 040/200  train_pulse_L1=4.09066  val_L1@15dB=4.38498  val_L1_amb=2.48506
+  lam=1.5000  epoch 041/200  train_pulse_L1=4.07733  val_L1@15dB=4.36851  val_L1_amb=2.47310
+  lam=1.5000  epoch 042/200  train_pulse_L1=4.04190  val_L1@15dB=4.43280  val_L1_amb=2.49885
+  lam=1.5000  epoch 043/200  train_pulse_L1=4.03273  val_L1@15dB=4.44926  val_L1_amb=2.56260
+  lam=1.5000  epoch 044/200  train_pulse_L1=4.00158  val_L1@15dB=4.39297  val_L1_amb=2.50121
+  lam=1.5000  epoch 045/200  train_pulse_L1=3.98766  val_L1@15dB=4.39307  val_L1_amb=2.49168
+  lam=1.5000  epoch 046/200  train_pulse_L1=3.96422  val_L1@15dB=4.41282  val_L1_amb=2.53527
+  lam=1.5000  epoch 047/200  train_pulse_L1=3.90244  val_L1@15dB=4.35771  val_L1_amb=2.45417
+  lam=1.5000  epoch 048/200  train_pulse_L1=3.89275  val_L1@15dB=4.37825  val_L1_amb=2.51094
+  lam=1.5000  epoch 049/200  train_pulse_L1=3.90009  val_L1@15dB=4.40010  val_L1_amb=2.47121
+  lam=1.5000  epoch 050/200  train_pulse_L1=3.85911  val_L1@15dB=4.41194  val_L1_amb=2.48219
+  lam=1.5000  epoch 051/200  train_pulse_L1=3.79861  val_L1@15dB=4.37297  val_L1_amb=2.44834
+  lam=1.5000  epoch 052/200  train_pulse_L1=3.75790  val_L1@15dB=4.36850  val_L1_amb=2.44906
+  lam=1.5000  epoch 053/200  train_pulse_L1=3.74961  val_L1@15dB=4.34665  val_L1_amb=2.46033
+  lam=1.5000  epoch 054/200  train_pulse_L1=3.74619  val_L1@15dB=4.40117  val_L1_amb=2.47198
+  lam=1.5000  epoch 055/200  train_pulse_L1=3.73284  val_L1@15dB=4.42388  val_L1_amb=2.50928
+  lam=1.5000  epoch 056/200  train_pulse_L1=3.69020  val_L1@15dB=4.41566  val_L1_amb=2.49975
+  lam=1.5000  epoch 057/200  train_pulse_L1=3.67521  val_L1@15dB=4.44571  val_L1_amb=2.52564
+  lam=1.5000  epoch 058/200  train_pulse_L1=3.62877  val_L1@15dB=4.38789  val_L1_amb=2.46873
+  early stop: no val improvement for 25 epochs; stopped at epoch 58, best epoch 33
+  lam=1.5000  best_epoch=33  best_val_L1=4.33533  best_val_L1_amb=2.55728
+
+--- lam = 2.2500 (4/5) ---
+  lam=2.2500  epoch 001/200  train_pulse_L1=6.45928  val_L1@15dB=5.99405  val_L1_amb=4.66978
+  lam=2.2500  epoch 002/200  train_pulse_L1=5.95320  val_L1@15dB=5.66485  val_L1_amb=4.51839
+  lam=2.2500  epoch 003/200  train_pulse_L1=5.76806  val_L1@15dB=5.51276  val_L1_amb=4.29475
+  lam=2.2500  epoch 004/200  train_pulse_L1=5.49868  val_L1@15dB=5.33644  val_L1_amb=4.16030
+  lam=2.2500  epoch 005/200  train_pulse_L1=5.36620  val_L1@15dB=5.31746  val_L1_amb=3.95353
+  lam=2.2500  epoch 006/200  train_pulse_L1=5.32048  val_L1@15dB=5.22717  val_L1_amb=3.85780
+  lam=2.2500  epoch 007/200  train_pulse_L1=5.26569  val_L1@15dB=5.07159  val_L1_amb=3.73962
+  lam=2.2500  epoch 008/200  train_pulse_L1=5.20194  val_L1@15dB=4.76584  val_L1_amb=3.64373
+  lam=2.2500  epoch 009/200  train_pulse_L1=5.25732  val_L1@15dB=5.01438  val_L1_amb=3.53484
+  lam=2.2500  epoch 010/200  train_pulse_L1=5.09941  val_L1@15dB=4.89025  val_L1_amb=3.37725
+  lam=2.2500  epoch 011/200  train_pulse_L1=5.01933  val_L1@15dB=4.94498  val_L1_amb=3.40957
+  lam=2.2500  epoch 012/200  train_pulse_L1=4.99872  val_L1@15dB=4.83469  val_L1_amb=3.30979
+  lam=2.2500  epoch 013/200  train_pulse_L1=4.94943  val_L1@15dB=4.76646  val_L1_amb=3.20802
+  lam=2.2500  epoch 014/200  train_pulse_L1=4.93306  val_L1@15dB=4.75250  val_L1_amb=3.19490
+  lam=2.2500  epoch 015/200  train_pulse_L1=4.88972  val_L1@15dB=4.70849  val_L1_amb=3.13752
+  lam=2.2500  epoch 016/200  train_pulse_L1=4.85313  val_L1@15dB=4.65931  val_L1_amb=3.06424
+  lam=2.2500  epoch 017/200  train_pulse_L1=4.81981  val_L1@15dB=4.68414  val_L1_amb=3.03492
+  lam=2.2500  epoch 018/200  train_pulse_L1=4.78655  val_L1@15dB=4.66714  val_L1_amb=2.99503
+  lam=2.2500  epoch 019/200  train_pulse_L1=4.77557  val_L1@15dB=4.57593  val_L1_amb=2.92709
+  lam=2.2500  epoch 020/200  train_pulse_L1=4.75078  val_L1@15dB=4.61056  val_L1_amb=2.84919
+  lam=2.2500  epoch 021/200  train_pulse_L1=4.71190  val_L1@15dB=4.59311  val_L1_amb=2.78275
+  lam=2.2500  epoch 022/200  train_pulse_L1=4.69409  val_L1@15dB=4.58456  val_L1_amb=2.77429
+  lam=2.2500  epoch 023/200  train_pulse_L1=4.66229  val_L1@15dB=4.62827  val_L1_amb=2.74648
+  lam=2.2500  epoch 024/200  train_pulse_L1=4.65614  val_L1@15dB=4.67012  val_L1_amb=2.81250
+  lam=2.2500  epoch 025/200  train_pulse_L1=4.64742  val_L1@15dB=4.57399  val_L1_amb=2.67706
+  lam=2.2500  epoch 026/200  train_pulse_L1=4.61315  val_L1@15dB=4.67434  val_L1_amb=2.71040
+  lam=2.2500  epoch 027/200  train_pulse_L1=4.61607  val_L1@15dB=4.57088  val_L1_amb=2.65606
+  lam=2.2500  epoch 028/200  train_pulse_L1=4.58957  val_L1@15dB=4.53459  val_L1_amb=2.57405
+  lam=2.2500  epoch 029/200  train_pulse_L1=4.56446  val_L1@15dB=4.62737  val_L1_amb=2.66300
+  lam=2.2500  epoch 030/200  train_pulse_L1=4.54701  val_L1@15dB=4.55233  val_L1_amb=2.60097
+  lam=2.2500  epoch 031/200  train_pulse_L1=4.54279  val_L1@15dB=4.55621  val_L1_amb=2.56892
+  lam=2.2500  epoch 032/200  train_pulse_L1=4.52310  val_L1@15dB=4.54861  val_L1_amb=2.54427
+  lam=2.2500  epoch 033/200  train_pulse_L1=4.49971  val_L1@15dB=4.56601  val_L1_amb=2.54939
+  lam=2.2500  epoch 034/200  train_pulse_L1=4.47789  val_L1@15dB=4.52821  val_L1_amb=2.54808
+  lam=2.2500  epoch 035/200  train_pulse_L1=4.46667  val_L1@15dB=4.49171  val_L1_amb=2.54074
+  lam=2.2500  epoch 036/200  train_pulse_L1=4.44991  val_L1@15dB=4.54045  val_L1_amb=2.53707
+  lam=2.2500  epoch 037/200  train_pulse_L1=4.42623  val_L1@15dB=4.53847  val_L1_amb=2.50605
+  lam=2.2500  epoch 038/200  train_pulse_L1=4.41045  val_L1@15dB=4.50342  val_L1_amb=2.48784
+  lam=2.2500  epoch 039/200  train_pulse_L1=4.38923  val_L1@15dB=4.48425  val_L1_amb=2.45988
+  lam=2.2500  epoch 040/200  train_pulse_L1=4.36480  val_L1@15dB=4.53533  val_L1_amb=2.49309
+  lam=2.2500  epoch 041/200  train_pulse_L1=4.36155  val_L1@15dB=4.52827  val_L1_amb=2.47443
+  lam=2.2500  epoch 042/200  train_pulse_L1=4.34241  val_L1@15dB=4.51769  val_L1_amb=2.46551
+  lam=2.2500  epoch 043/200  train_pulse_L1=4.31800  val_L1@15dB=4.51217  val_L1_amb=2.47039
+  lam=2.2500  epoch 044/200  train_pulse_L1=4.29235  val_L1@15dB=4.53153  val_L1_amb=2.45246
+  lam=2.2500  epoch 045/200  train_pulse_L1=4.27795  val_L1@15dB=4.55187  val_L1_amb=2.44662
+  lam=2.2500  epoch 046/200  train_pulse_L1=4.28263  val_L1@15dB=4.49386  val_L1_amb=2.40450
+  lam=2.2500  epoch 047/200  train_pulse_L1=4.24603  val_L1@15dB=4.54835  val_L1_amb=2.45270
+  lam=2.2500  epoch 048/200  train_pulse_L1=4.24066  val_L1@15dB=4.50991  val_L1_amb=2.45413
+  lam=2.2500  epoch 049/200  train_pulse_L1=4.22903  val_L1@15dB=4.46886  val_L1_amb=2.43835
+  lam=2.2500  epoch 050/200  train_pulse_L1=4.20568  val_L1@15dB=4.53336  val_L1_amb=2.43152
+  lam=2.2500  epoch 051/200  train_pulse_L1=4.18820  val_L1@15dB=4.48830  val_L1_amb=2.41952
+  lam=2.2500  epoch 052/200  train_pulse_L1=4.18367  val_L1@15dB=4.52976  val_L1_amb=2.46193
+  lam=2.2500  epoch 053/200  train_pulse_L1=4.15385  val_L1@15dB=4.52220  val_L1_amb=2.43271
+  lam=2.2500  epoch 054/200  train_pulse_L1=4.14372  val_L1@15dB=4.50891  val_L1_amb=2.41207
+  lam=2.2500  epoch 055/200  train_pulse_L1=4.12467  val_L1@15dB=4.48074  val_L1_amb=2.43081
+  lam=2.2500  epoch 056/200  train_pulse_L1=4.11446  val_L1@15dB=4.54400  val_L1_amb=2.41415
+  lam=2.2500  epoch 057/200  train_pulse_L1=4.09713  val_L1@15dB=4.50104  val_L1_amb=2.41679
+  lam=2.2500  epoch 058/200  train_pulse_L1=4.08668  val_L1@15dB=4.50709  val_L1_amb=2.39407
+  lam=2.2500  epoch 059/200  train_pulse_L1=4.06936  val_L1@15dB=4.54189  val_L1_amb=2.44347
+  lam=2.2500  epoch 060/200  train_pulse_L1=4.04059  val_L1@15dB=4.51965  val_L1_amb=2.39676
+  lam=2.2500  epoch 061/200  train_pulse_L1=4.03178  val_L1@15dB=4.53963  val_L1_amb=2.39992
+  lam=2.2500  epoch 062/200  train_pulse_L1=4.02691  val_L1@15dB=4.55359  val_L1_amb=2.45477
+  lam=2.2500  epoch 063/200  train_pulse_L1=4.03157  val_L1@15dB=4.55144  val_L1_amb=2.43016
+  lam=2.2500  epoch 064/200  train_pulse_L1=3.99455  val_L1@15dB=4.51936  val_L1_amb=2.40572
+  lam=2.2500  epoch 065/200  train_pulse_L1=3.98316  val_L1@15dB=4.49940  val_L1_amb=2.39995
+  lam=2.2500  epoch 066/200  train_pulse_L1=3.95612  val_L1@15dB=4.60225  val_L1_amb=2.41860
+  lam=2.2500  epoch 067/200  train_pulse_L1=3.94900  val_L1@15dB=4.56438  val_L1_amb=2.39476
+  lam=2.2500  epoch 068/200  train_pulse_L1=3.91662  val_L1@15dB=4.53194  val_L1_amb=2.40899
+  lam=2.2500  epoch 069/200  train_pulse_L1=3.93210  val_L1@15dB=4.53344  val_L1_amb=2.40365
+  lam=2.2500  epoch 070/200  train_pulse_L1=3.89077  val_L1@15dB=4.50179  val_L1_amb=2.40930
+  lam=2.2500  epoch 071/200  train_pulse_L1=3.86969  val_L1@15dB=4.54882  val_L1_amb=2.38333
+  lam=2.2500  epoch 072/200  train_pulse_L1=3.87025  val_L1@15dB=4.50778  val_L1_amb=2.40069
+  lam=2.2500  epoch 073/200  train_pulse_L1=3.85912  val_L1@15dB=4.53670  val_L1_amb=2.42543
+  lam=2.2500  epoch 074/200  train_pulse_L1=3.85238  val_L1@15dB=4.54515  val_L1_amb=2.40786
+  early stop: no val improvement for 25 epochs; stopped at epoch 74, best epoch 49
+  lam=2.2500  best_epoch=49  best_val_L1=4.46886  best_val_L1_amb=2.43835
+
+--- lam = 3.0000 (5/5) ---
+  lam=3.0000  epoch 001/200  train_pulse_L1=6.31439  val_L1@15dB=5.92109  val_L1_amb=4.67367
+  lam=3.0000  epoch 002/200  train_pulse_L1=5.94363  val_L1@15dB=5.58953  val_L1_amb=4.37416
+  lam=3.0000  epoch 003/200  train_pulse_L1=5.75475  val_L1@15dB=5.48467  val_L1_amb=4.14646
+  lam=3.0000  epoch 004/200  train_pulse_L1=5.56571  val_L1@15dB=5.47106  val_L1_amb=4.05616
+  lam=3.0000  epoch 005/200  train_pulse_L1=5.45596  val_L1@15dB=5.37181  val_L1_amb=3.93825
+  lam=3.0000  epoch 006/200  train_pulse_L1=5.41982  val_L1@15dB=5.18244  val_L1_amb=3.76852
+  lam=3.0000  epoch 007/200  train_pulse_L1=5.34761  val_L1@15dB=5.29727  val_L1_amb=3.76373
+  lam=3.0000  epoch 008/200  train_pulse_L1=5.28992  val_L1@15dB=5.08595  val_L1_amb=3.51917
+  lam=3.0000  epoch 009/200  train_pulse_L1=5.22938  val_L1@15dB=5.01197  val_L1_amb=3.47181
+  lam=3.0000  epoch 010/200  train_pulse_L1=5.16494  val_L1@15dB=4.93844  val_L1_amb=3.31347
+  lam=3.0000  epoch 011/200  train_pulse_L1=5.07661  val_L1@15dB=4.86806  val_L1_amb=3.18635
+  lam=3.0000  epoch 012/200  train_pulse_L1=5.03881  val_L1@15dB=4.87357  val_L1_amb=3.17072
+  lam=3.0000  epoch 013/200  train_pulse_L1=4.99423  val_L1@15dB=4.84875  val_L1_amb=3.12249
+  lam=3.0000  epoch 014/200  train_pulse_L1=4.98299  val_L1@15dB=4.84806  val_L1_amb=3.13365
+  lam=3.0000  epoch 015/200  train_pulse_L1=4.96762  val_L1@15dB=4.91035  val_L1_amb=3.11734
+  lam=3.0000  epoch 016/200  train_pulse_L1=4.94384  val_L1@15dB=4.77460  val_L1_amb=2.93096
+  lam=3.0000  epoch 017/200  train_pulse_L1=4.89470  val_L1@15dB=4.89490  val_L1_amb=2.98796
+  lam=3.0000  epoch 018/200  train_pulse_L1=4.87999  val_L1@15dB=4.81817  val_L1_amb=2.88692
+  lam=3.0000  epoch 019/200  train_pulse_L1=4.86522  val_L1@15dB=4.88607  val_L1_amb=2.91814
+  lam=3.0000  epoch 020/200  train_pulse_L1=4.86945  val_L1@15dB=4.80556  val_L1_amb=2.82856
+  lam=3.0000  epoch 021/200  train_pulse_L1=4.81282  val_L1@15dB=4.78729  val_L1_amb=2.76449
+  lam=3.0000  epoch 022/200  train_pulse_L1=4.79634  val_L1@15dB=4.73020  val_L1_amb=2.71612
+  lam=3.0000  epoch 023/200  train_pulse_L1=4.77774  val_L1@15dB=4.71346  val_L1_amb=2.69046
+  lam=3.0000  epoch 024/200  train_pulse_L1=4.76626  val_L1@15dB=4.73270  val_L1_amb=2.71172
+  lam=3.0000  epoch 025/200  train_pulse_L1=4.72412  val_L1@15dB=4.79406  val_L1_amb=2.69040
+  lam=3.0000  epoch 026/200  train_pulse_L1=4.71445  val_L1@15dB=4.75701  val_L1_amb=2.67421
+  lam=3.0000  epoch 027/200  train_pulse_L1=4.71330  val_L1@15dB=4.73327  val_L1_amb=2.61402
+  lam=3.0000  epoch 028/200  train_pulse_L1=4.69618  val_L1@15dB=4.73473  val_L1_amb=2.68667
+  lam=3.0000  epoch 029/200  train_pulse_L1=4.67406  val_L1@15dB=4.74506  val_L1_amb=2.60649
+  lam=3.0000  epoch 030/200  train_pulse_L1=4.64785  val_L1@15dB=4.71399  val_L1_amb=2.57433
+  lam=3.0000  epoch 031/200  train_pulse_L1=4.62824  val_L1@15dB=4.73794  val_L1_amb=2.59169
+  lam=3.0000  epoch 032/200  train_pulse_L1=4.60871  val_L1@15dB=4.72600  val_L1_amb=2.57577
+  lam=3.0000  epoch 033/200  train_pulse_L1=4.59060  val_L1@15dB=4.74617  val_L1_amb=2.60510
+  lam=3.0000  epoch 034/200  train_pulse_L1=4.57995  val_L1@15dB=4.64960  val_L1_amb=2.53002
+  lam=3.0000  epoch 035/200  train_pulse_L1=4.55652  val_L1@15dB=4.66162  val_L1_amb=2.50610
+  lam=3.0000  epoch 036/200  train_pulse_L1=4.54204  val_L1@15dB=4.68557  val_L1_amb=2.50820
+  lam=3.0000  epoch 037/200  train_pulse_L1=4.53575  val_L1@15dB=4.68107  val_L1_amb=2.49498
+  lam=3.0000  epoch 038/200  train_pulse_L1=4.51025  val_L1@15dB=4.69062  val_L1_amb=2.52600
+  lam=3.0000  epoch 039/200  train_pulse_L1=4.51113  val_L1@15dB=4.64928  val_L1_amb=2.52482
+  lam=3.0000  epoch 040/200  train_pulse_L1=4.49523  val_L1@15dB=4.67955  val_L1_amb=2.46463
+  lam=3.0000  epoch 041/200  train_pulse_L1=4.47462  val_L1@15dB=4.64441  val_L1_amb=2.44196
+  lam=3.0000  epoch 042/200  train_pulse_L1=4.45461  val_L1@15dB=4.71332  val_L1_amb=2.48758
+  lam=3.0000  epoch 043/200  train_pulse_L1=4.44424  val_L1@15dB=4.64044  val_L1_amb=2.46414
+  lam=3.0000  epoch 044/200  train_pulse_L1=4.42731  val_L1@15dB=4.66801  val_L1_amb=2.45567
+  lam=3.0000  epoch 045/200  train_pulse_L1=4.42775  val_L1@15dB=4.69103  val_L1_amb=2.50207
+  lam=3.0000  epoch 046/200  train_pulse_L1=4.40311  val_L1@15dB=4.71443  val_L1_amb=2.48704
+  lam=3.0000  epoch 047/200  train_pulse_L1=4.40425  val_L1@15dB=4.65522  val_L1_amb=2.46679
+  lam=3.0000  epoch 048/200  train_pulse_L1=4.37413  val_L1@15dB=4.66561  val_L1_amb=2.44841
+  lam=3.0000  epoch 049/200  train_pulse_L1=4.36509  val_L1@15dB=4.59879  val_L1_amb=2.49641
+  lam=3.0000  epoch 050/200  train_pulse_L1=4.36312  val_L1@15dB=4.64007  val_L1_amb=2.42852
+  lam=3.0000  epoch 051/200  train_pulse_L1=4.33500  val_L1@15dB=4.68079  val_L1_amb=2.45469
+  lam=3.0000  epoch 052/200  train_pulse_L1=4.35584  val_L1@15dB=4.57685  val_L1_amb=2.40431
+  lam=3.0000  epoch 053/200  train_pulse_L1=4.32610  val_L1@15dB=4.68057  val_L1_amb=2.41792
+  lam=3.0000  epoch 054/200  train_pulse_L1=4.29791  val_L1@15dB=4.64055  val_L1_amb=2.41579
+  lam=3.0000  epoch 055/200  train_pulse_L1=4.30126  val_L1@15dB=4.62913  val_L1_amb=2.43912
+  lam=3.0000  epoch 056/200  train_pulse_L1=4.27879  val_L1@15dB=4.67992  val_L1_amb=2.43540
+  lam=3.0000  epoch 057/200  train_pulse_L1=4.26042  val_L1@15dB=4.65459  val_L1_amb=2.47521
+  lam=3.0000  epoch 058/200  train_pulse_L1=4.26170  val_L1@15dB=4.66769  val_L1_amb=2.42551
+  lam=3.0000  epoch 059/200  train_pulse_L1=4.23604  val_L1@15dB=4.61500  val_L1_amb=2.42149
+  lam=3.0000  epoch 060/200  train_pulse_L1=4.22339  val_L1@15dB=4.60515  val_L1_amb=2.44635
+  lam=3.0000  epoch 061/200  train_pulse_L1=4.20980  val_L1@15dB=4.64443  val_L1_amb=2.45144
+  lam=3.0000  epoch 062/200  train_pulse_L1=4.20850  val_L1@15dB=4.65401  val_L1_amb=2.44561
+  lam=3.0000  epoch 063/200  train_pulse_L1=4.20282  val_L1@15dB=4.59581  val_L1_amb=2.39623
+  lam=3.0000  epoch 064/200  train_pulse_L1=4.19240  val_L1@15dB=4.66057  val_L1_amb=2.45596
+  lam=3.0000  epoch 065/200  train_pulse_L1=4.18997  val_L1@15dB=4.61573  val_L1_amb=2.43338
+  lam=3.0000  epoch 066/200  train_pulse_L1=4.15044  val_L1@15dB=4.59738  val_L1_amb=2.42226
+  lam=3.0000  epoch 067/200  train_pulse_L1=4.15580  val_L1@15dB=4.62842  val_L1_amb=2.39759
+  lam=3.0000  epoch 068/200  train_pulse_L1=4.14843  val_L1@15dB=4.63781  val_L1_amb=2.43762
+  lam=3.0000  epoch 069/200  train_pulse_L1=4.11917  val_L1@15dB=4.65110  val_L1_amb=2.44833
+  lam=3.0000  epoch 070/200  train_pulse_L1=4.14176  val_L1@15dB=4.65300  val_L1_amb=2.40813
+  lam=3.0000  epoch 071/200  train_pulse_L1=4.10342  val_L1@15dB=4.66043  val_L1_amb=2.46470
+  lam=3.0000  epoch 072/200  train_pulse_L1=4.08480  val_L1@15dB=4.61929  val_L1_amb=2.42067
+  lam=3.0000  epoch 073/200  train_pulse_L1=4.08540  val_L1@15dB=4.64339  val_L1_amb=2.43375
+  lam=3.0000  epoch 074/200  train_pulse_L1=4.08680  val_L1@15dB=4.59476  val_L1_amb=2.45931
+  lam=3.0000  epoch 075/200  train_pulse_L1=4.07351  val_L1@15dB=4.62509  val_L1_amb=2.45047
+  lam=3.0000  epoch 076/200  train_pulse_L1=4.06861  val_L1@15dB=4.68104  val_L1_amb=2.43937
+  lam=3.0000  epoch 077/200  train_pulse_L1=4.03559  val_L1@15dB=4.56570  val_L1_amb=2.41677
+  lam=3.0000  epoch 078/200  train_pulse_L1=4.04308  val_L1@15dB=4.62370  val_L1_amb=2.43754
+  lam=3.0000  epoch 079/200  train_pulse_L1=4.03623  val_L1@15dB=4.60043  val_L1_amb=2.42900
+  lam=3.0000  epoch 080/200  train_pulse_L1=4.03535  val_L1@15dB=4.58800  val_L1_amb=2.43202
+  lam=3.0000  epoch 081/200  train_pulse_L1=4.01383  val_L1@15dB=4.59911  val_L1_amb=2.42497
+  lam=3.0000  epoch 082/200  train_pulse_L1=3.99691  val_L1@15dB=4.60363  val_L1_amb=2.44497
+  lam=3.0000  epoch 083/200  train_pulse_L1=3.99137  val_L1@15dB=4.61033  val_L1_amb=2.43487
+  lam=3.0000  epoch 084/200  train_pulse_L1=3.96763  val_L1@15dB=4.62541  val_L1_amb=2.44687
+  lam=3.0000  epoch 085/200  train_pulse_L1=3.97160  val_L1@15dB=4.60411  val_L1_amb=2.44008
+  lam=3.0000  epoch 086/200  train_pulse_L1=3.97800  val_L1@15dB=4.60033  val_L1_amb=2.42571
+  lam=3.0000  epoch 087/200  train_pulse_L1=3.94480  val_L1@15dB=4.61031  val_L1_amb=2.41365
+  lam=3.0000  epoch 088/200  train_pulse_L1=3.94915  val_L1@15dB=4.61368  val_L1_amb=2.43009
+  lam=3.0000  epoch 089/200  train_pulse_L1=3.95478  val_L1@15dB=4.62304  val_L1_amb=2.45384
+  lam=3.0000  epoch 090/200  train_pulse_L1=3.92402  val_L1@15dB=4.58547  val_L1_amb=2.42936
+  lam=3.0000  epoch 091/200  train_pulse_L1=3.92934  val_L1@15dB=4.62006  val_L1_amb=2.44515
+  lam=3.0000  epoch 092/200  train_pulse_L1=3.91500  val_L1@15dB=4.59615  val_L1_amb=2.47194
+  lam=3.0000  epoch 093/200  train_pulse_L1=3.89463  val_L1@15dB=4.63423  val_L1_amb=2.43015
+  lam=3.0000  epoch 094/200  train_pulse_L1=3.89791  val_L1@15dB=4.63825  val_L1_amb=2.44164
+  lam=3.0000  epoch 095/200  train_pulse_L1=3.88133  val_L1@15dB=4.64587  val_L1_amb=2.46643
+  lam=3.0000  epoch 096/200  train_pulse_L1=3.88094  val_L1@15dB=4.57119  val_L1_amb=2.41974
+  lam=3.0000  epoch 097/200  train_pulse_L1=3.87217  val_L1@15dB=4.59560  val_L1_amb=2.46092
+  lam=3.0000  epoch 098/200  train_pulse_L1=3.85267  val_L1@15dB=4.59860  val_L1_amb=2.44064
+  lam=3.0000  epoch 099/200  train_pulse_L1=3.82649  val_L1@15dB=4.61620  val_L1_amb=2.42123
+  lam=3.0000  epoch 100/200  train_pulse_L1=3.85095  val_L1@15dB=4.59531  val_L1_amb=2.46669
+  lam=3.0000  epoch 101/200  train_pulse_L1=3.84827  val_L1@15dB=4.61234  val_L1_amb=2.43570
+  lam=3.0000  epoch 102/200  train_pulse_L1=3.84630  val_L1@15dB=4.58855  val_L1_amb=2.46150
+  early stop: no val improvement for 25 epochs; stopped at epoch 102, best epoch 77
+  lam=3.0000  best_epoch=77  best_val_L1=4.56570  best_val_L1_amb=2.41677
+
+All lambda checkpoints saved under D:\Haim\Haim 3rd paper\Ultra-Fast project\src\checkpoints\benchmark\stochastic_data_c_multires_2k_noisy_trace_lambda
+
+lambda* = 0.0000  (best val L1 = 4.06827)
+  at λ*: best val L1 (amb) @ best-raw epoch = 3.08178
+baseline λ = 0.0000  (best val L1 = 4.06827)
+Saved optimal checkpoint: D:\Haim\Haim 3rd paper\Ultra-Fast project\src\checkpoints\benchmark\stochastic_data_c_multires_2k_noisy_trace_lambda_opt.pt
+
+SNR sweep (λ*) on stochastic test (n=512) …
+CNN sweep @ -10.0 dB …
+CNN sweep @ -5.0 dB …
+CNN sweep @ 0.0 dB …
+CNN sweep @ 5.0 dB …
+CNN sweep @ 10.0 dB …
+CNN sweep @ 15.0 dB …
+CNN sweep @ 20.0 dB …
+CNN sweep @ 25.0 dB …
+CNN sweep @ 30.0 dB …
+Saved sweep: D:\Haim\Haim 3rd paper\Ultra-Fast project\src\checkpoints\benchmark\stochastic_data_c_multires_2k_noisy_trace_lambda_opt_sweep.npz
+
+SNR sweep (baseline λ=0.0000, no trace loss) …
+CNN sweep @ -10.0 dB …
+CNN sweep @ -5.0 dB …
+CNN sweep @ 0.0 dB …
+CNN sweep @ 5.0 dB …
+CNN sweep @ 10.0 dB …
+CNN sweep @ 15.0 dB …
+CNN sweep @ 20.0 dB …
+CNN sweep @ 25.0 dB …
+CNN sweep @ 30.0 dB …
+Saved baseline sweep: D:\Haim\Haim 3rd paper\Ultra-Fast project\src\checkpoints\benchmark\stochastic_data_c_multires_2k_noisy_trace_lambda_baseline_sweep.npz
+
+Test eval λ* @ 0 dB SNR (n=512) …
+Saved eval: D:\Haim\Haim 3rd paper\Ultra-Fast project\src\checkpoints\benchmark\stochastic_data_c_multires_2k_trace_test_0db.npz
+  L1 (best amb)     = 3.1878 ± 0.9513
+  SIMILARITY (best) = 0.1259 ± 0.0888
+
+Done in 1108s
+Saved: D:\Haim\Haim 3rd paper\Ultra-Fast project\src\checkpoints\benchmark\stochastic_data_c_multires_2k_noisy_trace_lambda.npz
+Meta:  D:\Haim\Haim 3rd paper\Ultra-Fast project\src\checkpoints\benchmark\stochastic_data_c_multires_2k_noisy_trace_lambda_meta.json

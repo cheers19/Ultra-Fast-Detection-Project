@@ -1,0 +1,54 @@
+[NbConvertApp] Converting notebook SHG_intensity_map_NB.ipynb to notebook
+[NbConvertApp] ERROR | Notebook JSON is invalid: 'name' is a required property
+
+Failed validating 'required' in stream:
+
+On instance['cells'][1]['outputs'][0]:
+{'output_type': 'stream',
+ 'text': 'carbon data: d:\\Haim\\Haim 3rd paper\\Ultra-Fast '
+         'project\\src\\shg_c...'}
+[NbConvertApp] ERROR | Notebook is invalid after preprocessor <nbconvert.preprocessors.tagremove.TagRemovePreprocessor object at 0x0000019DD02F8110>
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "C:\Users\SharonLab\miniconda3\Scripts\jupyter-nbconvert.EXE\__main__.py", line 7, in <module>
+  File "C:\Users\SharonLab\miniconda3\Lib\site-packages\jupyter_core\application.py", line 283, in launch_instance
+    super().launch_instance(argv=argv, **kwargs)
+  File "C:\Users\SharonLab\miniconda3\Lib\site-packages\traitlets\config\application.py", line 1075, in launch_instance
+    app.start()
+  File "C:\Users\SharonLab\miniconda3\Lib\site-packages\nbconvert\nbconvertapp.py", line 420, in start
+    self.convert_notebooks()
+  File "C:\Users\SharonLab\miniconda3\Lib\site-packages\nbconvert\nbconvertapp.py", line 597, in convert_notebooks
+    self.convert_single_notebook(notebook_filename)
+  File "C:\Users\SharonLab\miniconda3\Lib\site-packages\nbconvert\nbconvertapp.py", line 563, in convert_single_notebook
+    output, resources = self.export_single_notebook(
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SharonLab\miniconda3\Lib\site-packages\nbconvert\nbconvertapp.py", line 487, in export_single_notebook
+    output, resources = self.exporter.from_filename(
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SharonLab\miniconda3\Lib\site-packages\nbconvert\exporters\exporter.py", line 201, in from_filename
+    return self.from_file(f, resources=resources, **kw)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SharonLab\miniconda3\Lib\site-packages\nbconvert\exporters\exporter.py", line 220, in from_file
+    return self.from_notebook_node(
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SharonLab\miniconda3\Lib\site-packages\nbconvert\exporters\notebook.py", line 36, in from_notebook_node
+    nb_copy, resources = super().from_notebook_node(nb, resources, **kw)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SharonLab\miniconda3\Lib\site-packages\nbconvert\exporters\exporter.py", line 154, in from_notebook_node
+    nb_copy, resources = self._preprocess(nb_copy, resources)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\SharonLab\miniconda3\Lib\site-packages\nbconvert\exporters\exporter.py", line 355, in _preprocess
+    self._validate_preprocessor(nbc, preprocessor)
+  File "C:\Users\SharonLab\miniconda3\Lib\site-packages\nbconvert\exporters\exporter.py", line 322, in _validate_preprocessor
+    nbformat.validate(nbc, relax_add_props=True)
+  File "C:\Users\SharonLab\miniconda3\Lib\site-packages\nbformat\validator.py", line 509, in validate
+    raise error
+nbformat.validator.NotebookValidationError: 'name' is a required property
+
+Failed validating 'required' in stream:
+
+On instance['cells'][1]['outputs'][0]:
+{'output_type': 'stream',
+ 'text': 'carbon data: d:\\Haim\\Haim 3rd paper\\Ultra-Fast '
+         'project\\src\\shg_c...'}

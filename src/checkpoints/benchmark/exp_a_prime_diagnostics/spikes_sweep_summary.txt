@@ -1,0 +1,6 @@
+N_spikes sweep (n_train=2048, lambda=0):
+name                                         valL1      hiL1     hiSim    ep
+phase3_spikes_30_n2048                      5.9887    5.0057    0.2325    17
+phase3_spikes_100_n2048                     5.7327    4.4746    0.1909    17
+phase3_spikes_300_n2048                     5.0392    4.1735    0.1711    19
+phase3_spikes_800_n2048                     4.9032    3.6407    0.1342    21

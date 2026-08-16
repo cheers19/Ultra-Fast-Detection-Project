@@ -1,0 +1,153 @@
+{
+  "protocol": "v2",
+  "LR": 0.001,
+  "TRACE_SCALE": 8.0,
+  "LAM_STAR": 6.0,
+  "TAG_STAR": "n300_phys_lam6_v2",
+  "coarse_rows": [
+    {
+      "lam": 1.5,
+      "tag": "n300_phys_lam1p5_v2",
+      "role": "lam_coarse",
+      "best_score": 2.045182940661907,
+      "best_epoch": 201,
+      "best_step": 1005,
+      "stopped_epoch": 361,
+      "global_step": 1805
+    },
+    {
+      "lam": 3.0,
+      "tag": "n300_phys_lam3_v2",
+      "role": "lam_coarse",
+      "best_score": 1.9549260693788528,
+      "best_epoch": 323,
+      "best_step": 1615,
+      "stopped_epoch": 483,
+      "global_step": 2415
+    },
+    {
+      "lam": 6.0,
+      "tag": "n300_phys_lam6_v2",
+      "role": "lam_coarse",
+      "best_score": 1.8814876091480255,
+      "best_epoch": 257,
+      "best_step": 1285,
+      "stopped_epoch": 417,
+      "global_step": 2085
+    },
+    {
+      "lam": 12.0,
+      "tag": "n300_phys_lam12_v2",
+      "role": "lam_coarse",
+      "best_score": 1.919073854982853,
+      "best_epoch": 441,
+      "best_step": 2205,
+      "stopped_epoch": 601,
+      "global_step": 3005
+    },
+    {
+      "lam": 15.0,
+      "tag": "n300_phys_lam15_v2",
+      "role": "lam_coarse",
+      "best_score": 2.0260005742311478,
+      "best_epoch": 365,
+      "best_step": 1825,
+      "stopped_epoch": 525,
+      "global_step": 2625
+    }
+  ],
+  "fine_rows": [
+    {
+      "lam": 4.242640687119285,
+      "tag": "n300_phys_lam4p24264_v2",
+      "role": "lam_fine",
+      "best_score": 1.9317869326472283,
+      "best_epoch": 465,
+      "best_step": 2325,
+      "stopped_epoch": 625,
+      "global_step": 3125
+    },
+    {
+      "lam": 8.48528137423857,
+      "tag": "n300_phys_lam8p48528_v2",
+      "role": "lam_fine",
+      "best_score": 1.9122884699702263,
+      "best_epoch": 304,
+      "best_step": 1520,
+      "stopped_epoch": 464,
+      "global_step": 2320
+    }
+  ],
+  "rows": [
+    {
+      "lam": 1.5,
+      "tag": "n300_phys_lam1p5_v2",
+      "role": "lam_coarse",
+      "best_score": 2.045182940661907,
+      "best_epoch": 201,
+      "best_step": 1005,
+      "stopped_epoch": 361,
+      "global_step": 1805
+    },
+    {
+      "lam": 3.0,
+      "tag": "n300_phys_lam3_v2",
+      "role": "lam_coarse",
+      "best_score": 1.9549260693788528,
+      "best_epoch": 323,
+      "best_step": 1615,
+      "stopped_epoch": 483,
+      "global_step": 2415
+    },
+    {
+      "lam": 6.0,
+      "tag": "n300_phys_lam6_v2",
+      "role": "lam_coarse",
+      "best_score": 1.8814876091480255,
+      "best_epoch": 257,
+      "best_step": 1285,
+      "stopped_epoch": 417,
+      "global_step": 2085
+    },
+    {
+      "lam": 12.0,
+      "tag": "n300_phys_lam12_v2",
+      "role": "lam_coarse",
+      "best_score": 1.919073854982853,
+      "best_epoch": 441,
+      "best_step": 2205,
+      "stopped_epoch": 601,
+      "global_step": 3005
+    },
+    {
+      "lam": 15.0,
+      "tag": "n300_phys_lam15_v2",
+      "role": "lam_coarse",
+      "best_score": 2.0260005742311478,
+      "best_epoch": 365,
+      "best_step": 1825,
+      "stopped_epoch": 525,
+      "global_step": 2625
+    },
+    {
+      "lam": 4.242640687119285,
+      "tag": "n300_phys_lam4p24264_v2",
+      "role": "lam_fine",
+      "best_score": 1.9317869326472283,
+      "best_epoch": 465,
+      "best_step": 2325,
+      "stopped_epoch": 625,
+      "global_step": 3125
+    },
+    {
+      "lam": 8.48528137423857,
+      "tag": "n300_phys_lam8p48528_v2",
+      "role": "lam_fine",
+      "best_score": 1.9122884699702263,
+      "best_epoch": 304,
+      "best_step": 1520,
+      "stopped_epoch": 464,
+      "global_step": 2320
+    }
+  ]
+}

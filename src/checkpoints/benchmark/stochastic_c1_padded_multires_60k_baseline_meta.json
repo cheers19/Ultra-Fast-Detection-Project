@@ -1,0 +1,13 @@
+{
+  "best_epoch": 8,
+  "stopped_epoch": 33,
+  "best_val_l1": 4.508170204162598,
+  "lam": 0.0,
+  "n_train": 60000,
+  "pulse_kind": "stochastic_c1_padded_tstar",
+  "n_fft": 128,
+  "wall_time_sec": 1732.9368867000157,
+  "data_generation_sec": 185.23783150000963,
+  "device": "cuda",
+  "cuda_name": "NVIDIA RTX A2000 Laptop GPU"
+}

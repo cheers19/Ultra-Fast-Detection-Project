@@ -1,0 +1,146 @@
+{
+  "checkpoint": "checkpoints\\benchmark\\data_c_amb_loss_diagnostics\\model_a_raw_pulse_loss_model.pt",
+  "device": "cuda",
+  "n_warmup": 2,
+  "n_repeat": 5,
+  "validation": {
+    "n_samples": 200,
+    "snr_db_range": [
+      -10.0,
+      30.0
+    ],
+    "verify": {
+      "n_checked": 64,
+      "max_abs_l1_diff_legacy_vs_fast": 0.0
+    },
+    "forward": {
+      "mean_sec": 0.053328340011648837,
+      "std_sec": 0.00025200908930759407,
+      "min_sec": 0.05310520005878061,
+      "max_sec": 0.05380630004219711
+    },
+    "legacy_torch": {
+      "mean_sec": 0.6597524000331759,
+      "std_sec": 0.02040424030952784,
+      "min_sec": 0.6363575001014397,
+      "max_sec": 0.6923562000738457
+    },
+    "fast_torch": {
+      "mean_sec": 0.16040358000900595,
+      "std_sec": 0.014013537920986679,
+      "min_sec": 0.13282940001226962,
+      "max_sec": 0.17058069992344826
+    },
+    "legacy_numpy": {
+      "mean_sec": 0.5640211000107229,
+      "std_sec": 0.03542561289241042,
+      "min_sec": 0.5337105999933556,
+      "max_sec": 0.6332398999948055
+    },
+    "forward_ms_per_sample": 0.2666417000582442,
+    "legacy_torch_ms_per_sample": 3.2987620001658797,
+    "fast_torch_ms_per_sample": 0.8020179000450297,
+    "legacy_numpy_ms_per_sample": 2.820105500053615,
+    "speedup_legacy_torch_vs_fast": 4.113077775422056,
+    "speedup_legacy_numpy_vs_fast": 3.5162625421393687
+  },
+  "test_snr_sweep": {
+    "snr_points": [
+      -10.0,
+      -5.0,
+      0.0,
+      5.0,
+      10.0,
+      15.0,
+      20.0,
+      25.0,
+      30.0
+    ],
+    "n_samples_per_point": 512,
+    "n_points": 9,
+    "per_snr": [
+      {
+        "snr_db": -10.0,
+        "n_samples": 512,
+        "forward_mean_sec": 0.13305293334027132,
+        "legacy_torch_mean_sec": 1.6945996000043426,
+        "fast_torch_mean_sec": 0.5190852999997636,
+        "legacy_numpy_mean_sec": 1.4034847000148147
+      },
+      {
+        "snr_db": -5.0,
+        "n_samples": 512,
+        "forward_mean_sec": 0.13323273335117847,
+        "legacy_torch_mean_sec": 1.6489928000373766,
+        "fast_torch_mean_sec": 0.5443605332790563,
+        "legacy_numpy_mean_sec": 1.3869722666374098
+      },
+      {
+        "snr_db": 0.0,
+        "n_samples": 512,
+        "forward_mean_sec": 0.1328627000330016,
+        "legacy_torch_mean_sec": 1.6509401000415285,
+        "fast_torch_mean_sec": 0.5165027333423495,
+        "legacy_numpy_mean_sec": 1.408712933305651
+      },
+      {
+        "snr_db": 5.0,
+        "n_samples": 512,
+        "forward_mean_sec": 0.13294973333055773,
+        "legacy_torch_mean_sec": 1.6366275666902463,
+        "fast_torch_mean_sec": 0.5135576333462571,
+        "legacy_numpy_mean_sec": 1.4026535333832726
+      },
+      {
+        "snr_db": 10.0,
+        "n_samples": 512,
+        "forward_mean_sec": 0.1328480333322659,
+        "legacy_torch_mean_sec": 1.6499842666477587,
+        "fast_torch_mean_sec": 0.5116461333818734,
+        "legacy_numpy_mean_sec": 1.3858581333576392
+      },
+      {
+        "snr_db": 15.0,
+        "n_samples": 512,
+        "forward_mean_sec": 0.13277453335467726,
+        "legacy_torch_mean_sec": 1.6615489666194965,
+        "fast_torch_mean_sec": 0.5038363333248222,
+        "legacy_numpy_mean_sec": 1.3999929332640022
+      },
+      {
+        "snr_db": 20.0,
+        "n_samples": 512,
+        "forward_mean_sec": 0.1331532000331208,
+        "legacy_torch_mean_sec": 1.649779333267361,
+        "fast_torch_mean_sec": 0.5192738333328938,
+        "legacy_numpy_mean_sec": 1.3958778666565195
+      },
+      {
+        "snr_db": 25.0,
+        "n_samples": 512,
+        "forward_mean_sec": 0.13260086664619544,
+        "legacy_torch_mean_sec": 1.6515056000013526,
+        "fast_torch_mean_sec": 0.5252996999770403,
+        "legacy_numpy_mean_sec": 1.4429534332981955
+      },
+      {
+        "snr_db": 30.0,
+        "n_samples": 512,
+        "forward_mean_sec": 0.1332542666544517,
+        "legacy_torch_mean_sec": 1.701279199992617,
+        "fast_torch_mean_sec": 0.5085069665995737,
+        "legacy_numpy_mean_sec": 1.3976986999235426
+      }
+    ],
+    "total_forward_sec": 1.1967290000757203,
+    "total_legacy_torch_sec": 14.94525743330208,
+    "total_fast_torch_sec": 4.66206916658363,
+    "total_legacy_numpy_sec": 12.624204499841047,
+    "total_samples": 4608,
+    "legacy_torch_ms_per_sample": 3.243328436046458,
+    "fast_torch_ms_per_sample": 1.0117337601092948,
+    "legacy_numpy_ms_per_sample": 2.739627712639116,
+    "speedup_legacy_torch_vs_fast": 3.2057133644488554,
+    "speedup_legacy_numpy_vs_fast": 2.7078543987137107
+  }
+}

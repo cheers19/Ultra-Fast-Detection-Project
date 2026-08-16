@@ -1,0 +1,132 @@
+================================================================================
+PROMPT: Estimate convergence rate vs SNR from an SNR-sweep curve
+         under a normality assumption
+================================================================================
+
+Language: English
+Purpose: Given plotted or tabulated SNR-sweep results (mean and std of a
+         reconstruction error at each SNR), estimate the convergence rate at
+         each SNR without recomputing per-pulse metrics, by assuming that the
+         per-pulse errors at a fixed SNR are approximately Gaussian.
+
+--------------------------------------------------------------------------------
+1. Definitions
+--------------------------------------------------------------------------------
+
+SNR sweep (what you already have):
+  For each SNR value s (dB), on a fixed held-out test set of N pulses:
+    - Add AWGN at that fixed SNR to each clean TRACE.
+    - Reconstruct each pulse.
+    - Score each pulse with a scalar error e_i(s) (typically best-ambiguity
+      SIMILARITY_ERROR; L1 may be used analogously if that is what the sweep
+      reports).
+    - Report:
+        mu(s)  = mean_i e_i(s)
+        sig(s) = std_i e_i(s)     # population std, ddof=0, as in evaluate_cnn
+
+Convergence rate (target quantity):
+  For a threshold tau (e.g. tau = 0.1 for "SIMILARITY_ERROR < 10%"):
+    C(s) = (1/N) * |{ i : e_i(s) < tau }|
+  i.e. the fraction of test pulses whose error is below tau at SNR = s.
+
+--------------------------------------------------------------------------------
+2. Normality assumption
+--------------------------------------------------------------------------------
+
+At each fixed SNR s, assume approximately:
+
+  e_i(s)  ~  Normal( mu(s), sig(s)^2 )
+
+independently across pulses i (for the purpose of this estimate only).
+
+Then:
+
+  C_hat(s) = P( e < tau ) = Phi( (tau - mu(s)) / sig(s) )
+
+where Phi is the CDF of the standard normal distribution:
+
+  Phi(z) = (1 / sqrt(2*pi)) * integral_{-inf}^{z} exp(-t^2 / 2) dt
+
+In code (e.g. NumPy / SciPy):
+
+  from math import erf, sqrt
+  # Phi(z) = 0.5 * (1 + erf(z / sqrt(2)))
+  C_hat = 0.5 * (1.0 + erf( ((tau - mu) / sig) / sqrt(2.0) ))
+
+  # or:
+  # from scipy.stats import norm
+  # C_hat = norm.cdf(tau, loc=mu, scale=sig)
+
+If sig(s) == 0:
+  - If mu(s) < tau:  C_hat(s) = 1
+  - If mu(s) > tau:  C_hat(s) = 0
+  - If mu(s) == tau: C_hat(s) = 0.5   (convention; rare)
+
+Optional: clip C_hat(s) to [0, 1] after evaluation (already implied by Phi).
+
+Report C_hat(s) either as a fraction in [0, 1] or as a percentage 100*C_hat(s),
+matching the style of the existing "Convergence rate vs SNR" plots.
+
+--------------------------------------------------------------------------------
+3. Inputs you need from the SNR-sweep graph / table
+--------------------------------------------------------------------------------
+
+Required at each SNR s on the same grid as the sweep (e.g. -10, -5, ..., 30 dB):
+
+  - mu(s)  : mean error (same metric you will threshold; usually SIM amb)
+  - sig(s) : std error (same metric; same units as mu)
+  - tau    : convergence threshold (default 0.1 for SIM < 10%)
+
+Do NOT mix metrics: if the sweep std bars are for L1, you cannot estimate
+SIM-based C(s) from them. Use the SIM mean/std series for a SIM threshold.
+
+--------------------------------------------------------------------------------
+4. Procedure (step by step)
+--------------------------------------------------------------------------------
+
+  1. Extract or read mu(s) and sig(s) for every SNR on the sweep grid.
+  2. Choose tau (default: 0.1 for SIMILARITY_ERROR convergence as in the
+     Multires 2K notebook section 3b).
+  3. For each s:
+       z(s) = (tau - mu(s)) / sig(s)     # if sig(s) > 0
+       C_hat(s) = Phi(z(s))
+  4. Plot C_hat(s) vs s (and optionally vs equivalent pulse count N(s) if you
+     use snr_db_to_equivalent_n_pulses).
+  5. Label clearly that this is an ESTIMATE under Gaussian assumption, not
+     the empirical per-pulse fraction.
+
+--------------------------------------------------------------------------------
+5. Interpretation and caveats (must state when using this estimate)
+--------------------------------------------------------------------------------
+
+  - This is ONLY an approximation. Reconstructive errors are often skewed,
+    bounded below by 0, and heavy-tailed; Normal(mu, sig^2) is a strong
+    assumption.
+  - Error bars on the SNR-sweep plot are ±sig (population std of per-pulse
+    errors), NOT the standard error of the mean (SEM = sig/sqrt(N)).
+  - The Gaussian formula uses (mu, sig) only; it ignores higher moments
+    (skewness, kurtosis) and does not equal the true empirical C(s) unless
+    the Normal assumption holds.
+  - Prefer computing C(s) directly from per-pulse e_i(s) whenever those
+    arrays (or a dedicated convergence NPZ) are available.
+  - Use this method when you only have the published/plotted mean±std sweep
+    and need a rough SNR-dependent success-rate curve.
+
+--------------------------------------------------------------------------------
+6. Minimal reference formula (copy-ready)
+--------------------------------------------------------------------------------
+
+Given SNR-sweep series mu[s], sig[s] for error metric e, and threshold tau:
+
+  C_hat[s] = Phi( (tau - mu[s]) / sig[s] )
+
+  with Phi = standard normal CDF.
+
+Example defaults (Multires 2K noisy-trace notebook convention):
+  e   = best-ambiguity SIMILARITY_ERROR
+  tau = 0.1
+  s   in {-10, -5, 0, 5, ..., 30} dB
+
+================================================================================
+End of prompt
+================================================================================

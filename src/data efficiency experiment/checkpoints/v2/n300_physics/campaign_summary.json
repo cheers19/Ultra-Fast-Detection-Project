@@ -1,0 +1,30 @@
+{
+  "protocol": "v2",
+  "n_train": 300,
+  "model": "physics",
+  "lambda": 6.0,
+  "LR": 0.001,
+  "trace_scale": 8.0,
+  "batch_size": 64,
+  "max_steps": 6400,
+  "patience_steps": 800,
+  "val_snr_values": [
+    -10.0,
+    0.0,
+    30.0
+  ],
+  "best_epoch": 257,
+  "best_step": 1285,
+  "best_score_val_amb": 1.8814876091480255,
+  "stopped_epoch": 417,
+  "global_step": 2085,
+  "wall_time_data_sec": 8.686559000052512,
+  "wall_time_train_sec": 832.8868664999027,
+  "device": "cuda",
+  "data": "filtered_c1",
+  "tag": "n300_phys_lam6_v2",
+  "retrained_after_lambda_star": false,
+  "snapshot_val_index": 0,
+  "snapshot_snr_db": 10.0,
+  "snapshot_noise_seed": 12345
+}

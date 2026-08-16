@@ -1,0 +1,35 @@
+{
+  "LR_STAR": 0.001,
+  "rows": [
+    {
+      "lr": 0.0001,
+      "tag": "n2498_plain_lr0p0001_screen",
+      "best_score": 2.0129198372364043,
+      "best_epoch": 100,
+      "best_step": 900,
+      "stopped_epoch": 100,
+      "global_step": 900,
+      "wall_time_train_sec": 1075.5674775000662
+    },
+    {
+      "lr": 0.001,
+      "tag": "n2498_plain_lr0p001_screen",
+      "best_score": 1.931268096268177,
+      "best_epoch": 52,
+      "best_step": 468,
+      "stopped_epoch": 77,
+      "global_step": 693,
+      "wall_time_train_sec": 816.917654799996
+    },
+    {
+      "lr": 0.01,
+      "tag": "n2498_plain_lr0p01_screen",
+      "best_score": 3.7300074136257173,
+      "best_epoch": 6,
+      "best_step": 54,
+      "stopped_epoch": 31,
+      "global_step": 279,
+      "wall_time_train_sec": 328.28102989983745
+    }
+  ]
+}

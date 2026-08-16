@@ -1,0 +1,456 @@
+﻿all_code_executed True counts [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+errors []
+--- SOURCE SNIPPETS matching W / L ---
+CELL 7 exec=4:
+  W = 1.0e-6          # m  (theory)
+  TAU_TL = 10.0e-15   # s  (used in L_s-t / GVM term)
+  # Spectral width of each fundamental field
+  SPECTRAL_WIDTH_FROM_TAU_TL = False   # True: old TL link; False: set ╬öE_L independently
+  FUND_E_FWHM_eV_SETTING = 0.45        # intensity FWHM of each |E_LASER,j|^2 [eV]
+  def displayed_dE_to_dw_SHG(dE_display_eV):
+  def dw_SHG_to_displayed_dE(dw_SHG):
+      return np.asarray(dw_SHG) * hb / (q * SHG_ENERGY_CALIBRATION)
+  if SPECTRAL_WIDTH_FROM_TAU_TL:
+      fund_E_FWHM_eV = (2.0 * np.sqrt(2.0) * np.log(2.0) / TAU_SPEC) * hb / q
+      fund_E_FWHM_eV = float(FUND_E_FWHM_eV_SETTING)
+      # |E|^2 ~ exp(-dw^2 ╧ä_spec^2 / (2 ln 2))  =>  ╬ö╧ë_FWHM = 2ΓêÜ2 ln2 / ╧ä_spec
+      delta_omega_L_FWHM = fund_E_FWHM_eV * q / hb
+      TAU_SPEC = 2.0 * np.sqrt(2.0) * np.log(2.0) / delta_omega_L_FWHM
+  def group_velocity(w0, rel_step=1e-6):
+      w0 = float(w0)
+      dw = rel_step * w0
+      dk_dw = (k_wave(w0 + dw) - k_wave(w0 - dw)) / (2.0 * dw)
+      return 1.0 / float(dk_dw)
+  vg_LASER = group_velocity(w_LASER)
+  vg_SHG = group_velocity(w_SHG)
+  L_st = (np.tan(rho) ** 2 / W**2 + GVM**2 / TAU_TL**2) ** (-0.5)
+  Delta_theta = 2.0 / (k_LASER * W)
+  print(f"L_s-t    = {L_st:.6e} m")
+  print(f"TAU_TL   = {TAU_TL*1e15:.1f} fs  (for L_s-t)")
+      f"SPECTRAL_WIDTH_FROM_TAU_TL = {SPECTRAL_WIDTH_FROM_TAU_TL} | "
+      f"╬öE_L FWHM = {fund_E_FWHM_eV:.4g} eV | "
+CELL 9 exec=5:
+  def delta_kz(dtheta_L, dw_L1, dtheta_S, dw_S):
+      """Longitudinal mismatch for ╧ë1+╧ë2=╧ëSHG; dw_L2=dw_S-dw_L1."""
+      dw_L2 = dw_S - dw_L1
+      wL1 = w_LASER + dw_L1
+      wL2 = w_LASER + dw_L2
+      wS = w_SHG + dw_S
+          k_wave(wL1) * np.cos(theta_L)
+          + k_wave(wL2) * np.cos(theta_L)
+          - k_wave(wS) * np.cos(theta_SHG0 + dtheta_S)
+  def delta_kx(dtheta_L, dw_L1, dtheta_S, dw_S):
+      """Transverse mismatch for ╧ë1+╧ë2=╧ëSHG; dw_L2=dw_S-dw_L1."""
+      dw_L2 = dw_S - dw_L1
+      wL1 = w_LASER + dw_L1
+      wL2 = w_LASER + dw_L2
+      wS = w_SHG + dw_S
+          k_wave(wL1) * np.sin(theta_L)
+          + k_wave(wL2) * np.sin(theta_L)
+          - k_wave(wS) * np.sin(theta_SHG0 + dtheta_S)
+  def shg_phase_envelope(dtheta_L, dw_L1, dtheta_S, dw_S, L_st_val, W_val=None):
+      if W_val is None:
+          W_val = W
+      dkz = delta_kz(dtheta_L, dw_L1, dtheta_S, dw_S)
+      dkx = delta_kx(dtheta_L, dw_L1, dtheta_S, dw_S)
+      return np.exp(-0.5 * (dkz * L_st_val) ** 2) * np.exp(-0.5 * (dkx * W_val) ** 2)
+  def E_laser_amp_1(dtheta_L, dw_L1, Delta_theta_val=None, tau_spec_val=None):
+          -(dw_L1**2) * tau_spec_val**2 / (4.0 * np.log(2.0))
+  def E_laser_amp_2(dtheta_L, dw_L2, Delta_theta_val=None, tau_spec_val=None):
+      return E_laser_amp_1(dtheta_L, dw_L2, Delta_theta_val, tau_spec_val)
+  def laser_pair_intensity(dtheta_L, dw_L1, dw_S, Delta_theta_val=None, tau_spec_val=None):
+      """Convolution weight |E_L,1(╬┤╧ë1) E_L,2(╬┤╧ëS-╬┤╧ë1)|┬▓."""
+      dw_L2 = dw_S - dw_L1
+      pair_amp = E_laser_amp_1(dtheta_L, dw_L1, Delta_theta_val, tau_spec_val) * E_laser_amp_2(
+          dtheta_L, dw_L2, Delta_theta_val, tau_spec_val
+  print("envelope(0)=", float(shg_phase_envelope(0, 0, 0, 0, L_st)))
+CELL 11 exec=6:
+  # Characteristic laser widths (spectrum from TAU_SPEC)
+  sigma_w_L = np.sqrt(2.0 * np.log(2.0)) / TAU_SPEC  # |E|^2 1/e half-width in ╧ë
+  # SHG map ranges: a few times the phase-match acceptance
+  theta_accept = 1.0 / (abs(k_SHG * np.sin(theta_SHG0)) * L_st + 1e-30)
+  w_accept = 1.0 / (L_st / c + 1e-30)
+  E_accept_display_eV = float(dw_SHG_to_displayed_dE(w_accept))
+      sigma_w_L * hb / (q * SHG_ENERGY_CALIBRATION),
+      fund_E_FWHM_eV / SHG_ENERGY_CALIBRATION,
+  dtheta_SHG_axis = np.linspace(-dtheta_SHG_max, dtheta_SHG_max, N_THETA_SHG)
+  dE_SHG_axis_eV = np.linspace(-dE_SHG_max_eV, dE_SHG_max_eV, N_ENERGY_SHG)
+  dw_SHG_axis = displayed_dE_to_dw_SHG(dE_SHG_axis_eV)
+  dtheta_L_axis = np.linspace(-3.0 * Delta_theta, 3.0 * Delta_theta, N_THETA_L)
+  dw_L_axis = np.linspace(-3.0 * sigma_w_L, 3.0 * sigma_w_L, N_OMEGA_L)
+  DTH_L, DW_REL = np.meshgrid(dtheta_L_axis, dw_L_axis, indexing="ij")
+  # Backward-compatible alias; loops shift it by ╬┤╧ë_SHG/2 before evaluation.
+  DW_L = DW_REL
+  dw_L = dw_L_axis[1] - dw_L_axis[0]
+      f"Each laser field: ╬öE_L FWHM = {fund_E_FWHM_eV:.4g} eV, "
+      f"╧â_E,L = {sigma_w_L * hb / q:.4g} eV"
+CELL 13 exec=7:
+  param_rows = [
+      ("╧ë_LASER", w_LASER, "rad/s", "pump angular frequency"),
+      ("╧ë_SHG", w_SHG, "rad/s", "SHG angular frequency"),
+      ("k_LASER", k_LASER, "1/m", "pump wave number"),
+      ("k_SHG", k_SHG, "1/m", "SHG wave number"),
+      ("n(╧ë_LASER)", float(n_index(w_LASER)), "ΓÇö", "refractive index at pump"),
+      ("n(╧ë_SHG)", float(n_index(w_SHG)), "ΓÇö", "refractive index at SHG"),
+      ("╧ü", rho, "rad", "walk-off angle = ╬╕_SHG0 ΓêÆ ╬╕_LASER0"),
+      ("╧ü", np.degrees(rho), "deg", "walk-off angle"),
+      # --- envelope / walk-off (theory) ---
+      ("W", W, "m", "beam width (theory)"),
+      ("W", W * 1e6, "╬╝m", "beam width (theory)"),
+      ("╧ä_TL", TAU_TL, "s", "temporal scale in L_s-t (GVM term)"),
+      ("╧ä_TL", TAU_TL * 1e15, "fs", "temporal scale in L_s-t (GVM term)"),
+      ("SPECTRAL_FROM_TAU_TL", SPECTRAL_WIDTH_FROM_TAU_TL, "ΓÇö", "if True, spectrum from ╧ä_TL"),
+      ("╬öE_L FWHM", fund_E_FWHM_eV, "eV", "intensity spectral FWHM of each fundamental field"),
+      ("L_s-t", L_st, "m", "spatiotemporal interaction length"),
+      ("L_s-t", L_st * 1e6, "╬╝m", "spatiotemporal interaction length"),
+      ("╬ö╬╕", Delta_theta, "rad", "laser angular width = 2/(k_LASER W)"),
+      ("╬ö╬╕", Delta_theta * 1e6, "╬╝rad", "laser angular width"),
+      ("╧â_╧ë,L", sigma_w_L, "rad/s", "laser freq. scale ΓêÜ(2 ln 2)/╧ä_spec"),
+      ("╧â_E,L", sigma_w_L * hb / q, "eV", "laser energy scale"),
+  params_df = pd.DataFrame(param_rows, columns=["Parameter", "Value", "Unit", "Description"])
+CELL 14 exec=8:
+  for i_E, dw_S in enumerate(dw_SHG_axis):
+      DW_L1 = DW_REL + 0.5 * dw_S
+      pair_weight = laser_pair_intensity(DTH_L, DW_L1, dw_S)
+          envelope = shg_phase_envelope(DTH_L, DW_L1, dth_S, dw_S, L_st, W)
+          I_SHG[i_E, i_th] = np.sum(envelope * pair_weight) * dth_L * dw_L
+  print(f"max I_SHG (raw) = {np.max(I_SHG):.6e}")
+  print(f"using ╬┤kz envelope with L_s-t = {L_st*1e6:.4g} ╬╝m and ╬┤kx envelope with W = {W*1e6:.4g} ╬╝m")
+CELL 16 exec=9:
+  # Sensible display window from the computed map (where I >= fraction of peak)
+  PLOT_FRAC = 0.05          # contour used to define the signal support
+      _iy, _ix = np.where(_mask)
+      # fallback: a few acceptance / laser scales on the displayed axis
+      dtheta_plot_max = 6.0 * max(Delta_theta, 1.0 / (abs(k_SHG * np.cos(theta_SHG0)) * W))
+      dE_plot_max = 6.0 * (sigma_w_L * hb / (q * SHG_ENERGY_CALIBRATION))
+      f"Plot window: ╬┤╬╕_SHG Γêê ┬▒{dtheta_plot_max*1e6:.2f} ╬╝rad, "
+  im = ax.imshow(
+      origin="lower",
+      + f"$W={W*1e6:.0f}$ ╬╝m, "
+  plt.show()
+CELL 17 exec=10:
+  # --- Fundamental-field widths ---
+  fund_ang_FWHM_urad = Delta_theta * np.sqrt(2.0 * np.log(2.0)) * 1e6
+  # fund_E_FWHM_eV already set in Sec. 3 from SPECTRAL_WIDTH_FROM_TAU_TL / FUND_E_FWHM_eV_SETTING
+  # Reuse / recompute the same sensible plot window as the 2D map
+      PLOT_FRAC = 0.05
+          _iy, _ix = np.where(_mask)
+          dtheta_plot_max = 6.0 * max(Delta_theta, 1.0 / (abs(k_SHG * np.cos(theta_SHG0)) * W))
+              sigma_w_L * hb / (q * SHG_ENERGY_CALIBRATION),
+              fund_E_FWHM_eV / SHG_ENERGY_CALIBRATION,
+  print(f"TAU_TL   = {TAU_TL * 1e15:.4g} fs  (L_s-t only)")
+  print(f"SPECTRAL_WIDTH_FROM_TAU_TL = {SPECTRAL_WIDTH_FROM_TAU_TL}")
+  print(f"L_s-t    = {L_st * 1e6:.6g} um  ({L_st:.6e} m)")
+  print(f"Fundamental angular FWHM  dth_L = {fund_ang_FWHM_urad:.6g} urad")
+  print(f"Fundamental energy FWHM   dE_L  = {fund_E_FWHM_eV:.6g} eV")
+      f"Plot window: ╬┤╬╕_SHG Γêê ┬▒{dtheta_plot_max*1e6:.2f} ╬╝rad, "
+      f"domega_rel range: [{dw_L_axis[0]:.6e}, {dw_L_axis[-1]:.6e}] rad/s "
+      f"(N = {len(dw_L_axis)}), with domega_L1 = domega_SHG/2 + domega_rel"
+      f"domega_rel as energy: [{dw_L_axis[0]*hb/q:.6g}, {dw_L_axis[-1]*hb/q:.6g}] eV"
+  axes[0].plot(dtheta_SHG_axis * 1e6, I_SHG_norm[i0, :], lw=2)
+  axes[1].plot(dE_SHG_axis_eV, I_SHG_norm[:, j0], lw=2, color="C1")
+      rf"$\Delta E_L={fund_E_FWHM_eV:.3g}\,\mathrm{{eV}}$, "
+      rf"$L_{{s\!-\!t}}={L_st*1e6:.3g}\,\mu\mathrm{{m}}$; "
+      rf"fund. $\Delta\theta_L={fund_ang_FWHM_urad:.3g}\,\mu\mathrm{{rad}}$",
+  plt.show()
+CELL 19 exec=11:
+      W_m,
+      """I_SHG map for beam width W_m [m], with adaptive SHG axes."""
+      Delta_theta_W = 2.0 / (k_LASER * W_m)
+      L_st_W = (np.tan(rho) ** 2 / W_m**2 + GVM**2 / TAU_TL**2) ** (-0.5)
+      # Expected SHG acceptances for this W
+      th_acc_z = 1.0 / (abs(k_SHG * np.sin(theta_SHG0)) * L_st_W + 1e-30)
+      th_acc_x = 1.0 / (abs(k_SHG * np.cos(theta_SHG0)) * W_m + 1e-30)
+      E_acc_display = float(dw_SHG_to_displayed_dE(1.0 / (L_st_W / c + 1e-30)))
+      sigma_w = np.sqrt(2.0 * np.log(2.0)) / TAU_SPEC
+      th_max = range_scale * max(th_acc_z, th_acc_x, Delta_theta_W)
+          sigma_w * hb / (q * SHG_ENERGY_CALIBRATION),
+          fund_E_FWHM_eV / SHG_ENERGY_CALIBRATION,
+      dtheta_S_axis = np.linspace(-th_max, th_max, n_theta_S)
+      dE_S_eV_axis = np.linspace(-E_max, E_max, n_energy_S)
+      dw_S_axis = displayed_dE_to_dw_SHG(dE_S_eV_axis)
+      dth_L_ax = np.linspace(-3.0 * Delta_theta_W, 3.0 * Delta_theta_W, n_theta_L)
+      dw_rel_ax = np.linspace(-3.0 * sigma_w, 3.0 * sigma_w, n_omega_L)
+      DTH, DW_REL_LOCAL = np.meshgrid(dth_L_ax, dw_rel_ax, indexing="ij")
+      dw_step = dw_rel_ax[1] - dw_rel_ax[0]
+      for i_E, dw_S in enumerate(dw_S_axis):
+          DW_L1 = DW_REL_LOCAL + 0.5 * dw_S
+          pair_weight = laser_pair_intensity(DTH, DW_L1, dw_S, Delta_theta_W, TAU_SPEC)
+              env = shg_phase_envelope(DTH, DW_L1, dth_S, dw_S, L_st_W, W_m)
+              I[i_E, i_th] = np.sum(env * pair_weight) * dth_step * dw_step
+          "W_m": W_m,
+          "Delta_theta": Delta_theta_W,
+          "L_st": L_st_W,
+  def sensible_window(I_norm, dtheta_axis, dE_axis, frac=0.05, pad=1.6):
+          iy, ix = np.where(mask)
+  W_um_list = [0.1, 1.0, 10.0]
+  maps_by_W = {}
+  for W_um in W_um_list:
+      print(f"Computing map for W = {W_um:g} ╬╝m ...")
+      m = compute_ishg_map(W_um * 1e-6)
+      th_max, E_max = sensible_window(m["I_norm"], m["dtheta_S"], m["dE_S_eV"])
+      maps_by_W[W_um] = m
+          f"  L_s-t = {m['L_st']*1e6:.4g} ╬╝m, "
+          f"window ┬▒{th_max*1e6:.2f} ╬╝rad / ┬▒{E_max:.3f} eV"
+  for ax, W_um in zip(axes, W_um_list):
+      m = maps_by_W[W_um]
+CELL 21 exec=12:
+  def fwhm_1d(x, y):
+      """Full width at half-maximum of a unimodal 1D profile y(x)."""
+      while i_L > 0 and y[i_L] > half:
+      while i_R < len(y) - 1 and y[i_R] > half:
+  def shg_widths_at_W(W_m, n_line=201, n_theta_L=61, n_omega_L=61):
+      """SHG angular [rad] and energy [eV] FWHM for beam width W_m."""
+      Delta_theta_W = 2.0 / (k_LASER * W_m)
+      L_st_W = (np.tan(rho) ** 2 / W_m**2 + GVM**2 / TAU_TL**2) ** (-0.5)
+      sigma_w = np.sqrt(2.0 * np.log(2.0)) / TAU_SPEC
+      dth_L_ax = np.linspace(-3.0 * Delta_theta_W, 3.0 * Delta_theta_W, n_theta_L)
+      dw_rel_ax = np.linspace(-3.0 * sigma_w, 3.0 * sigma_w, n_omega_L)
+      DTH, DW_REL_LOCAL = np.meshgrid(dth_L_ax, dw_rel_ax, indexing="ij")
+      dw_step = dw_rel_ax[1] - dw_rel_ax[0]
+      th_acc = 1.0 / (abs(k_SHG * np.sin(theta_SHG0)) * L_st_W + 1e-30)
+      th_acc_x = 1.0 / (abs(k_SHG * np.cos(theta_SHG0)) * W_m + 1e-30)
+      E_acc_display = float(dw_SHG_to_displayed_dE(1.0 / (L_st_W / c + 1e-30)))
+      th_max = 6.0 * max(th_acc, th_acc_x, Delta_theta_W)
+          sigma_w * hb / (q * SHG_ENERGY_CALIBRATION),
+          fund_E_FWHM_eV / SHG_ENERGY_CALIBRATION,
+      th_axis = np.linspace(-th_max, th_max, n_line)
+      E_axis = np.linspace(-E_max, E_max, n_line)
+      DW_L1_ZERO = DW_REL_LOCAL
+      weight_zero = laser_pair_intensity(DTH, DW_L1_ZERO, 0.0, Delta_theta_W, TAU_SPEC)
+          env = shg_phase_envelope(DTH, DW_L1_ZERO, dth_S, 0.0, L_st_W, W_m)
+          I_th[j] = np.sum(env * weight_zero) * dth_step * dw_step
+          dw_S = float(displayed_dE_to_dw_SHG(dE))
+          DW_L1 = DW_REL_LOCAL + 0.5 * dw_S
+          pair_weight = laser_pair_intensity(DTH, DW_L1, dw_S, Delta_theta_W, TAU_SPEC)
+          env = shg_phase_envelope(DTH, DW_L1, 0.0, dw_S, L_st_W, W_m)
+          I_E[j] = np.sum(env * pair_weight) * dth_step * dw_step
+          "ang_FWHM_rad": fwhm_1d(th_axis, I_th),
+          "ene_FWHM_eV": fwhm_1d(E_axis, I_E),
+          "L_st": L_st_W,
+          "Delta_theta": Delta_theta_W,
+  W_um_scan = np.logspace(np.log10(0.05), np.log10(10.0), 16)
+  ang_FWHM_urad = np.empty_like(W_um_scan)
+  ene_FWHM_eV = np.empty_like(W_um_scan)
+  L_st_of_W_um = np.empty_like(W_um_scan)
+  for i, W_um in enumerate(W_um_scan):
+      out = shg_widths_at_W(W_um * 1e-6)
+CELL 23 exec=13:
+  if "fwhm_1d" not in globals():
+      def fwhm_1d(x, y):
+          while i_L > 0 and y[i_L] > half:
+          while i_R < len(y) - 1 and y[i_R] > half:
+  def shg_widths_at_W_and_dE(
+      W_m,
+      fund_E_FWHM_eV_local,
+      """SHG angular [rad] and energy [eV] FWHM for given W and ╬öE_L."""
+      Delta_theta_W = 2.0 / (k_LASER * W_m)
+      L_st_W = (np.tan(rho) ** 2 / W_m**2 + GVM**2 / TAU_TL**2) ** (-0.5)
+      # Spectral scale from independent fundamental energy FWHM
+      d_omega_FWHM = fund_E_FWHM_eV_local * q / hb
+      tau_spec = 2.0 * np.sqrt(2.0) * np.log(2.0) / d_omega_FWHM
+      sigma_w = np.sqrt(2.0 * np.log(2.0)) / tau_spec
+      dth_L_ax = np.linspace(-3.0 * Delta_theta_W, 3.0 * Delta_theta_W, n_theta_L)
+      dw_rel_ax = np.linspace(-3.0 * sigma_w, 3.0 * sigma_w, n_omega_L)
+      DTH, DW_REL_LOCAL = np.meshgrid(dth_L_ax, dw_rel_ax, indexing="ij")
+      dw_step = dw_rel_ax[1] - dw_rel_ax[0]
+      th_acc = 1.0 / (abs(k_SHG * np.sin(theta_SHG0)) * L_st_W + 1e-30)
+      th_acc_x = 1.0 / (abs(k_SHG * np.cos(theta_SHG0)) * W_m + 1e-30)
+      E_acc_display = float(dw_SHG_to_displayed_dE(1.0 / (L_st_W / c + 1e-30)))
+      th_max = 6.0 * max(th_acc, th_acc_x, Delta_theta_W)
+          sigma_w * hb / (q * SHG_ENERGY_CALIBRATION),
+          fund_E_FWHM_eV_local / SHG_ENERGY_CALIBRATION,
+      th_axis = np.linspace(-th_max, th_max, n_line)
+      E_axis = np.linspace(-E_max, E_max, n_line)
+      weight_zero = laser_pair_intensity(DTH, DW_REL_LOCAL, 0.0, Delta_theta_W, tau_spec)
+          env = shg_phase_envelope(DTH, DW_REL_LOCAL, dth_S, 0.0, L_st_W, W_m)
+          I_th[j] = np.sum(env * weight_zero) * dth_step * dw_step
+          dw_S = float(displayed_dE_to_dw_SHG(dE))
+          DW_L1 = DW_REL_LOCAL + 0.5 * dw_S
+          pair_weight = laser_pair_intensity(DTH, DW_L1, dw_S, Delta_theta_W, tau_spec)
+          env = shg_phase_envelope(DTH, DW_L1, 0.0, dw_S, L_st_W, W_m)
+          I_E[j] = np.sum(env * pair_weight) * dth_step * dw_step
+      return fwhm_1d(th_axis, I_th), fwhm_1d(E_axis, I_E)
+  W_um_for_dE_scan = [0.1, 1.0, 10.0]
+  dE_L_scan_eV = np.logspace(np.log10(0.05), np.log10(2.0), 12)
+  for W_um in W_um_for_dE_scan:
+      print(f"=== W = {W_um:g} ╬╝m ===")
+      ang = np.empty_like(dE_L_scan_eV)
+CELL 25 exec=14:
+      dE_SHG_eV=dE_SHG_axis_eV,  # backward-compatible alias: displayed/calibrated axis
+      TAU_TL_s=TAU_TL,
+      fund_E_FWHM_eV=fund_E_FWHM_eV,
+      W_m=W,
+      L_st_m=L_st,
+CELL 27 exec=15:
+  def fwhm(x, y):
+      """Full width at half-maximum of a unimodal 1D profile y(x)."""
+      while i_L > 0 and y[i_L] > half:
+      while i_R < len(y) - 1 and y[i_R] > half:
+  def ishg_lineout_theta(dtheta_S_axis, L_st_val, dth_L_grid, dw_rel_grid, dth_step, dw_step):
+      """I_SHG(╬┤╬╕_S, displayed ╬┤E_S=0), with the two-field convolution."""
+      pair_weight = laser_pair_intensity(dth_L_grid, dw_rel_grid, 0.0)
+          env = shg_phase_envelope(dth_L_grid, dw_rel_grid, dth_S, 0.0, L_st_val, W)
+          out[i] = np.sum(env * pair_weight) * dth_step * dw_step
+  def ishg_lineout_energy(dE_S_eV_axis, L_st_val, dth_L_grid, dw_rel_grid, dth_step, dw_step):
+      """I_SHG(╬┤╬╕_S=0, displayed ╬┤E_S), with the two-field convolution."""
+      dw_S_axis = displayed_dE_to_dw_SHG(dE_S_eV_axis)
+      out = np.empty(len(dw_S_axis), dtype=float)
+      for i, dw_S in enumerate(dw_S_axis):
+          dw_L1_grid = dw_rel_grid + 0.5 * dw_S
+          pair_weight = laser_pair_intensity(dth_L_grid, dw_L1_grid, dw_S)
+          env = shg_phase_envelope(dth_L_grid, dw_L1_grid, 0.0, dw_S, L_st_val, W)
+          out[i] = np.sum(env * pair_weight) * dth_step * dw_step
+      _sig_w = np.sqrt(2.0 * np.log(2.0)) / TAU_SPEC
+      _dth = np.linspace(-3.0 * Delta_theta, 3.0 * Delta_theta, 61)
+      _dw = np.linspace(-3.0 * _sig_w, 3.0 * _sig_w, 61)
+      DTH_L, DW_REL = np.meshgrid(_dth, _dw, indexing="ij")
+      DW_L = DW_REL
+      dw_L = _dw[1] - _dw[0]
+  if "DW_REL" not in globals():
+      DW_REL = DW_L
+  if "sigma_w_L" not in globals():
+      sigma_w_L = np.sqrt(2.0 * np.log(2.0)) / TAU_SPEC
+  L_st_scan_um = np.logspace(np.log10(0.05), np.log10(10.0), 10)  # 0.05 ΓåÆ 10 ╬╝m
+  L_st_scan_m = L_st_scan_um * 1e-6
+  angular_fwhm_urad = np.empty(len(L_st_scan_m))
+  energy_fwhm_eV = np.empty(len(L_st_scan_m))
+  for i, Lval in enumerate(L_st_scan_m):
+      # Adaptive half-range ~ several acceptance widths for this L_s-t
+      E_acc_display = float(dw_SHG_to_displayed_dE(1.0 / (Lval / c + 1e-30)))
+      # Also account for transverse acceptance ~ 1/(k W) scale
+      th_acc_x = 1.0 / (abs(k_SHG * np.cos(theta_SHG0)) * W + 1e-30)
+          sigma_w_L * hb / (q * SHG_ENERGY_CALIBRATION),
+      th_axis = np.linspace(-th_max, th_max, N_LINE)
+      E_axis = np.linspace(-E_max, E_max, N_LINE)
+CELL 28 exec=16:
+  axes[0].loglog(L_st_scan_um, angular_fwhm_urad, "o-", lw=2, ms=7)
+  axes[0].axvline(L_st * 1e6, color="0.5", ls="--", lw=1, label=rf"nominal $L_{{s-t}}={L_st*1e6:.2f}\,\mu$m")
+  axes[0].set_ylabel(r"SHG angular FWHM [╬╝rad]")
+  axes[0].set_title(r"Angular width vs $L_{s\!-\!t}$")
+  axes[0].grid(True, which="both", alpha=0.3)
+  axes[1].loglog(L_st_scan_um, energy_fwhm_eV, "s-", color="C1", lw=2, ms=7)
+  axes[1].axvline(L_st * 1e6, color="0.5", ls="--", lw=1, label=rf"nominal $L_{{s-t}}={L_st*1e6:.2f}\,\mu$m")
+  axes[1].set_ylabel(r"Displayed SHG energy FWHM [eV]")
+  axes[1].set_title(r"Energy width vs $L_{s\!-\!t}$")
+  axes[1].grid(True, which="both", alpha=0.3)
+  fig.suptitle(r"SHG field widths for 10 log-spaced $L_{s\!-\!t}$ values", y=1.02)
+  plt.show()
+CELL 30 exec=17:
+  # Same L_s-t samples as the numerical width sweep (Sec. 9)
+  if "L_st_scan_um" not in globals():
+      L_st_scan_um = np.logspace(np.log10(0.05), np.log10(10.0), 10)
+  L_st_scan_m_an = L_st_scan_um * 1e-6
+  k_omega = k_LASER  # fundamental wave number k_╧ë
+  two_theta_B = 2.0 * theta_B
+  # Angular FWHM [rad] ΓåÆ ╬╝rad
+  dtheta_FWHM_an_rad = (
+      / (2.0 * np.pi * k_omega * L_st_scan_m_an * np.tan(two_theta_B))
+  dtheta_FWHM_an_urad = dtheta_FWHM_an_rad * 1e6
+  # Physical energy FWHM [J], then convert to the calibrated displayed eV axis.
+  dE_FWHM_an_J = (
+      * np.cos(two_theta_B)
+      / (L_st_scan_m_an * np.sin(theta_B) ** 2)
+  dE_FWHM_an_eV = dE_FWHM_an_J / (q * SHG_ENERGY_CALIBRATION)
+  yudovich_widths = pd.DataFrame(
+          "L_s-t [╬╝m]": L_st_scan_um,
+          "╬ö╬╕_FWHM analytic [╬╝rad]": dtheta_FWHM_an_urad,
+          "╬öE_FWHM analytic [eV]": dE_FWHM_an_eV,
+      display(yudovich_widths)
+      print(yudovich_widths.to_string(index=False))
+CELL 31 exec=18:
+  axes[0].loglog(L_st_scan_um, dtheta_FWHM_an_urad, "o-", lw=2, ms=7, color="C0")
+      L_st * 1e6, color="0.5", ls="--", lw=1,
+      label=rf"nominal $L_{{s-t}}={L_st*1e6:.2f}\,\mu$m",
+  axes[0].set_ylabel(r"SHG angular FWHM [╬╝rad]")
+  axes[0].set_title(r"Yudovich analytic $\Delta\theta_{\mathrm{FWHM}}$")
+  axes[0].grid(True, which="both", alpha=0.3)
+  axes[1].loglog(L_st_scan_um, dE_FWHM_an_eV, "s-", lw=2, ms=7, color="C1")
+      L_st * 1e6, color="0.5", ls="--", lw=1,
+      label=rf"nominal $L_{{s-t}}={L_st*1e6:.2f}\,\mu$m",
+  axes[1].set_ylabel(r"Displayed SHG energy FWHM [eV]")
+  axes[1].set_title(r"Yudovich analytic $\Delta E_{\mathrm{FWHM}}^{\mathrm{disp}}$")
+  axes[1].grid(True, which="both", alpha=0.3)
+      r"Analytical SHG widths vs $L_{s\!-\!t}$ (Yudovich approx.)",
+  plt.show()
+CELL 33 exec=19:
+  # Beam-width scan (same ╧ü, GVM as the base geometry)
+  W_um_axis = np.logspace(np.log10(0.1), np.log10(100.0), 200)  # 0.1 ΓåÆ 100 ╬╝m
+  W_m_axis = W_um_axis * 1e-6
+  L_st_vs_W = {}
+      L_st_vs_W[tau_fs] = (
+          np.tan(rho) ** 2 / W_m_axis**2 + GVM**2 / tau_s**2
+          W_um_axis,
+          L_st_vs_W[tau_fs] * 1e6,
+          lw=2.5,
+  # Mark the theory reference point W = 1 ╬╝m used elsewhere in the notebook
+  ax.axvline(1.0, color="0.5", ls="--", lw=1, label=r"$W=1\,\mu\mathrm{m}$ (theory ref.)")
+      print(f"╧ä_TL = {tau_fs:g} fs, W = 1 ╬╝m ΓåÆ L_s-t = {L_at_1um*1e6:.4f} ╬╝m")
+  ax.set_xlabel(r"Beam width $W$ [╬╝m]")
+  ax.set_title(r"$L_{s\!-\!t}$ vs beam width for two $\tau_{TL}$ values")
+  ax.grid(True, which="both", alpha=0.3)
+  plt.show()
+--- OUTPUT TEXT mentions ---
+PAT W[^\n]{0,80} count 67
+  'WIDTH_FROM_TAU_TL = False | ╬öE_L FWHM = 0.45 eV | TAU_SPEC = 2.868 fs'
+  'WHM = 0.45 eV, ╧â_E,L = 0.2703 eV'
+  'W</td>'
+  'W</td>'
+  'WHM</td>'
+  'WHM of each fundamental field</td>'
+  'W)</td>'
+  'W        1e-06      m   '
+  'W            1     ╬╝m   '
+  'WHM         0.45     eV   '
+  'WHM of each fundamental field  '
+  'W)  '
+  'W       1e-06     m                               beam width (theory)'
+  'W           1    ╬╝m                               beam width (theory)'
+  'WHM        0.45    eV intensity spectral FWHM of each fundamental field'
+PAT L_s[^\n]{0,80} count 54
+  'L_s-t    = 1.466523e-06 m'
+  'L_s-t)'
+  'L_s-t (GVM term)</td>'
+  'L_s-t (GVM term)</td>'
+  'L_s-t</td>'
+  'L_s-t</td>'
+  'L_s-t  1.46652e-06      m   '
+  'L_s-t      1.46652     ╬╝m   '
+  'L_s-t (GVM term)  '
+  'L_s-t (GVM term)  '
+  'L_s-t (GVM term)'
+  'L_s-t (GVM term)'
+  'L_s-t 1.46652e-06     m                 spatiotemporal interaction length'
+  'L_s-t     1.46652    ╬╝m                 spatiotemporal interaction length'
+  'L_s-t = 1.467 ╬╝m and ╬┤kx envelope with W = 1 ╬╝m'
+PAT 0\.05[^\n]{0,60} count 14
+  '0.050 ╬╝m | L_s-t =   0.074 ╬╝m | ╬ö╬╕_FWHM =  539.669 ╬╝rad | ╬öE_FWH'
+  '0.050000</td>'
+  '0.050000    0.073709           539.669017          0.318046'
+  '0.050 eV | ╬ö╬╕_SHG =  269.840 ╬╝rad | ╬öE_SHG =   0.0413 eV'
+  '0.050 eV | ╬ö╬╕_SHG =   27.054 ╬╝rad | ╬öE_SHG =   0.0354 eV'
+  '0.050 eV | ╬ö╬╕_SHG =    3.178 ╬╝rad | ╬öE_SHG =   0.0309 eV'
+  '0.0529 eV'
+  '0.0572 eV'
+  '0.0593 eV'
+  '0.050 ╬╝m | ╬ö╬╕_FWHM =   44.025 ╬╝rad | ╬öE_FWHM =   0.2989 eV'
+  '0.050000</td>'
+  '0.050000            44.025475          0.298929'
+  '0.050000</td>'
+  '0.050000               157.076003              15.771146'
+PAT 0\.1[^\n]{0,60} count 37
+  '0.1 ╬╝m ...'
+  '0.1474 ╬╝m, ╬ö╬╕ = 402.1 ╬╝rad, window ┬▒428.86 ╬╝rad / ┬▒0.428 eV'
+  '0.105 ╬╝m | ╬ö╬╕_FWHM =  379.078 ╬╝rad | ╬öE_FWHM =   0.3185 eV'
+  '0.101 ╬╝m | L_s-t =   0.149 ╬╝m | ╬ö╬╕_FWHM =  266.276 ╬╝rad | ╬öE_FW'
+  '0.144 ╬╝m | L_s-t =   0.213 ╬╝m | ╬ö╬╕_FWHM =  187.043 ╬╝rad | ╬öE_FW'
+  '0.1964 eV'
+  '0.1540 eV'
+  '0.1162 eV'
+  '0.104934</td>'
+  '0.101338</td>'
+  '0.149385</td>'
+  '0.144270</td>'
+  '0.196356</td>'
+  '0.154041</td>'
+  '0.116183</td>'

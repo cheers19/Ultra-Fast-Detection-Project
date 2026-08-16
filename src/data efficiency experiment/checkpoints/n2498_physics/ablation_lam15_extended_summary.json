@@ -1,0 +1,41 @@
+{
+  "n_train": 2498,
+  "model": "physics",
+  "role": "final_lam15_extended",
+  "lambda": 15.0,
+  "LR_star": 0.001,
+  "trace_scale": 8.0,
+  "batch_size": 300,
+  "patience_steps": 225,
+  "max_steps": 5400,
+  "best_epoch": 212,
+  "best_step": 1908,
+  "best_score_val_amb": 1.468330878019333,
+  "stopped_epoch": 237,
+  "global_step": 2133,
+  "hit_max_steps": false,
+  "tag": "n2498_phys_lam15_final_ext",
+  "compare_to_tag": "n2498_phys_lam15_final",
+  "snr_sweep_db": [
+    -10.0,
+    -5.0,
+    0.0,
+    5.0,
+    10.0,
+    15.0,
+    20.0,
+    25.0,
+    30.0
+  ],
+  "snr_sweep_l1_amb_m": [
+    4.094334038440138,
+    2.091202586889267,
+    1.6588975309859961,
+    1.5576337786624208,
+    1.522682711831294,
+    1.5091871745535173,
+    1.5061184207443148,
+    1.5022607085993513,
+    1.5028852802352048
+  ]
+}

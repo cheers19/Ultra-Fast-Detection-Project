@@ -75,6 +75,7 @@ def train_multires_noisy_trace_loss_early_stop(
     train_snr_db_range: tuple[float, float],
     val_snr_db: float,
     verbose: bool = True,
+    restore_best: bool = True,
 ):
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
     history = TrainHistory()
@@ -86,6 +87,7 @@ def train_multires_noisy_trace_loss_early_stop(
     best_state: dict[str, torch.Tensor] | None = None
     epochs_no_improve = 0
     stopped_epoch = 0
+    final_val = float("inf")
 
     snr_lo, snr_hi = float(train_snr_db_range[0]), float(train_snr_db_range[1])
 
@@ -125,6 +127,7 @@ def train_multires_noisy_trace_loss_early_stop(
                 vsum += vloss.item() * b
                 vcount += b
         val_l1 = vsum / max(vcount, 1)
+        final_val = val_l1
         history.val_l1_pulses.append(val_l1)
 
         if val_l1 < best_val:
@@ -155,16 +158,18 @@ def train_multires_noisy_trace_loss_early_stop(
     else:
         stopped_epoch = max_epochs
 
-    if best_state is not None:
+    if restore_best and best_state is not None:
         model.load_state_dict(best_state)
 
     return {
         "history": history,
         "best_epoch": best_epoch,
         "best_val_l1": best_val,
+        "final_val_l1": float(final_val),
         "stopped_epoch": stopped_epoch,
         "lam": float(lam),
         "trace_scale": scale,
+        "restore_best": bool(restore_best),
     }
 
 

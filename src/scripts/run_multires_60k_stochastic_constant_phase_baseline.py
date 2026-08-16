@@ -51,6 +51,11 @@ def main() -> None:
     parser.add_argument("--lr", type=float, default=1e-3)
     parser.add_argument("--max-epochs", type=int, default=200)
     parser.add_argument("--patience", type=int, default=25)
+    parser.add_argument(
+        "--no-restore-best",
+        action="store_true",
+        help="Keep final-epoch weights (do not reload best-val checkpoint).",
+    )
     parser.add_argument("--train-snr-min", type=float, default=0.0)
     parser.add_argument("--train-snr-max", type=float, default=30.0)
     parser.add_argument("--val-snr-db", type=float, default=15.0)
@@ -105,9 +110,12 @@ def main() -> None:
             f"val={int(args.n_val)} test={int(args.n_test)}",
             flush=True,
         )
+        restore_best = not bool(args.no_restore_best)
         print(
             f"train SNR [{train_snr_range[0]:.0f}, {train_snr_range[1]:.0f}] dB; "
-            f"val @ {args.val_snr_db:.0f} dB; λ=0 (pulse L1 only)",
+            f"val @ {args.val_snr_db:.0f} dB; lam=0 (pulse L1 only); "
+            f"max_epochs={int(args.max_epochs)} patience={int(args.patience)} "
+            f"restore_best={restore_best}",
             flush=True,
         )
         model = build_model(n, device, model_name="multires")
@@ -129,6 +137,7 @@ def main() -> None:
             lr=float(args.lr),
             train_snr_db_range=train_snr_range,
             val_snr_db=float(args.val_snr_db),
+            restore_best=restore_best,
         )
         hist = train_out["history"]
         payload = {
@@ -137,6 +146,8 @@ def main() -> None:
             "best_epoch": train_out["best_epoch"],
             "stopped_epoch": train_out["stopped_epoch"],
             "best_val_l1": train_out["best_val_l1"],
+            "final_val_l1": train_out.get("final_val_l1"),
+            "restore_best": restore_best,
             "trace_scale": train_out["trace_scale"],
             "train_losses": hist.train_losses,
             "val_l1_pulses": hist.val_l1_pulses,
@@ -146,6 +157,7 @@ def main() -> None:
             "n_val": int(args.n_val),
             "n_test": int(args.n_test),
             "pulse_kind": "stochastic_constant_phase",
+            "matched_2k_lam15_stopped_epoch": int(args.max_epochs),
         }
         ckpt_path.parent.mkdir(parents=True, exist_ok=True)
         torch.save(payload, ckpt_path)
@@ -155,9 +167,13 @@ def main() -> None:
                     "best_epoch": train_out["best_epoch"],
                     "stopped_epoch": train_out["stopped_epoch"],
                     "best_val_l1": train_out["best_val_l1"],
+                    "final_val_l1": train_out.get("final_val_l1"),
+                    "restore_best": restore_best,
                     "lam": 0.0,
                     "n_train": int(args.n_train),
                     "pulse_kind": "stochastic_constant_phase",
+                    "matched_2k_lam15_stopped_epoch": int(args.max_epochs),
+                    "patience": int(args.patience),
                 },
                 indent=2,
             ),

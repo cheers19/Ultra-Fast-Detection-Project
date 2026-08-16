@@ -1,0 +1,38 @@
+{
+  "best_epoch": 52,
+  "best_score": 1.931268096268177,
+  "stopped_epoch": 77,
+  "lam": 0.0,
+  "trace_scale": 7.85720531873808,
+  "pulse_loss_mode": "raw",
+  "ambiguity_backend": "legacy",
+  "trace_loss_ref": "clean",
+  "device": "cuda",
+  "train_snr_db_range": [
+    0.0,
+    30.0
+  ],
+  "train_snr_db_values": null,
+  "val_snr_db_range": [
+    0.0,
+    30.0
+  ],
+  "val_snr_db_values": null,
+  "n_train": 2498,
+  "n_val": 200,
+  "seed": 0,
+  "loader_builder": "filtered_c1",
+  "canonicalize_mode": "t0",
+  "lr": 0.001,
+  "batch_size": 300,
+  "max_steps": 900,
+  "global_step": 693,
+  "best_step": 468,
+  "early_stop_mode": "steps",
+  "early_stop_frac": 0.9,
+  "patience": 225,
+  "wall_time_data_sec": 29.48780389991589,
+  "wall_time_train_sec": 816.917654799996,
+  "role": "lr_screen",
+  "wall_time_total_sec": 847.3891443999019
+}

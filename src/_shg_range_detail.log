@@ -1,0 +1,92 @@
+﻿C19/ex11: maps_by_W = {}
+C19/ex11: maps_by_W[W_um] = m
+C19/ex11: m = maps_by_W[W_um]
+C19/ex11: rf"SHG intensity maps vs beam width "
+C21/ex12: L_st_of_W_um = np.empty_like(W_um_scan)
+C23/ex13: W_um_for_dE_scan = [0.1, 1.0, 10.0]
+C23/ex13: for W_um in W_um_for_dE_scan:
+C23/ex13: for W_um in W_um_for_dE_scan:
+C33/ex19: W_um_axis = np.logspace(np.log10(0.1), np.log10(100.0), 200)  # 0.1 ΓåÆ 100 ╬╝m
+C33/ex19: W_m_axis = W_um_axis * 1e-6
+C33/ex19: W_um_axis,
+
+==== CELL 19 full relevant source (three maps?) ====
+def compute_ishg_map(
+    """I_SHG map for beam width W_m [m], with adaptive SHG axes."""
+    dtheta_S_axis = np.linspace(-th_max, th_max, n_theta_S)
+    dE_S_eV_axis = np.linspace(-E_max, E_max, n_energy_S)
+    dth_L_ax = np.linspace(-3.0 * Delta_theta_W, 3.0 * Delta_theta_W, n_theta_L)
+    dw_rel_ax = np.linspace(-3.0 * sigma_w, 3.0 * sigma_w, n_omega_L)
+W_um_list = [0.1, 1.0, 10.0]
+maps_by_W = {}
+for W_um in W_um_list:
+    print(f"Computing map for W = {W_um:g} ╬╝m ...")
+    m = compute_ishg_map(W_um * 1e-6)
+    maps_by_W[W_um] = m
+for ax, W_um in zip(axes, W_um_list):
+    m = maps_by_W[W_um]
+        cmap="viridis",
+        rf"$W={W_um:g}\,\mu\mathrm{{m}}$"
+    rf"SHG intensity maps vs beam width "
+
+==== CELL 19 OUTPUT (head) ====
+Computing map for W = 0.1 ╬╝m ...
+
+  L_s-t = 0.1474 ╬╝m, ╬ö╬╕ = 402.1 ╬╝rad, window ┬▒428.86 ╬╝rad / ┬▒0.428 eV
+Computing map for W = 1 ╬╝m ...
+
+  L_s-t = 1.467 ╬╝m, ╬ö╬╕ = 40.21 ╬╝rad, window ┬▒42.89 ╬╝rad / ┬▒0.480 eV
+Computing map for W = 10 ╬╝m ...
+
+  L_s-t = 10.3 ╬╝m, ╬ö╬╕ = 4.021 ╬╝rad, window ┬▒12.01 ╬╝rad / ┬▒0.240 eV
+
+<Figure size 1400x420 with 6 Axes>
+
+==== Find W sweep cells ====
+--- cell 19 exec 11 ---
+  """I_SHG map for beam width W_m [m], with adaptive SHG axes."""
+  # Expected SHG acceptances for this W
+  def sensible_window(I_norm, dtheta_axis, dE_axis, frac=0.05, pad=1.6):
+  W_um_list = [0.1, 1.0, 10.0]
+  for W_um in W_um_list:
+  print(f"Computing map for W = {W_um:g} ╬╝m ...")
+  m = compute_ishg_map(W_um * 1e-6)
+  maps_by_W[W_um] = m
+  for ax, W_um in zip(axes, W_um_list):
+  m = maps_by_W[W_um]
+  rf"$W={W_um:g}\,\mu\mathrm{{m}}$"
+--- cell 21 exec 12 ---
+  """SHG angular [rad] and energy [eV] FWHM for beam width W_m."""
+  W_um_scan = np.logspace(np.log10(0.05), np.log10(10.0), 16)
+  ang_FWHM_urad = np.empty_like(W_um_scan)
+  ene_FWHM_eV = np.empty_like(W_um_scan)
+  L_st_of_W_um = np.empty_like(W_um_scan)
+  for i, W_um in enumerate(W_um_scan):
+  out = shg_widths_at_W(W_um * 1e-6)
+  L_st_of_W_um[i] = out["L_st"] * 1e6
+  f"W = {W_um:7.3f} ╬╝m | L_s-t = {L_st_of_W_um[i]:7.3f} ╬╝m | "
+  "W [╬╝m]": W_um_scan,
+  "L_s-t [╬╝m]": L_st_of_W_um,
+  axes[0].loglog(W_um_scan, ang_FWHM_urad, "o-", lw=2, ms=6)
+  for Wmark in (0.1, 1.0, 10.0):
+  axes[1].loglog(W_um_scan, ene_FWHM_eV, "s-", color="C1", lw=2, ms=6)
+  for Wmark in (0.1, 1.0, 10.0):
+--- cell 23 exec 13 ---
+  """SHG angular [rad] and energy [eV] FWHM for given W and ╬öE_L."""
+  W_um_for_dE_scan = [0.1, 1.0, 10.0]
+  dE_L_scan_eV = np.logspace(np.log10(0.05), np.log10(2.0), 12)
+  for W_um in W_um_for_dE_scan:
+  print(f"=== W = {W_um:g} ╬╝m ===")
+  a_rad, e_eV = shg_widths_at_W_and_dE(W_um * 1e-6, float(dE_L))
+  ang_vs_dE[W_um] = ang
+  ene_vs_dE[W_um] = ene
+  for W_um in W_um_for_dE_scan:
+  dE_L_scan_eV, ang_vs_dE[W_um], "o-", lw=2, ms=5,
+  label=rf"$W={W_um:g}\,\mu\mathrm{{m}}$",
+  dE_L_scan_eV, ene_vs_dE[W_um], "s-", lw=2, ms=5,
+  label=rf"$W={W_um:g}\,\mu\mathrm{{m}}$",
+--- cell 33 exec 19 ---
+  W_um_axis = np.logspace(np.log10(0.1), np.log10(100.0), 200)  # 0.1 ΓåÆ 100 ╬╝m
+  W_m_axis = W_um_axis * 1e-6
+  TAU_TL_list_fs = [10.0, 0.5]
+  W_um_axis,

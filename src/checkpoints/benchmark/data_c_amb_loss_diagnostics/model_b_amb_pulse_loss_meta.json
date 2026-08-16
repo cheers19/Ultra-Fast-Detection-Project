@@ -1,0 +1,20 @@
+{
+  "best_epoch": 78,
+  "best_score": 2.21168182849884,
+  "stopped_epoch": 103,
+  "lam": 3.0,
+  "trace_scale": 7.7575333480202735,
+  "pulse_loss_mode": "best_ambiguity",
+  "device": "cuda",
+  "train_snr_db_range": [
+    0.0,
+    30.0
+  ],
+  "val_snr_db_range": [
+    -10.0,
+    30.0
+  ],
+  "n_train": 2048,
+  "n_val": 200,
+  "seed": 0
+}

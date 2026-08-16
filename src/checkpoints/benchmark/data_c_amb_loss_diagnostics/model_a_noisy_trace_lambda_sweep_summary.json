@@ -1,0 +1,21 @@
+{
+  "lambda_values": [
+    1.0,
+    2.0,
+    3.0,
+    4.0,
+    5.0
+  ],
+  "best_lam": 5.0,
+  "best_score": 2.3836146441102026,
+  "winner_tag": "model_a_raw_pulse_loss_noisy_trace",
+  "per_lam_best_score": {
+    "1.0": 2.5722275668382646,
+    "2.0": 2.5082624888420106,
+    "3.0": 2.396109402179718,
+    "4.0": 2.489720569252968,
+    "5.0": 2.3836146441102026
+  },
+  "trace_loss_ref": "noisy",
+  "selection_metric": "val_pulse_l1_amb"
+}

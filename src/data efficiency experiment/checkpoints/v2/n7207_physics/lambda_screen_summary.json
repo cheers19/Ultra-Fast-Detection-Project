@@ -1,0 +1,96 @@
+{
+  "protocol": "v2",
+  "protocol_band": "B",
+  "LR": 0.001,
+  "TRACE_SCALE": 8.0,
+  "PATIENCE_STEPS": 4700,
+  "EXTENSION_STEPS": 2000,
+  "LAM_STAR": 1.8,
+  "TAG_STAR_SCREEN": "n7207_phys_lam1p8_v2",
+  "stage1_rows": [
+    {
+      "lam": 0.6,
+      "tag": "n7207_phys_lam0p6_v2",
+      "role": "lam_stage1",
+      "best_score": 1.4464162054657936,
+      "best_epoch": 50,
+      "best_step": 5650,
+      "stopped_epoch": 92,
+      "global_step": 10396
+    },
+    {
+      "lam": 1.8,
+      "tag": "n7207_phys_lam1p8_v2",
+      "role": "lam_stage1",
+      "best_score": 1.257280435860157,
+      "best_epoch": 49,
+      "best_step": 5537,
+      "stopped_epoch": 91,
+      "global_step": 10283
+    },
+    {
+      "lam": 4.3,
+      "tag": "n7207_phys_lam4p3_v2",
+      "role": "lam_stage1",
+      "best_score": 1.2765394335985183,
+      "best_epoch": 45,
+      "best_step": 5085,
+      "stopped_epoch": 87,
+      "global_step": 9831
+    }
+  ],
+  "fine_rows": [
+    {
+      "lam": 1.0392304845413265,
+      "tag": "n7207_phys_lam1p03923_v2",
+      "role": "lam_stage2",
+      "best_score": 1.36159014031291,
+      "best_epoch": 61,
+      "best_step": 6893,
+      "stopped_epoch": 103,
+      "global_step": 11639
+    }
+  ],
+  "rows": [
+    {
+      "lam": 0.6,
+      "tag": "n7207_phys_lam0p6_v2",
+      "role": "lam_stage1",
+      "best_score": 1.4464162054657936,
+      "best_epoch": 50,
+      "best_step": 5650,
+      "stopped_epoch": 92,
+      "global_step": 10396
+    },
+    {
+      "lam": 1.8,
+      "tag": "n7207_phys_lam1p8_v2",
+      "role": "lam_stage1",
+      "best_score": 1.257280435860157,
+      "best_epoch": 49,
+      "best_step": 5537,
+      "stopped_epoch": 91,
+      "global_step": 10283
+    },
+    {
+      "lam": 4.3,
+      "tag": "n7207_phys_lam4p3_v2",
+      "role": "lam_stage1",
+      "best_score": 1.2765394335985183,
+      "best_epoch": 45,
+      "best_step": 5085,
+      "stopped_epoch": 87,
+      "global_step": 9831
+    },
+    {
+      "lam": 1.0392304845413265,
+      "tag": "n7207_phys_lam1p03923_v2",
+      "role": "lam_stage2",
+      "best_score": 1.36159014031291,
+      "best_epoch": 61,
+      "best_step": 6893,
+      "stopped_epoch": 103,
+      "global_step": 11639
+    }
+  ]
+}

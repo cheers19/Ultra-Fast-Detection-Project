@@ -24,9 +24,13 @@ from data_generation import stochastic_pulse_config_data_c
 from dataset_utils import build_stochastic_frog_dataloaders
 from evaluate_cnn import mean_l1_cnn_at_snr, mean_metric_cnn_at_snr, run_cnn_snr_sweep, save_cnn_sweep
 from frog_reconstruction_model import extract_pulse_prediction
-from pulse_metrics import best_l1_ambiguity, best_similarity_error_ambiguity
 from frognet import FROGNet
-from pulse_metrics import pulse_packed_l1_loss_torch
+from pulse_metrics import (
+    best_l1_ambiguity,
+    best_similarity_error_ambiguity,
+    pulse_packed_l1_loss_torch,
+    unpack_packed_field,
+)
 from trace_noise import add_trace_noise_awgn
 from train import TrainHistory, build_model
 
@@ -63,6 +67,19 @@ def calibrate_trace_scale(
     return float(np.median(ratios))
 
 
+def _batch_mean_best_l1_ambiguity(
+    E_pred: torch.Tensor, E_true: torch.Tensor
+) -> float:
+    """Mean packed L1 over FROG ambiguities for a packed [B, 2N] batch."""
+    e_pred = E_pred.detach().cpu().numpy()
+    e_true = E_true.detach().cpu().numpy()
+    vals = [
+        best_l1_ambiguity(unpack_packed_field(e_pred[i]), unpack_packed_field(e_true[i]))
+        for i in range(e_pred.shape[0])
+    ]
+    return float(np.mean(vals)) if vals else float("nan")
+
+
 def train_multires_noisy_trace_loss_early_stop(
     model: torch.nn.Module,
     train_loader,
@@ -78,12 +95,23 @@ def train_multires_noisy_trace_loss_early_stop(
     val_snr_db: float,
     verbose: bool = True,
 ):
+    """
+    Train with composite loss ``pulse_L1 + λ·trace_L1/scale``.
+
+    Logged / displayed metrics are **pulse L1 only**:
+      - train: raw packed pulse L1 (no ambiguity)
+      - val: raw packed pulse L1 **and** best-ambiguity pulse L1
+
+    Early-stop / λ* selection still use raw val pulse L1 (no ambiguity).
+    """
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
     history = TrainHistory()
+    val_l1_amb_hist: list[float] = []
     device = next(model.parameters()).device
     scale = max(float(trace_scale), 1e-8)
 
     best_val = float("inf")
+    best_val_amb = float("inf")
     best_epoch = 0
     best_state: dict[str, torch.Tensor] | None = None
     epochs_no_improve = 0
@@ -93,7 +121,7 @@ def train_multires_noisy_trace_loss_early_stop(
 
     for epoch in range(max_epochs):
         model.train()
-        running = 0.0
+        running_pulse = 0.0
         n_seen = 0
         for I_clean, E_true in train_loader:
             I_clean = I_clean.to(device)
@@ -110,12 +138,13 @@ def train_multires_noisy_trace_loss_early_stop(
             loss.backward()
             optimizer.step()
             b = I_clean.shape[0]
-            running += loss.item() * b
+            # Log pulse L1 only (not the composite physics loss).
+            running_pulse += pulse_l1.item() * b
             n_seen += b
-        history.train_losses.append(running / max(n_seen, 1))
+        history.train_losses.append(running_pulse / max(n_seen, 1))
 
         model.eval()
-        vsum, vcount = 0.0, 0
+        vsum, vsum_amb, vcount = 0.0, 0.0, 0
         with torch.no_grad():
             for I_clean, E_true in val_loader:
                 I_clean = I_clean.to(device)
@@ -125,12 +154,16 @@ def train_multires_noisy_trace_loss_early_stop(
                 vloss = pulse_packed_l1_loss_torch(E_pred, E_true)
                 b = I_clean.shape[0]
                 vsum += vloss.item() * b
+                vsum_amb += _batch_mean_best_l1_ambiguity(E_pred, E_true) * b
                 vcount += b
         val_l1 = vsum / max(vcount, 1)
+        val_l1_amb = vsum_amb / max(vcount, 1)
         history.val_l1_pulses.append(val_l1)
+        val_l1_amb_hist.append(val_l1_amb)
 
         if val_l1 < best_val:
             best_val = val_l1
+            best_val_amb = val_l1_amb
             best_epoch = epoch + 1
             best_state = copy.deepcopy(model.state_dict())
             epochs_no_improve = 0
@@ -140,8 +173,9 @@ def train_multires_noisy_trace_loss_early_stop(
         if verbose:
             print(
                 f"  lam={float(lam):.4f}  epoch {epoch + 1:03d}/{max_epochs}  "
-                f"train_loss={history.train_losses[-1]:.5f}  "
-                f"val_L1@{val_snr_db:.0f}dB={val_l1:.5f}",
+                f"train_pulse_L1={history.train_losses[-1]:.5f}  "
+                f"val_L1@{val_snr_db:.0f}dB={val_l1:.5f}  "
+                f"val_L1_amb={val_l1_amb:.5f}",
                 flush=True,
             )
 
@@ -162,8 +196,10 @@ def train_multires_noisy_trace_loss_early_stop(
 
     return {
         "history": history,
+        "val_l1_amb": val_l1_amb_hist,
         "best_epoch": best_epoch,
         "best_val_l1": best_val,
+        "best_val_l1_amb": best_val_amb,
         "stopped_epoch": stopped_epoch,
         "lam": float(lam),
         "trace_scale": scale,
@@ -336,9 +372,14 @@ def main() -> None:
             "best_epoch": result["best_epoch"],
             "stopped_epoch": result["stopped_epoch"],
             "best_val_l1": result["best_val_l1"],
+            "best_val_l1_amb": float(result["best_val_l1_amb"]),
             "trace_scale": trace_scale,
             "train_losses": result["history"].train_losses,
             "val_l1_pulses": result["history"].val_l1_pulses,
+            "val_l1_amb": list(result["val_l1_amb"]),
+            "train_metric": "pulse_l1_raw",
+            "val_metric": "pulse_l1_raw",
+            "val_metric_amb": "pulse_l1_best_ambiguity",
             "train_snr_db_range": list(train_snr_range),
             "val_snr_db": float(args.val_snr_db),
             "n_val": int(args.n_val),
@@ -357,13 +398,15 @@ def main() -> None:
         )
         print(
             f"  lam={lam:.4f}  best_epoch={result['best_epoch']}  "
-            f"best_val_L1={result['best_val_l1']:.5f}",
+            f"best_val_L1={result['best_val_l1']:.5f}  "
+            f"best_val_L1_amb={result['best_val_l1_amb']:.5f}",
             flush=True,
         )
 
     print(f"\nAll lambda checkpoints saved under {ckpt_dir}", flush=True)
     run_log = []
     best_val_l1 = np.full(n_lam, np.nan)
+    best_val_l1_amb = np.full(n_lam, np.nan)
     best_epochs = np.full(n_lam, -1, dtype=np.int32)
     stopped_epochs = np.full(n_lam, -1, dtype=np.int32)
     for li, lam in enumerate(lambda_grid):
@@ -372,6 +415,7 @@ def main() -> None:
         entry = meta.get("log_entry", {k: v for k, v in meta.items() if k != "model_state_dict"})
         run_log.append(entry)
         best_val_l1[li] = float(meta["best_val_l1"])
+        best_val_l1_amb[li] = float(meta.get("best_val_l1_amb", np.nan))
         best_epochs[li] = int(meta["best_epoch"])
         stopped_epochs[li] = int(meta["stopped_epoch"])
 
@@ -380,6 +424,11 @@ def main() -> None:
     lambda_opt = float(lambda_grid[opt_idx])
     lambda_baseline = float(lambda_grid[baseline_idx])
     print(f"\nlambda* = {lambda_opt:.4f}  (best val L1 = {best_val_l1[opt_idx]:.5f})", flush=True)
+    if np.isfinite(best_val_l1_amb[opt_idx]):
+        print(
+            f"  at λ*: best val L1 (amb) @ best-raw epoch = {best_val_l1_amb[opt_idx]:.5f}",
+            flush=True,
+        )
     print(
         f"baseline λ = {lambda_baseline:.4f}  (best val L1 = {best_val_l1[baseline_idx]:.5f})",
         flush=True,
@@ -392,6 +441,7 @@ def main() -> None:
         out_npz,
         lambda_grid=lambda_grid,
         best_val_l1=best_val_l1,
+        best_val_l1_amb=best_val_l1_amb,
         best_epochs=best_epochs,
         stopped_epochs=stopped_epochs,
         lambda_opt=lambda_opt,
@@ -399,7 +449,9 @@ def main() -> None:
         lambda_baseline=lambda_baseline,
         lambda_baseline_idx=baseline_idx,
         best_val_at_opt=float(best_val_l1[opt_idx]),
+        best_val_amb_at_opt=float(best_val_l1_amb[opt_idx]),
         best_val_at_baseline=float(best_val_l1[baseline_idx]),
+        best_val_amb_at_baseline=float(best_val_l1_amb[baseline_idx]),
         trace_scale=trace_scale,
         n_train=int(args.n_train),
         n_val=int(args.n_val),
@@ -412,6 +464,9 @@ def main() -> None:
         seed=int(args.seed),
         pulse_kind="stochastic_data_c",
         t_center_std_fs=float(stoch_grid.t_center_std_fs),
+        train_metric="pulse_l1_raw",
+        val_metric="pulse_l1_raw",
+        val_metric_amb="pulse_l1_best_ambiguity",
     )
 
     opt_src = ckpt_dir / f"lam_{lambda_opt:.4f}.pt"

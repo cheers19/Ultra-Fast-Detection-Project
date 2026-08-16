@@ -1,3 +1,9 @@
 .venv/
 __pycache__/
 .vscode/
+
+# Model weights / training checkpoints are kept locally only (too large for the remote)
+*.pt
+
+# Office lock files
+~$*

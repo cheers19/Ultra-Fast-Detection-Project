@@ -1,0 +1,23 @@
+{
+  "n_train": 2498,
+  "model": "physics",
+  "role": "final_lam3_ablation",
+  "lambda": 3.0,
+  "lambda_star": 15.0,
+  "LR_star": 0.001,
+  "trace_scale": 8.0,
+  "batch_size": 300,
+  "best_epoch": 195,
+  "best_score_val_amb": 1.5271162545681,
+  "stopped_epoch": 200,
+  "global_step": 1800,
+  "wall_time_data_sec": 28.38365380000323,
+  "wall_time_train_sec": 4047.981945700012,
+  "device": "cuda",
+  "data": "filtered_c1",
+  "tag": "n2498_phys_lam3_final",
+  "compare_to_tag": "n2498_phys_lam15_final",
+  "snapshot_val_index": 0,
+  "snapshot_snr_db": 10.0,
+  "snapshot_noise_seed": 12345
+}

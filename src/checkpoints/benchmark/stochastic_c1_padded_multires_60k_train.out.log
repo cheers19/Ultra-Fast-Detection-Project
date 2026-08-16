@@ -1,0 +1,52 @@
+device: cuda
+notebook C1 padded 60K: T=53.0 fs, N_spikes=300, N_FFT=128, λ=0 (pulse L1 only)
+data generation + FROG traces: 185.2s
+train=60000 val=200 test=512; SNR [0,30] dB; val @15 dB
+  lam=0.0000  epoch 001/200  train_loss=5.47458  val_L1@15dB=4.97974
+  lam=0.0000  epoch 002/200  train_loss=4.90056  val_L1@15dB=4.80556
+  lam=0.0000  epoch 003/200  train_loss=4.71706  val_L1@15dB=4.66303
+  lam=0.0000  epoch 004/200  train_loss=4.60663  val_L1@15dB=4.61042
+  lam=0.0000  epoch 005/200  train_loss=4.53061  val_L1@15dB=4.61573
+  lam=0.0000  epoch 006/200  train_loss=4.45968  val_L1@15dB=4.64382
+  lam=0.0000  epoch 007/200  train_loss=4.40171  val_L1@15dB=4.55972
+  lam=0.0000  epoch 008/200  train_loss=4.34529  val_L1@15dB=4.50817
+  lam=0.0000  epoch 009/200  train_loss=4.29773  val_L1@15dB=4.56439
+  lam=0.0000  epoch 010/200  train_loss=4.24118  val_L1@15dB=4.58519
+  lam=0.0000  epoch 011/200  train_loss=4.18903  val_L1@15dB=4.54648
+  lam=0.0000  epoch 012/200  train_loss=4.15102  val_L1@15dB=4.63137
+  lam=0.0000  epoch 013/200  train_loss=4.10065  val_L1@15dB=4.71387
+  lam=0.0000  epoch 014/200  train_loss=4.05306  val_L1@15dB=4.68615
+  lam=0.0000  epoch 015/200  train_loss=4.01735  val_L1@15dB=4.74284
+  lam=0.0000  epoch 016/200  train_loss=3.97983  val_L1@15dB=4.66750
+  lam=0.0000  epoch 017/200  train_loss=3.93463  val_L1@15dB=4.70602
+  lam=0.0000  epoch 018/200  train_loss=3.88971  val_L1@15dB=4.64964
+  lam=0.0000  epoch 019/200  train_loss=3.85032  val_L1@15dB=4.72705
+  lam=0.0000  epoch 020/200  train_loss=3.82525  val_L1@15dB=4.65892
+  lam=0.0000  epoch 021/200  train_loss=3.77798  val_L1@15dB=4.76576
+  lam=0.0000  epoch 022/200  train_loss=3.73869  val_L1@15dB=4.79800
+  lam=0.0000  epoch 023/200  train_loss=3.69070  val_L1@15dB=4.82501
+  lam=0.0000  epoch 024/200  train_loss=3.67182  val_L1@15dB=4.74893
+  lam=0.0000  epoch 025/200  train_loss=3.66289  val_L1@15dB=4.86427
+  lam=0.0000  epoch 026/200  train_loss=3.64388  val_L1@15dB=4.84306
+  lam=0.0000  epoch 027/200  train_loss=3.59782  val_L1@15dB=4.89411
+  lam=0.0000  epoch 028/200  train_loss=3.55622  val_L1@15dB=4.86826
+  lam=0.0000  epoch 029/200  train_loss=3.53848  val_L1@15dB=4.95782
+  lam=0.0000  epoch 030/200  train_loss=3.53464  val_L1@15dB=4.87603
+  lam=0.0000  epoch 031/200  train_loss=3.48352  val_L1@15dB=4.93935
+  lam=0.0000  epoch 032/200  train_loss=3.44760  val_L1@15dB=4.82140
+  lam=0.0000  epoch 033/200  train_loss=3.46977  val_L1@15dB=4.93835
+  early stop: no val improvement for 25 epochs; stopped at epoch 33, best epoch 8
+Saved checkpoint: D:\Haim\Haim 3rd paper\Ultra-Fast project\src\checkpoints\benchmark\stochastic_c1_padded_multires_60k_baseline.pt  (train wall=1732.9s, best_ep=8)
+
+SNR sweep on test set (n=512) …
+CNN sweep @ -10.0 dB …
+CNN sweep @ -5.0 dB …
+CNN sweep @ 0.0 dB …
+CNN sweep @ 5.0 dB …
+CNN sweep @ 10.0 dB …
+CNN sweep @ 15.0 dB …
+CNN sweep @ 20.0 dB …
+CNN sweep @ 25.0 dB …
+CNN sweep @ 30.0 dB …
+Saved sweep: D:\Haim\Haim 3rd paper\Ultra-Fast project\src\checkpoints\benchmark\stochastic_c1_padded_multires_60k_baseline_sweep.npz  (wall=29.2s)
+Done in 1948s (data=185s, train=1733s, sweep=29s)
